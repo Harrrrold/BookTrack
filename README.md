@@ -24,3 +24,12 @@ Register Page:
 
 <img width="483" height="957" alt="image" src="https://github.com/user-attachments/assets/d173ec29-7b04-4da0-a2d4-e4100e53b6fb" />
 
+Forget Page:
+<img width="1920" height="958" alt="image" src="https://github.com/user-attachments/assets/5fe15936-c7cb-48e3-a86c-2eef21e9be4f" />
+
+<img width="499" height="956" alt="image" src="https://github.com/user-attachments/assets/0888ab6b-85d3-4cd9-ad78-f61da9afbbd0" />
+
+Reset Password Page:
+<img width="1920" height="955" alt="image" src="https://github.com/user-attachments/assets/8c536db3-b1b8-49b3-b05a-025b839650ac" />
+
+<img width="495" height="955" alt="image" src="https://github.com/user-attachments/assets/49e47f88-a35f-4c5d-bfe2-5982b47f29a0" />
