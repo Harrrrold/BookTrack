@@ -4,9 +4,48 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
-    <title>Document</title>
+    <link href="assets/css/styles.css" rel="stylesheet">
+    <title>BookTrack · Login</title>
 </head>
-<body>
-    
+<body class="bt-theme">
+    <main class="bt-center">
+        <div class="container-sm" style="max-width: 440px;">
+            <div class="bt-card p-4 p-md-5">
+                <div class="bt-header mb-4">
+                    <a href="index.html" class="bt-brand mx-auto">
+                        <span class="bt-brand-mark">B</span>
+                        <span>BookTrack</span>
+                    </a>
+                    <h1 class="h4 bt-title mb-0">Welcome back</h1>
+                    <p class="bt-subtitle mb-0">Log in to continue tracking your reading</p>
+                </div>
+
+                <form novalidate>
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email</label>
+                        <input type="email" class="form-control bt-input" id="email" placeholder="you@example.com" required>
+                    </div>
+                    <div class="mb-2">
+                        <label for="password" class="form-label">Password</label>
+                        <input type="password" class="form-control bt-input" id="password" placeholder="••••••••" required>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="" id="remember">
+                            <label class="form-check-label" for="remember">Remember me</label>
+                        </div>
+                        <a href="forgot.html" class="bt-link">Forgot password?</a>
+                    </div>
+
+                    <button type="submit" class="btn btn-bt w-100">Sign in</button>
+                </form>
+
+                <div class="bt-divider my-4"></div>
+                <p class="text-center mb-0 bt-muted">New to BookTrack? <a href="register.html" class="bt-link">Create an account</a></p>
+            </div>
+        </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js" integrity="sha384-aIG8c0qc3Cq4W3dah6+7m3V2eqnfJcEdXtewK1H7S7m+6gD7n3t9xWm6R3bB8E7b" crossorigin="anonymous"></script>
 </body>
 </html>

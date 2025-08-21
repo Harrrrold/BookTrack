@@ -1,0 +1,136 @@
+/* Light-brown aesthetic theme for BookTrack */
+/* Palette */
+:root {
+    --bt-bg: #f7f1ea;         /* light parchment */
+    --bt-card: #fffaf5;       /* soft paper */
+    --bt-accent: #b07c4f;     /* light brown (buttons/links) */
+    --bt-accent-600: #96653e; /* darker hover */
+    --bt-accent-700: #7e5333; /* active */
+    --bt-text: #4a3b2f;       /* deep brown */
+    --bt-muted: #8b6f57;      /* muted */
+    --bt-border: #e6d8c9;     /* subtle border */
+    --bt-input-bg: #fffdfb;   /* inputs */
+}
+
+html, body {
+    height: 100%;
+}
+
+body.bt-theme {
+    background: radial-gradient(1200px 800px at 20% -10%, #ffffff 0%, var(--bt-bg) 60%), var(--bt-bg);
+    color: var(--bt-text);
+}
+
+/* Centering helper */
+.bt-center {
+    min-height: 100dvh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+}
+
+/* Card */
+.bt-card {
+    background: var(--bt-card);
+    border: 1px solid var(--bt-border);
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(124, 92, 66, 0.08);
+}
+
+.bt-card .bt-header {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    text-align: center;
+}
+
+.bt-brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 700;
+    color: var(--bt-text);
+    text-decoration: none;
+}
+
+.bt-brand-mark {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    background: linear-gradient(160deg, var(--bt-accent), var(--bt-accent-600));
+    display: inline-grid;
+    place-items: center;
+    color: #fff;
+    font-size: 18px;
+    box-shadow: 0 6px 16px rgba(176, 124, 79, 0.35);
+}
+
+.bt-title {
+    font-weight: 700;
+    letter-spacing: 0.2px;
+}
+
+.bt-subtitle {
+    color: var(--bt-muted);
+}
+
+/* Inputs */
+.form-control.bt-input {
+    background: var(--bt-input-bg);
+    border: 1px solid var(--bt-border);
+    color: var(--bt-text);
+    padding: 10px 12px;
+    border-radius: 10px;
+}
+
+.form-control.bt-input:focus {
+    border-color: var(--bt-accent);
+    box-shadow: 0 0 0 0.2rem rgba(176, 124, 79, 0.15);
+}
+
+/* Buttons */
+.btn-bt {
+    --bs-btn-color: #fff;
+    --bs-btn-bg: var(--bt-accent);
+    --bs-btn-border-color: var(--bt-accent);
+    --bs-btn-hover-bg: var(--bt-accent-600);
+    --bs-btn-hover-border-color: var(--bt-accent-600);
+    --bs-btn-active-bg: var(--bt-accent-700);
+    --bs-btn-active-border-color: var(--bt-accent-700);
+    --bs-btn-disabled-bg: #caa988;
+    --bs-btn-disabled-border-color: #caa988;
+    border-radius: 10px;
+    padding: 10px 14px;
+}
+
+/* Links */
+.bt-link {
+    color: var(--bt-accent);
+    text-decoration: none;
+}
+
+.bt-link:hover {
+    color: var(--bt-accent-600);
+    text-decoration: underline;
+}
+
+/* Subtle divider */
+.bt-divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--bt-border), transparent);
+}
+
+/* Helper for small muted text */
+.bt-muted {
+    color: var(--bt-muted);
+}
+
+/* Background image hero (optional use) */
+.bt-hero-bg {
+    background-image: url('../img/Background.jpg');
+    background-size: cover;
+    background-position: center;
+}
+
+
