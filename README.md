@@ -12,7 +12,7 @@ Live Demo URL: https://harrrrold.github.io/BookTrack/
 Home Page:
 <img width="1920" height="956" alt="image" src="https://github.com/user-attachments/assets/f2dc0e80-cd79-4ee3-932b-8c2aa878f0a4" />
 
-<img width="500" height="959" alt="image" src="https://github.com/user-attachments/assets/fa2e0884-59cc-4973-8507-4cdcadb2bda4" />
+<img width="499" height="956" alt="image" src="https://github.com/user-attachments/assets/bd15ae62-6d98-477b-b3df-9be6d31f9fe7" />
 
 Login Page:
 <img width="1909" height="940" alt="image" src="https://github.com/user-attachments/assets/efc90917-5b43-42ad-b807-9440093d2217" />
