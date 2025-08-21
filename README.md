@@ -1,4 +1,4 @@
-![14b7ae87-f857-4c5a-a8eb-254119346d8d](https://github.com/user-attachments/assets/6362d708-f751-4ac3-833b-4d1dbf68c607)<img width="497" height="956" alt="image" src="https://github.com/user-attachments/assets/7f984e2f-a78f-426e-b2ae-b0cedc967ba8" />BookTrack: A Simple Web App For Searching, Reserving, And Managing Library Books
+Web App For Searching, Reserving, And Managing Library Books
 
 BookTrack is a PHP-based web application that allows library members to register an account, search for books, reserve available titles, and bookmark or mark favorite books for easy access later. Administrators can manage the book catalog and member accounts through an easy-to-use interface. This system aims to simplify book borrowing processes, ensure accurate tracking of book availability, and provide a user-friendly environment for both members and librarians.
 
