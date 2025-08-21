@@ -7,8 +7,29 @@
     <link href="assets/css/styles.css" rel="stylesheet">
     <title>BookTrack · Login</title>
 </head>
-<body class="bt-theme">
-    <main class="bt-center">
+<body class="bt-theme d-flex flex-column min-vh-100">
+    <!-- Navbar (copied from index.html) -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
+        <div class="container">
+            <a class="bt-brand navbar-brand" href="index.html">
+                <span class="bt-brand-mark">B</span>
+                <span>BookTrack</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="register.html">Register</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="login.html">Login</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <main class="flex-grow-1 d-flex align-items-center">
         <div class="container-sm" style="max-width: 440px;">
             <div class="bt-card p-4 p-md-5">
                 <div class="bt-header mb-4">
@@ -45,6 +66,14 @@
             </div>
         </div>
     </main>
+
+    <!-- Footer (copied from index.html) -->
+    <footer class="mt-auto py-4 border-top text-center bt-muted">
+        <div class="container">
+            <p class="mb-1">&copy; 2025 BookTrack. All rights reserved.</p>
+            <small>Made with ❤️ using Bootstrap 5</small>
+        </div>
+    </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js" integrity="sha384-aIG8c0qc3Cq4W3dah6+7m3V2eqnfJcEdXtewK1H7S7m+6gD7n3t9xWm6R3bB8E7b" crossorigin="anonymous"></script>
 </body>
