@@ -1,12 +1,81 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
-    <title>Document</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BookTrack · Home</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
+  <link href="assets/css/styles.css" rel="stylesheet">
 </head>
-<body>
-    
+<body class="bt-theme d-flex flex-column min-vh-100">
+
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
+    <div class="container">
+      <a class="bt-brand navbar-brand" href="index.html">
+        <span class="bt-brand-mark">B</span>
+        <span>BookTrack</span>
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+        <ul class="navbar-nav">
+          <li class="nav-item"><a class="nav-link active" href="index.html">Home</a></li>
+          <li class="nav-item"><a class="nav-link" href="register.html">Register</a></li>
+          <li class="nav-item"><a class="nav-link" href="login.html">Login</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <section class="py-5 text-center">
+    <div class="container">
+      <h1 class="display-5 fw-bold mb-3">Welcome to BookTrack</h1>
+      <p class="lead mb-4">Search, reserve, and manage your favorite library books with ease.</p>
+      <a href="register.html" class="btn btn-bt btn-lg me-2">Get Started</a>
+      <a href="login.html" class="btn btn-outline-secondary btn-lg">Sign In</a>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section class="py-5 bg-light">
+    <div class="container">
+      <div class="row g-4">
+        <div class="col-md-4">
+          <div class="bt-card h-100 p-4 text-center">
+            <h5 class="bt-title mb-2">Search Books</h5>
+            <p class="bt-subtitle mb-0">Quickly find books across the entire library collection.</p>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="bt-card h-100 p-4 text-center">
+            <h5 class="bt-title mb-2">Reserve Online</h5>
+            <p class="bt-subtitle mb-0">Easily reserve available titles and pick them up later.</p>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="bt-card h-100 p-4 text-center">
+            <h5 class="bt-title mb-2">Track Favorites</h5>
+            <p class="bt-subtitle mb-0">Bookmark your favorite books and manage your reading list.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="mt-auto py-4 border-top text-center bt-muted">
+    <div class="container">
+      <p class="mb-1">&copy; 2025 BookTrack. All rights reserved.</p>
+      <small>Made with ❤️ using Bootstrap 5</small>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q"
+    crossorigin="anonymous"></script>
 </body>
 </html>
