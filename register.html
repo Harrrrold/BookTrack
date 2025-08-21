@@ -21,14 +21,22 @@
                 </div>
 
                 <form novalidate>
-                    <div class="row g-3">
-                        <div class="col-sm-6">
+                    <div class="row g-3 bt-name-grid">
+                        <div class="col-6 col-sm-4">
                             <label for="firstName" class="form-label">First name</label>
                             <input type="text" class="form-control bt-input" id="firstName" placeholder="Jane" required>
                         </div>
-                        <div class="col-sm-6">
+                        <div class="col-6 col-sm-3">
+                            <label for="middleName" class="form-label">Middle name</label>
+                            <input type="text" class="form-control bt-input" id="middleName" placeholder="Anne">
+                        </div>
+                        <div class="col-6 col-sm-3">
                             <label for="lastName" class="form-label">Last name</label>
                             <input type="text" class="form-control bt-input" id="lastName" placeholder="Doe" required>
+                        </div>
+                        <div class="col-6 col-sm-2">
+                            <label for="suffix" class="form-label">Suffix</label>
+                            <input type="text" class="form-control bt-input" id="suffix" placeholder="Jr.">
                         </div>
                         <div class="col-12">
                             <label for="email" class="form-label">Email</label>

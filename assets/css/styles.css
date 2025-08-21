@@ -75,6 +75,15 @@ body.bt-theme {
     color: var(--bt-muted);
 }
 
+/* Name grid tweaks */
+.bt-name-grid .form-label {
+    white-space: nowrap;
+}
+
+.bt-name-grid .form-control {
+    text-overflow: ellipsis;
+}
+
 /* Inputs */
 .form-control.bt-input {
     background: var(--bt-input-bg);
