@@ -7,39 +7,70 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
     <link href="assets/css/styles.css" rel="stylesheet">
 </head>
-<body class="bt-theme">
+<body class="bt-theme d-flex flex-column min-vh-100">
 
-    <div class="bt-center">
-        <div class="bt-card p-4" style="min-width:340px;max-width:370px;width:100%;">
-            <div class="bt-header mb-4">
-                <a class="bt-brand mb-2" href="index.html">
-                    <span class="bt-brand-mark">B</span>
-                    <span>BookTrack</span>
-                </a>
-                <h4 class="bt-title mb-1">Forgot Password</h4>
-                <div class="bt-subtitle">Enter your Gmail and OTP to continue</div>
-            </div>
-            <form action="forgot2.html" method="get">
-                <div class="mb-3">
-                    <label for="gmail" class="form-label">Gmail</label>
-                    <input type="email" class="form-control bt-input" id="gmail" placeholder="yourname@gmail.com" required>
-                </div>
-                <div class="mb-3">
-                    <label for="otp" class="form-label">OTP</label>
-                    <div class="input-group">
-                        <input type="text" class="form-control bt-input" id="otp" placeholder="Enter OTP" required>
-                        <button class="btn btn-bt" type="button" id="sendOtpBtn">Send OTP</button>
-                    </div>
-                </div>
-                <div class="d-grid mt-4">
-                    <button type="submit" class="btn btn-bt">Next</button>
-                </div>
-            </form>
-            <div class="text-center mt-3">
-                <a href="login.html" class="bt-link">Back to Login</a>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
+        <div class="container">
+            <a class="bt-brand navbar-brand" href="index.html">
+                <span class="bt-brand-mark">B</span>
+                <span>BookTrack</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="register.html">Register</a></li>
+                    <li class="nav-item"><a class="nav-link" href="login.html">Login</a></li>
+                </ul>
             </div>
         </div>
-    </div>
+    </nav>
+
+    <main class="flex-grow-1 d-flex align-items-center justify-content-center">
+        <div class="bt-center w-100">
+            <div class="bt-card p-4" style="min-width:340px;max-width:370px;width:100%;">
+                <div class="bt-header mb-4">
+                    <a class="bt-brand mb-2" href="index.html">
+                        <span class="bt-brand-mark">B</span>
+                        <span>BookTrack</span>
+                    </a>
+                    <h4 class="bt-title mb-1">Forgot Password</h4>
+                    <div class="bt-subtitle">Enter your Gmail and OTP to continue</div>
+                </div>
+                <form action="forgot2.html" method="get">
+                    <div class="mb-3">
+                        <label for="gmail" class="form-label">Gmail</label>
+                        <input type="email" class="form-control bt-input" id="gmail" name="gmail" placeholder="yourname@gmail.com" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="otp" class="form-label">OTP</label>
+                        <div class="input-group">
+                            <input type="text" class="form-control bt-input" id="otp" name="otp" placeholder="Enter OTP" required>
+                            <button class="btn btn-bt" type="button" id="sendOtpBtn">Send OTP</button>
+                        </div>
+                    </div>
+                    <div class="d-grid mt-4">
+                        <button type="submit" class="btn btn-bt">Next</button>
+                    </div>
+                </form>
+                <div class="text-center mt-3">
+                    <a href="login.html" class="bt-link">Back to Login</a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="mt-auto py-4 border-top text-center bt-muted">
+        <div class="container">
+            <p class="mb-1">&copy; 2025 BookTrack. All rights reserved.</p>
+            <small>Made with ❤️ using Bootstrap 5</small>
+        </div>
+    </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q"
