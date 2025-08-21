@@ -10,7 +10,7 @@ Gomez, John Ryan
 Live Demo URL: https://harrrrold.github.io/BookTrack/
 
 Home Page:
-<img width="1920" height="957" alt="image" src="https://github.com/user-attachments/assets/a08f4fb2-a263-4c76-9f0f-49574fcc0889" />
+<img width="1920" height="956" alt="image" src="https://github.com/user-attachments/assets/f2dc0e80-cd79-4ee3-932b-8c2aa878f0a4" />
 
 <img width="500" height="959" alt="image" src="https://github.com/user-attachments/assets/fa2e0884-59cc-4973-8507-4cdcadb2bda4" />
 
