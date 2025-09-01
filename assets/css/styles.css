@@ -10,6 +10,8 @@
     --bt-muted: #8b6f57;      /* muted */
     --bt-border: #e6d8c9;     /* subtle border */
     --bt-input-bg: #fffdfb;   /* inputs */
+    --bt-error: #dc3545;      /* error color */
+    --bt-success: #198754;    /* success color */
 }
 
 html, body {
@@ -91,11 +93,29 @@ body.bt-theme {
     color: var(--bt-text);
     padding: 10px 12px;
     border-radius: 10px;
+    transition: all 0.2s ease;
 }
 
 .form-control.bt-input:focus {
     border-color: var(--bt-accent);
     box-shadow: 0 0 0 0.2rem rgba(176, 124, 79, 0.15);
+}
+
+/* Validation states */
+.form-control.bt-input.is-invalid {
+    border-color: var(--bt-error);
+    box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.15);
+}
+
+.form-control.bt-input.is-valid {
+    border-color: var(--bt-success);
+    box-shadow: 0 0 0 0.2rem rgba(25, 135, 84, 0.15);
+}
+
+.invalid-feedback {
+    color: var(--bt-error);
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
 }
 
 /* Buttons */
@@ -111,6 +131,18 @@ body.bt-theme {
     --bs-btn-disabled-border-color: #caa988;
     border-radius: 10px;
     padding: 10px 14px;
+    transition: all 0.2s ease;
+}
+
+.btn-bt:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+/* Loading spinner */
+.spinner-border-sm {
+    width: 1rem;
+    height: 1rem;
 }
 
 /* Links */
@@ -140,6 +172,35 @@ body.bt-theme {
     background-image: url('../img/Background.jpg');
     background-size: cover;
     background-position: center;
+}
+
+/* Shake animation for wrong credentials */
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+    20%, 40%, 60%, 80% { transform: translateX(5px); }
+}
+
+/* Demo credentials box */
+.bg-light {
+    background-color: rgba(176, 124, 79, 0.05) !important;
+    border: 1px solid var(--bt-border);
+}
+
+/* Form validation improvements */
+.form-label {
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+}
+
+.form-check-input:checked {
+    background-color: var(--bt-accent);
+    border-color: var(--bt-accent);
+}
+
+.form-check-input:focus {
+    border-color: var(--bt-accent);
+    box-shadow: 0 0 0 0.2rem rgba(176, 124, 79, 0.15);
 }
 
 

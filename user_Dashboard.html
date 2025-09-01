@@ -3,9 +3,206 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
+    <link href="assets/css/styles.css" rel="stylesheet">
+    <title>BookTrack · User Dashboard</title>
 </head>
-<body>
+<body class="bt-theme d-flex flex-column min-vh-100">
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
+        <div class="container">
+            <a class="bt-brand navbar-brand" href="index.html">
+                <span class="bt-brand-mark">B</span>
+                <span>BookTrack</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item"><a class="nav-link" href="user_Dashboard.html">Dashboard</a></li>
+                    <li class="nav-item"><a class="nav-link" href="bookmark.html">My Books</a></li>
+                    <li class="nav-item"><a class="nav-link" href="profile.html">Profile</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#" id="logoutBtn">Logout</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <main class="flex-grow-1">
+        <div class="container py-4">
+            <!-- Welcome Section -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="bt-card p-4">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h1 class="h3 bt-title mb-2">Welcome back, <span id="userName">User</span>!</h1>
+                                <p class="bt-subtitle mb-0">Track your reading progress and discover new books</p>
+                            </div>
+                            <div class="text-end">
+                                <div class="h4 mb-1" id="totalBooks">0</div>
+                                <small class="bt-muted">Books in your library</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stats Cards -->
+            <div class="row mb-4">
+                <div class="col-md-4 mb-3">
+                    <div class="bt-card p-4 text-center">
+                        <div class="h2 mb-2 text-success" id="readingBooks">0</div>
+                        <div class="bt-muted">Currently Reading</div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <div class="bt-card p-4 text-center">
+                        <div class="h2 mb-2 text-primary" id="completedBooks">0</div>
+                        <div class="bt-muted">Completed</div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <div class="bt-card p-4 text-center">
+                        <div class="h2 mb-2 text-warning" id="wishlistBooks">0</div>
+                        <div class="bt-muted">Wishlist</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Activity -->
+            <div class="row">
+                <div class="col-lg-8 mb-4">
+                    <div class="bt-card p-4">
+                        <h3 class="h5 bt-title mb-3">Recent Activity</h3>
+                        <div id="recentActivity">
+                            <div class="d-flex align-items-center py-2 border-bottom">
+                                <div class="flex-shrink-0">
+                                    <div class="bg-light rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                                        <span class="bt-muted">📚</span>
+                                    </div>
+                                </div>
+                                <div class="flex-grow-1 ms-3">
+                                    <div class="fw-medium">No recent activity</div>
+                                    <small class="bt-muted">Start reading to see your activity here</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-4 mb-4">
+                    <div class="bt-card p-4">
+                        <h3 class="h5 bt-title mb-3">Quick Actions</h3>
+                        <div class="d-grid gap-2">
+                            <a href="bookmark.html" class="btn btn-bt">Add New Book</a>
+                            <a href="profile.html" class="btn btn-outline-secondary">View Profile</a>
+                            <button class="btn btn-outline-secondary" onclick="exportData()">Export Data</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="mt-auto py-4 border-top text-center bt-muted">
+        <div class="container">
+            <p class="mb-1">&copy; 2025 BookTrack. All rights reserved.</p>
+            <small>Made with ❤️ using Bootstrap 5</small>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q"
+        crossorigin="anonymous"></script>
     
+    <script>
+        // Check if user is logged in
+        function checkAuth() {
+            const isLoggedIn = sessionStorage.getItem('isLoggedIn');
+            const userRole = sessionStorage.getItem('userRole');
+            
+            if (!isLoggedIn || userRole !== 'user') {
+                window.location.href = 'login.html';
+                return;
+            }
+            
+            // Display user info
+            const userEmail = sessionStorage.getItem('userEmail');
+            const userName = userEmail ? userEmail.split('@')[0] : 'User';
+            document.getElementById('userName').textContent = userName;
+        }
+
+        // Logout function
+        function logout() {
+            sessionStorage.clear();
+            window.location.href = 'login.html';
+        }
+
+        // Export data function
+        function exportData() {
+            alert('Export functionality will be implemented soon!');
+        }
+
+        // Load dashboard data
+        function loadDashboardData() {
+            // Simulate loading data from localStorage or API
+            const userData = JSON.parse(localStorage.getItem('userData')) || {
+                totalBooks: 0,
+                readingBooks: 0,
+                completedBooks: 0,
+                wishlistBooks: 0,
+                recentActivity: []
+            };
+            
+            document.getElementById('totalBooks').textContent = userData.totalBooks;
+            document.getElementById('readingBooks').textContent = userData.readingBooks;
+            document.getElementById('completedBooks').textContent = userData.completedBooks;
+            document.getElementById('wishlistBooks').textContent = userData.wishlistBooks;
+            
+            // Load recent activity
+            const activityContainer = document.getElementById('recentActivity');
+            if (userData.recentActivity.length === 0) {
+                activityContainer.innerHTML = `
+                    <div class="d-flex align-items-center py-2 border-bottom">
+                        <div class="flex-shrink-0">
+                            <div class="bg-light rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                                <span class="bt-muted">📚</span>
+                            </div>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <div class="fw-medium">No recent activity</div>
+                            <small class="bt-muted">Start reading to see your activity here</small>
+                        </div>
+                    </div>
+                `;
+            } else {
+                // Display actual activity items here
+                activityContainer.innerHTML = userData.recentActivity.map(activity => `
+                    <div class="d-flex align-items-center py-2 border-bottom">
+                        <div class="flex-shrink-0">
+                            <div class="bg-light rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                                <span class="bt-muted">📖</span>
+                            </div>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <div class="fw-medium">${activity.title}</div>
+                            <small class="bt-muted">${activity.description}</small>
+                        </div>
+                    </div>
+                `).join('');
+            }
+        }
+
+        // Event listeners
+        document.getElementById('logoutBtn').addEventListener('click', logout);
+
+        // Initialize dashboard
+        checkAuth();
+        loadDashboardData();
+    </script>
 </body>
 </html>

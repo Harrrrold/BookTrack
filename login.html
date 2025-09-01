@@ -41,14 +41,16 @@
                     <p class="bt-subtitle mb-0">Log in to continue tracking your reading</p>
                 </div>
 
-                <form novalidate>
+                <form id="loginForm" novalidate>
                     <div class="mb-3">
                         <label for="email" class="form-label">Email</label>
                         <input type="email" class="form-control bt-input" id="email" placeholder="you@example.com" required>
+                        <div class="invalid-feedback" id="emailError"></div>
                     </div>
                     <div class="mb-2">
                         <label for="password" class="form-label">Password</label>
                         <input type="password" class="form-control bt-input" id="password" placeholder="••••••••" required>
+                        <div class="invalid-feedback" id="passwordError"></div>
                     </div>
                     <div class="d-flex justify-content-between align-items-center mb-4">
                         <div class="form-check">
@@ -58,11 +60,26 @@
                         <a href="forgot.html" class="bt-link">Forgot password?</a>
                     </div>
 
-                    <button type="submit" class="btn btn-bt w-100">Sign in</button>
+                    <button type="submit" class="btn btn-bt w-100" id="loginBtn">
+                        <span class="btn-text">Sign in</span>
+                        <span class="btn-loading d-none">
+                            <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                            Signing in...
+                        </span>
+                    </button>
                 </form>
 
                 <div class="bt-divider my-4"></div>
                 <p class="text-center mb-0 bt-muted">New to BookTrack? <a href="register.html" class="bt-link">Create an account</a></p>
+                
+                <!-- Demo credentials info -->
+                <div class="mt-4 p-3 bg-light rounded">
+                    <small class="bt-muted">
+                        <strong>Demo Credentials:</strong><br>
+                        Admin: admin@booktrack.com / admin123<br>
+                        User: user@booktrack.com / user123
+                    </small>
+                </div>
             </div>
         </div>
     </main>
@@ -78,5 +95,157 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q"
         crossorigin="anonymous"></script>
+    
+    <script>
+        // Demo credentials
+        const credentials = {
+            'admin@booktrack.com': { password: 'admin123', role: 'admin' },
+            'user@booktrack.com': { password: 'user123', role: 'user' }
+        };
+
+        // Email validation function
+        function isValidEmail(email) {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return emailRegex.test(email);
+        }
+
+        // Password validation function
+        function isValidPassword(password) {
+            return password.length >= 6;
+        }
+
+        // Show error message
+        function showError(input, message) {
+            input.classList.add('is-invalid');
+            const errorElement = document.getElementById(input.id + 'Error');
+            if (errorElement) {
+                errorElement.textContent = message;
+            }
+        }
+
+        // Clear error message
+        function clearError(input) {
+            input.classList.remove('is-invalid');
+            const errorElement = document.getElementById(input.id + 'Error');
+            if (errorElement) {
+                errorElement.textContent = '';
+            }
+        }
+
+        // Show loading state
+        function setLoading(loading) {
+            const btn = document.getElementById('loginBtn');
+            const btnText = btn.querySelector('.btn-text');
+            const btnLoading = btn.querySelector('.btn-loading');
+            
+            if (loading) {
+                btn.disabled = true;
+                btnText.classList.add('d-none');
+                btnLoading.classList.remove('d-none');
+            } else {
+                btn.disabled = false;
+                btnText.classList.remove('d-none');
+                btnLoading.classList.add('d-none');
+            }
+        }
+
+        // Handle form submission
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+            
+            // Clear previous errors
+            clearError(document.getElementById('email'));
+            clearError(document.getElementById('password'));
+            
+            let isValid = true;
+            
+            // Validate email
+            if (!email) {
+                showError(document.getElementById('email'), 'Email is required');
+                isValid = false;
+            } else if (!isValidEmail(email)) {
+                showError(document.getElementById('email'), 'Please enter a valid email address');
+                isValid = false;
+            }
+            
+            // Validate password
+            if (!password) {
+                showError(document.getElementById('password'), 'Password is required');
+                isValid = false;
+            } else if (!isValidPassword(password)) {
+                showError(document.getElementById('password'), 'Password must be at least 6 characters');
+                isValid = false;
+            }
+            
+            if (!isValid) {
+                return;
+            }
+            
+            // Show loading state
+            setLoading(true);
+            
+            // Simulate API call delay
+            setTimeout(() => {
+                // Check credentials
+                if (credentials[email] && credentials[email].password === password) {
+                    const role = credentials[email].role;
+                    
+                    // Store login info in sessionStorage
+                    sessionStorage.setItem('userEmail', email);
+                    sessionStorage.setItem('userRole', role);
+                    sessionStorage.setItem('isLoggedIn', 'true');
+                    
+                    // Redirect based on role
+                    if (role === 'admin') {
+                        window.location.href = 'admin_Dasboard.html';
+                    } else {
+                        window.location.href = 'user_Dashboard.html';
+                    }
+                } else {
+                    // Show error message
+                    setLoading(false);
+                    showError(document.getElementById('password'), 'Invalid email or password');
+                    
+                    // Shake animation for wrong credentials
+                    const card = document.querySelector('.bt-card');
+                    card.style.animation = 'shake 0.5s ease-in-out';
+                    setTimeout(() => {
+                        card.style.animation = '';
+                    }, 500);
+                }
+            }, 1000);
+        });
+
+        // Real-time validation
+        document.getElementById('email').addEventListener('blur', function() {
+            const email = this.value.trim();
+            if (email && !isValidEmail(email)) {
+                showError(this, 'Please enter a valid email address');
+            } else {
+                clearError(this);
+            }
+        });
+
+        document.getElementById('password').addEventListener('blur', function() {
+            const password = this.value;
+            if (password && !isValidPassword(password)) {
+                showError(this, 'Password must be at least 6 characters');
+            } else {
+                clearError(this);
+            }
+        });
+
+        // Clear errors on input
+        document.getElementById('email').addEventListener('input', function() {
+            clearError(this);
+        });
+
+        document.getElementById('password').addEventListener('input', function() {
+            clearError(this);
+        });
+    </script>
 </body>
 </html>

@@ -3,9 +3,247 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
+    <link href="assets/css/styles.css" rel="stylesheet">
+    <title>BookTrack · Admin Dashboard</title>
 </head>
-<body>
+<body class="bt-theme d-flex flex-column min-vh-100">
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
+        <div class="container">
+            <a class="bt-brand navbar-brand" href="index.html">
+                <span class="bt-brand-mark">B</span>
+                <span>BookTrack</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item"><a class="nav-link" href="admin_Dasboard.html">Dashboard</a></li>
+                    <li class="nav-item"><a class="nav-link" href="admin_User_List.html">Users</a></li>
+                    <li class="nav-item"><a class="nav-link" href="admin_Book_List.html">Books</a></li>
+                    <li class="nav-item"><a class="nav-link" href="admin_Logs.html">Logs</a></li>
+                    <li class="nav-item"><a class="nav-link" href="admin_Profile.html">Profile</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#" id="logoutBtn">Logout</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <main class="flex-grow-1">
+        <div class="container py-4">
+            <!-- Welcome Section -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="bt-card p-4">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h1 class="h3 bt-title mb-2">Admin Dashboard</h1>
+                                <p class="bt-subtitle mb-0">Welcome back, <span id="adminName">Admin</span>! Manage your BookTrack platform</p>
+                            </div>
+                            <div class="text-end">
+                                <div class="h4 mb-1" id="totalUsers">0</div>
+                                <small class="bt-muted">Total Users</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stats Cards -->
+            <div class="row mb-4">
+                <div class="col-md-3 mb-3">
+                    <div class="bt-card p-4 text-center">
+                        <div class="h2 mb-2 text-primary" id="activeUsers">0</div>
+                        <div class="bt-muted">Active Users</div>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <div class="bt-card p-4 text-center">
+                        <div class="h2 mb-2 text-success" id="totalBooks">0</div>
+                        <div class="bt-muted">Total Books</div>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <div class="bt-card p-4 text-center">
+                        <div class="h2 mb-2 text-warning" id="pendingRequests">0</div>
+                        <div class="bt-muted">Pending Requests</div>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <div class="bt-card p-4 text-center">
+                        <div class="h2 mb-2 text-info" id="systemHealth">100%</div>
+                        <div class="bt-muted">System Health</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Actions and Recent Activity -->
+            <div class="row">
+                <div class="col-lg-8 mb-4">
+                    <div class="bt-card p-4">
+                        <h3 class="h5 bt-title mb-3">Recent System Activity</h3>
+                        <div id="systemActivity">
+                            <div class="d-flex align-items-center py-2 border-bottom">
+                                <div class="flex-shrink-0">
+                                    <div class="bg-light rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                                        <span class="bt-muted">⚙️</span>
+                                    </div>
+                                </div>
+                                <div class="flex-grow-1 ms-3">
+                                    <div class="fw-medium">System initialized</div>
+                                    <small class="bt-muted">Admin dashboard loaded successfully</small>
+                                </div>
+                                <div class="text-end">
+                                    <small class="bt-muted">Just now</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-4 mb-4">
+                    <div class="bt-card p-4">
+                        <h3 class="h5 bt-title mb-3">Quick Actions</h3>
+                        <div class="d-grid gap-2">
+                            <a href="admin_User_List.html" class="btn btn-bt">Manage Users</a>
+                            <a href="admin_Book_List.html" class="btn btn-outline-secondary">Manage Books</a>
+                            <a href="admin_Logs.html" class="btn btn-outline-secondary">View Logs</a>
+                            <button class="btn btn-outline-secondary" onclick="backupSystem()">Backup System</button>
+                        </div>
+                    </div>
+
+                    <!-- System Status -->
+                    <div class="bt-card p-4 mt-4">
+                        <h3 class="h5 bt-title mb-3">System Status</h3>
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span>Database</span>
+                            <span class="badge bg-success">Online</span>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span>API Services</span>
+                            <span class="badge bg-success">Online</span>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span>File Storage</span>
+                            <span class="badge bg-success">Online</span>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span>Email Service</span>
+                            <span class="badge bg-success">Online</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="mt-auto py-4 border-top text-center bt-muted">
+        <div class="container">
+            <p class="mb-1">&copy; 2025 BookTrack. All rights reserved.</p>
+            <small>Made with ❤️ using Bootstrap 5</small>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q"
+        crossorigin="anonymous"></script>
     
+    <script>
+        // Check if admin is logged in
+        function checkAuth() {
+            const isLoggedIn = sessionStorage.getItem('isLoggedIn');
+            const userRole = sessionStorage.getItem('userRole');
+            
+            if (!isLoggedIn || userRole !== 'admin') {
+                window.location.href = 'login.html';
+                return;
+            }
+            
+            // Display admin info
+            const userEmail = sessionStorage.getItem('userEmail');
+            const adminName = userEmail ? userEmail.split('@')[0] : 'Admin';
+            document.getElementById('adminName').textContent = adminName;
+        }
+
+        // Logout function
+        function logout() {
+            sessionStorage.clear();
+            window.location.href = 'login.html';
+        }
+
+        // Backup system function
+        function backupSystem() {
+            alert('System backup initiated. This may take a few minutes.');
+        }
+
+        // Load admin dashboard data
+        function loadAdminData() {
+            // Simulate loading admin data
+            const adminData = JSON.parse(localStorage.getItem('adminData')) || {
+                totalUsers: 0,
+                activeUsers: 0,
+                totalBooks: 0,
+                pendingRequests: 0,
+                systemHealth: '100%',
+                systemActivity: []
+            };
+            
+            document.getElementById('totalUsers').textContent = adminData.totalUsers;
+            document.getElementById('activeUsers').textContent = adminData.activeUsers;
+            document.getElementById('totalBooks').textContent = adminData.totalBooks;
+            document.getElementById('pendingRequests').textContent = adminData.pendingRequests;
+            document.getElementById('systemHealth').textContent = adminData.systemHealth;
+            
+            // Load system activity
+            const activityContainer = document.getElementById('systemActivity');
+            if (adminData.systemActivity.length === 0) {
+                activityContainer.innerHTML = `
+                    <div class="d-flex align-items-center py-2 border-bottom">
+                        <div class="flex-shrink-0">
+                            <div class="bg-light rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                                <span class="bt-muted">⚙️</span>
+                            </div>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <div class="fw-medium">System initialized</div>
+                            <small class="bt-muted">Admin dashboard loaded successfully</small>
+                        </div>
+                        <div class="text-end">
+                            <small class="bt-muted">Just now</small>
+                        </div>
+                    </div>
+                `;
+            } else {
+                // Display actual system activity here
+                activityContainer.innerHTML = adminData.systemActivity.map(activity => `
+                    <div class="d-flex align-items-center py-2 border-bottom">
+                        <div class="flex-shrink-0">
+                            <div class="bg-light rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                                <span class="bt-muted">${activity.icon}</span>
+                            </div>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <div class="fw-medium">${activity.title}</div>
+                            <small class="bt-muted">${activity.description}</small>
+                        </div>
+                        <div class="text-end">
+                            <small class="bt-muted">${activity.time}</small>
+                        </div>
+                    </div>
+                `).join('');
+            }
+        }
+
+        // Event listeners
+        document.getElementById('logoutBtn').addEventListener('click', logout);
+
+        // Initialize admin dashboard
+        checkAuth();
+        loadAdminData();
+    </script>
 </body>
 </html>
