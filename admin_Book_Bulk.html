@@ -1,0 +1,937 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
+    <link href="assets/css/styles.css" rel="stylesheet">
+    <title>BookTrack · Bulk Book Management</title>
+</head>
+<body class="bt-theme d-flex flex-column min-vh-100">
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
+        <div class="container">
+            <a class="bt-brand navbar-brand" href="index.html">
+                <span class="bt-brand-mark">B</span>
+                <span>BookTrack</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item"><a class="nav-link" href="admin_Dasboard.html">Dashboard</a></li>
+                    <li class="nav-item"><a class="nav-link" href="admin_User_List.html">Users</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="admin_Book_List.html">Books</a></li>
+                    <li class="nav-item"><a class="nav-link" href="admin_Logs.html">Logs</a></li>
+                    <li class="nav-item"><a class="nav-link" href="admin_Profile.html">Profile</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#" id="logoutBtn">Logout</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <main class="flex-grow-1">
+        <div class="container py-4">
+            <!-- Breadcrumb -->
+            <nav aria-label="breadcrumb" class="mb-4">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="admin_Dasboard.html">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a href="admin_Book_List.html">Book Management</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Bulk Operations</li>
+                </ol>
+            </nav>
+
+            <!-- Header Section -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="bt-card p-4">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h1 class="h3 bt-title mb-2">Bulk Book Management</h1>
+                                <p class="bt-subtitle mb-0">Import, export, and manage multiple books efficiently</p>
+                            </div>
+                            <div class="d-flex gap-2">
+                                <a href="admin_Book_List.html" class="btn btn-outline-secondary">
+                                    <i class="bi bi-arrow-left me-2"></i>Back to Books
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bulk Operations Tabs -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="bt-card p-4">
+                        <ul class="nav nav-tabs" id="bulkTabs" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active" id="import-tab" data-bs-toggle="tab" data-bs-target="#import" type="button" role="tab">
+                                    <i class="bi bi-upload me-2"></i>Import Books
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="export-tab" data-bs-toggle="tab" data-bs-target="#export" type="button" role="tab">
+                                    <i class="bi bi-download me-2"></i>Export Books
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="bulk-actions-tab" data-bs-toggle="tab" data-bs-target="#bulk-actions" type="button" role="tab">
+                                    <i class="bi bi-gear me-2"></i>Bulk Actions
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="categories-tab" data-bs-toggle="tab" data-bs-target="#categories" type="button" role="tab">
+                                    <i class="bi bi-tags me-2"></i>Manage Categories
+                                </button>
+                            </li>
+                        </ul>
+
+                        <div class="tab-content mt-4" id="bulkTabsContent">
+                            <!-- Import Books Tab -->
+                            <div class="tab-pane fade show active" id="import" role="tabpanel">
+                                <div class="row">
+                                    <div class="col-lg-8">
+                                        <h4 class="bt-title mb-3">Import Books from CSV</h4>
+                                        <p class="bt-muted mb-4">Upload a CSV file with book information. The file should include columns for: Title, Author, ISBN, Category, Copies, Status, Description, Year, Publisher.</p>
+                                        
+                                        <div class="mb-4">
+                                            <label for="csvFile" class="form-label">Select CSV File</label>
+                                            <input type="file" class="form-control bt-input" id="csvFile" accept=".csv" onchange="previewCSV(this)">
+                                        </div>
+
+                                        <div id="csvPreview" class="mb-4" style="display: none;">
+                                            <h5 class="bt-title mb-3">CSV Preview</h5>
+                                            <div class="table-responsive">
+                                                <table class="table table-sm" id="previewTable">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Title</th>
+                                                            <th>Author</th>
+                                                            <th>ISBN</th>
+                                                            <th>Category</th>
+                                                            <th>Copies</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody id="previewTableBody">
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+
+                                        <div class="d-flex gap-2">
+                                            <button class="btn btn-bt" onclick="importBooks()" id="importBtn" disabled>
+                                                <i class="bi bi-upload me-2"></i>Import Books
+                                            </button>
+                                            <button class="btn btn-outline-secondary" onclick="clearImport()">
+                                                <i class="bi bi-x-circle me-2"></i>Clear
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-lg-4">
+                                        <div class="bt-card p-4">
+                                            <h5 class="bt-title mb-3">Import Template</h5>
+                                            <p class="bt-muted mb-3">Download the CSV template to ensure proper formatting:</p>
+                                            <button class="btn btn-outline-secondary w-100 mb-3" onclick="downloadTemplate()">
+                                                <i class="bi bi-download me-2"></i>Download Template
+                                            </button>
+                                            
+                                            <h6 class="bt-title mb-2">Required Fields:</h6>
+                                            <ul class="small bt-muted">
+                                                <li>Title (required)</li>
+                                                <li>Author (required)</li>
+                                                <li>ISBN (required)</li>
+                                                <li>Category (required)</li>
+                                                <li>Copies (required, min: 1)</li>
+                                                <li>Status (optional, default: available)</li>
+                                                <li>Description (optional)</li>
+                                                <li>Year (optional)</li>
+                                                <li>Publisher (optional)</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Export Books Tab -->
+                            <div class="tab-pane fade" id="export" role="tabpanel">
+                                <div class="row">
+                                    <div class="col-lg-8">
+                                        <h4 class="bt-title mb-3">Export Books</h4>
+                                        <p class="bt-muted mb-4">Export your book collection in various formats for backup, analysis, or migration purposes.</p>
+                                        
+                                        <div class="row g-3 mb-4">
+                                            <div class="col-md-6">
+                                                <label for="exportFormat" class="form-label">Export Format</label>
+                                                <select class="form-select bt-input" id="exportFormat">
+                                                    <option value="csv">CSV (Excel compatible)</option>
+                                                    <option value="json">JSON (API/Development)</option>
+                                                    <option value="xml">XML (Legacy systems)</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label for="exportFilter" class="form-label">Filter by Status</label>
+                                                <select class="form-select bt-input" id="exportFilter">
+                                                    <option value="">All Books</option>
+                                                    <option value="available">Available Only</option>
+                                                    <option value="borrowed">Borrowed Only</option>
+                                                    <option value="reserved">Reserved Only</option>
+                                                    <option value="archived">Archived Only</option>
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                        <div class="d-flex gap-2">
+                                            <button class="btn btn-bt" onclick="exportBooks()">
+                                                <i class="bi bi-download me-2"></i>Export Books
+                                            </button>
+                                            <button class="btn btn-outline-secondary" onclick="previewExport()">
+                                                <i class="bi bi-eye me-2"></i>Preview Export
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-lg-4">
+                                        <div class="bt-card p-4">
+                                            <h5 class="bt-title mb-3">Export Statistics</h5>
+                                            <div class="row g-3">
+                                                <div class="col-6">
+                                                    <div class="text-center">
+                                                        <div class="h4 mb-1" id="totalBooksExport">0</div>
+                                                        <small class="bt-muted">Total Books</small>
+                                                    </div>
+                                                </div>
+                                                <div class="col-6">
+                                                    <div class="text-center">
+                                                        <div class="h4 mb-1" id="availableBooksExport">0</div>
+                                                        <small class="bt-muted">Available</small>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Bulk Actions Tab -->
+                            <div class="tab-pane fade" id="bulk-actions" role="tabpanel">
+                                <div class="row">
+                                    <div class="col-lg-8">
+                                        <h4 class="bt-title mb-3">Bulk Actions</h4>
+                                        <p class="bt-muted mb-4">Perform actions on multiple books simultaneously. Select books from the list below to apply bulk operations.</p>
+                                        
+                                        <div class="row g-3 mb-4">
+                                            <div class="col-md-6">
+                                                <label for="bulkAction" class="form-label">Select Action</label>
+                                                <select class="form-select bt-input" id="bulkAction">
+                                                    <option value="">Choose an action...</option>
+                                                    <option value="archive">Archive Selected</option>
+                                                    <option value="change_status">Change Status</option>
+                                                    <option value="change_category">Change Category</option>
+                                                    <option value="delete">Delete Selected</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label for="bulkValue" class="form-label">Action Value</label>
+                                                <input type="text" class="form-control bt-input" id="bulkValue" placeholder="Enter value for action" disabled>
+                                            </div>
+                                        </div>
+
+                                        <div class="d-flex gap-2 mb-4">
+                                            <button class="btn btn-bt" onclick="applyBulkAction()" id="applyBulkBtn" disabled>
+                                                <i class="bi bi-check-circle me-2"></i>Apply Action
+                                            </button>
+                                            <button class="btn btn-outline-secondary" onclick="selectAllBooks()">
+                                                <i class="bi bi-check-all me-2"></i>Select All
+                                            </button>
+                                            <button class="btn btn-outline-secondary" onclick="clearSelection()">
+                                                <i class="bi bi-x-circle me-2"></i>Clear Selection
+                                            </button>
+                                        </div>
+
+                                        <div class="table-responsive">
+                                            <table class="table">
+                                                <thead>
+                                                    <tr>
+                                                        <th>
+                                                            <input type="checkbox" class="form-check-input" id="selectAllCheckbox">
+                                                        </th>
+                                                        <th>Title</th>
+                                                        <th>Author</th>
+                                                        <th>Category</th>
+                                                        <th>Status</th>
+                                                        <th>Copies</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody id="bulkActionsTableBody">
+                                                    <!-- Books will be loaded here -->
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-lg-4">
+                                        <div class="bt-card p-4">
+                                            <h5 class="bt-title mb-3">Selected Books</h5>
+                                            <div class="text-center">
+                                                <div class="h4 mb-1" id="selectedCount">0</div>
+                                                <small class="bt-muted">Books Selected</small>
+                                            </div>
+                                            
+                                            <div class="mt-4">
+                                                <h6 class="bt-title mb-2">Quick Actions:</h6>
+                                                <div class="d-grid gap-2">
+                                                    <button class="btn btn-sm btn-outline-warning" onclick="quickArchive()">
+                                                        <i class="bi bi-archive me-1"></i>Quick Archive
+                                                    </button>
+                                                    <button class="btn btn-sm btn-outline-info" onclick="quickStatusChange()">
+                                                        <i class="bi bi-arrow-repeat me-1"></i>Quick Status
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Categories Tab -->
+                            <div class="tab-pane fade" id="categories" role="tabpanel">
+                                <div class="row">
+                                    <div class="col-lg-8">
+                                        <h4 class="bt-title mb-3">Manage Categories</h4>
+                                        <p class="bt-muted mb-4">Organize your books by creating and managing categories. Categories help users find books more easily.</p>
+                                        
+                                        <div class="row g-3 mb-4">
+                                            <div class="col-md-6">
+                                                <label for="newCategory" class="form-label">New Category Name</label>
+                                                <input type="text" class="form-control bt-input" id="newCategory" placeholder="Enter category name">
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label for="categoryColor" class="form-label">Category Color</label>
+                                                <input type="color" class="form-control form-control-color" id="categoryColor" value="#b07c4f">
+                                            </div>
+                                        </div>
+
+                                        <div class="d-flex gap-2 mb-4">
+                                            <button class="btn btn-bt" onclick="addCategory()">
+                                                <i class="bi bi-plus-circle me-2"></i>Add Category
+                                            </button>
+                                            <button class="btn btn-outline-secondary" onclick="clearCategoryForm()">
+                                                <i class="bi bi-x-circle me-2"></i>Clear
+                                            </button>
+                                        </div>
+
+                                        <div class="table-responsive">
+                                            <table class="table">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Category</th>
+                                                        <th>Book Count</th>
+                                                        <th>Color</th>
+                                                        <th>Actions</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody id="categoriesTableBody">
+                                                    <!-- Categories will be loaded here -->
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-lg-4">
+                                        <div class="bt-card p-4">
+                                            <h5 class="bt-title mb-3">Category Statistics</h5>
+                                            <div id="categoryStats">
+                                                <!-- Category stats will be loaded here -->
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="mt-auto py-4 border-top text-center bt-muted">
+        <div class="container">
+            <p class="mb-1">&copy; 2025 BookTrack. All rights reserved.</p>
+            <small>Made with ❤️ using Bootstrap 5</small>
+        </div>
+    </footer>
+
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q"
+        crossorigin="anonymous"></script>
+    
+    <script>
+        let csvData = [];
+        let selectedBooks = new Set();
+        let categories = [
+            { name: 'fiction', color: '#b07c4f', count: 0 },
+            { name: 'non-fiction', color: '#96653e', count: 0 },
+            { name: 'science', color: '#7e5333', count: 0 },
+            { name: 'history', color: '#8b6f57', count: 0 },
+            { name: 'biography', color: '#caa988', count: 0 },
+            { name: 'technology', color: '#6c757d', count: 0 }
+        ];
+
+        // Check if admin is logged in
+        function checkAuth() {
+            const isLoggedIn = sessionStorage.getItem('isLoggedIn');
+            const userRole = sessionStorage.getItem('userRole');
+            
+            if (!isLoggedIn || userRole !== 'admin') {
+                window.location.href = 'login.html';
+                return;
+            }
+        }
+
+        // Logout function
+        function logout() {
+            sessionStorage.clear();
+            window.location.href = 'login.html';
+        }
+
+        // Initialize
+        function initialize() {
+            loadBooks();
+            loadCategories();
+            updateExportStats();
+            setupEventListeners();
+        }
+
+        // Load books for bulk actions
+        function loadBooks() {
+            const books = JSON.parse(localStorage.getItem('books')) || [];
+            const tbody = document.getElementById('bulkActionsTableBody');
+            tbody.innerHTML = '';
+
+            books.forEach(book => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>
+                        <input type="checkbox" class="form-check-input book-checkbox" value="${book.id}" onchange="updateSelection()">
+                    </td>
+                    <td>${book.title}</td>
+                    <td>${book.author}</td>
+                    <td><span class="badge bg-secondary">${book.category}</span></td>
+                    <td><span class="badge ${getStatusBadgeClass(book.status)}">${book.status}</span></td>
+                    <td>${book.copies}</td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        // Load categories
+        function loadCategories() {
+            const books = JSON.parse(localStorage.getItem('books')) || [];
+            
+            // Count books per category
+            categories.forEach(cat => {
+                cat.count = books.filter(book => book.category === cat.name).length;
+            });
+
+            const tbody = document.getElementById('categoriesTableBody');
+            tbody.innerHTML = '';
+
+            categories.forEach(cat => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${cat.name.charAt(0).toUpperCase() + cat.name.slice(1)}</td>
+                    <td>${cat.count}</td>
+                    <td>
+                        <div class="d-flex align-items-center">
+                            <div class="rounded-circle me-2" style="width: 20px; height: 20px; background-color: ${cat.color}"></div>
+                            ${cat.color}
+                        </div>
+                    </td>
+                    <td>
+                        <button class="btn btn-sm btn-outline-danger" onclick="deleteCategory('${cat.name}')" ${cat.count > 0 ? 'disabled' : ''}>
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+
+            updateCategoryStats();
+        }
+
+        // Update category statistics
+        function updateCategoryStats() {
+            const container = document.getElementById('categoryStats');
+            const totalCategories = categories.length;
+            const totalBooks = categories.reduce((sum, cat) => sum + cat.count, 0);
+            
+            container.innerHTML = `
+                <div class="row g-3">
+                    <div class="col-6">
+                        <div class="text-center">
+                            <div class="h4 mb-1">${totalCategories}</div>
+                            <small class="bt-muted">Categories</small>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="text-center">
+                            <div class="h4 mb-1">${totalBooks}</div>
+                            <small class="bt-muted">Total Books</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-3">
+                    <h6 class="bt-title mb-2">Top Categories:</h6>
+                    ${categories
+                        .sort((a, b) => b.count - a.count)
+                        .slice(0, 3)
+                        .map(cat => `
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <span>${cat.name.charAt(0).toUpperCase() + cat.name.slice(1)}</span>
+                                <span class="badge bg-secondary">${cat.count}</span>
+                            </div>
+                        `).join('')}
+                </div>
+            `;
+        }
+
+        // Update export statistics
+        function updateExportStats() {
+            const books = JSON.parse(localStorage.getItem('books')) || [];
+            const availableBooks = books.filter(book => book.status === 'available').length;
+            
+            document.getElementById('totalBooksExport').textContent = books.length;
+            document.getElementById('availableBooksExport').textContent = availableBooks;
+        }
+
+        // Setup event listeners
+        function setupEventListeners() {
+            // Bulk action change handler
+            document.getElementById('bulkAction').addEventListener('change', function() {
+                const bulkValue = document.getElementById('bulkValue');
+                if (this.value === 'change_status' || this.value === 'change_category') {
+                    bulkValue.disabled = false;
+                    bulkValue.placeholder = this.value === 'change_status' ? 'Enter new status' : 'Enter new category';
+                } else {
+                    bulkValue.disabled = true;
+                    bulkValue.value = '';
+                }
+            });
+
+            // Select all checkbox
+            document.getElementById('selectAllCheckbox').addEventListener('change', function() {
+                const checkboxes = document.querySelectorAll('.book-checkbox');
+                checkboxes.forEach(cb => {
+                    cb.checked = this.checked;
+                });
+                updateSelection();
+            });
+        }
+
+        // CSV Preview
+        function previewCSV(input) {
+            const file = input.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const text = e.target.result;
+                const lines = text.split('\n');
+                const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, ''));
+                
+                csvData = lines.slice(1).filter(line => line.trim()).map(line => {
+                    const values = line.split(',').map(v => v.trim().replace(/"/g, ''));
+                    const row = {};
+                    headers.forEach((header, index) => {
+                        row[header] = values[index] || '';
+                    });
+                    return row;
+                });
+
+                displayCSVPreview();
+                document.getElementById('importBtn').disabled = false;
+            };
+            reader.readAsText(file);
+        }
+
+        // Display CSV preview
+        function displayCSVPreview() {
+            const container = document.getElementById('csvPreview');
+            const tbody = document.getElementById('previewTableBody');
+            
+            tbody.innerHTML = '';
+            csvData.slice(0, 5).forEach(row => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${row.Title || ''}</td>
+                    <td>${row.Author || ''}</td>
+                    <td>${row.ISBN || ''}</td>
+                    <td>${row.Category || ''}</td>
+                    <td>${row.Copies || ''}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+            
+            container.style.display = 'block';
+        }
+
+        // Import books
+        function importBooks() {
+            if (csvData.length === 0) {
+                showAlert('No data to import', 'warning');
+                return;
+            }
+
+            const books = JSON.parse(localStorage.getItem('books')) || [];
+            let importedCount = 0;
+            let errors = [];
+
+            csvData.forEach((row, index) => {
+                if (!row.Title || !row.Author || !row.ISBN || !row.Category || !row.Copies) {
+                    errors.push(`Row ${index + 2}: Missing required fields`);
+                    return;
+                }
+
+                const newBook = {
+                    id: Date.now() + index,
+                    title: row.Title.trim(),
+                    author: row.Author.trim(),
+                    isbn: row.ISBN.trim(),
+                    category: row.Category.trim().toLowerCase(),
+                    copies: parseInt(row.Copies) || 1,
+                    status: row.Status || 'available',
+                    description: row.Description || '',
+                    year: row.Year ? parseInt(row.Year) : null,
+                    publisher: row.Publisher || '',
+                    cover: null
+                };
+
+                books.push(newBook);
+                importedCount++;
+            });
+
+            localStorage.setItem('books', JSON.stringify(books));
+            showAlert(`Successfully imported ${importedCount} books!`, 'success');
+            
+            if (errors.length > 0) {
+                showAlert(`Import completed with ${errors.length} errors. Check console for details.`, 'warning');
+                console.log('Import errors:', errors);
+            }
+
+            clearImport();
+            loadBooks();
+            loadCategories();
+            updateExportStats();
+        }
+
+        // Clear import
+        function clearImport() {
+            document.getElementById('csvFile').value = '';
+            document.getElementById('csvPreview').style.display = 'none';
+            document.getElementById('importBtn').disabled = true;
+            csvData = [];
+        }
+
+        // Download template
+        function downloadTemplate() {
+            const template = 'Title,Author,ISBN,Category,Copies,Status,Description,Year,Publisher\n"The Great Gatsby","F. Scott Fitzgerald","978-0743273565","fiction",3,"available","A story of the fabulously wealthy Jay Gatsby and his love for the beautiful Daisy Buchanan.",1925,"Scribner"';
+            
+            const blob = new Blob([template], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'booktrack_import_template.csv';
+            a.click();
+            window.URL.revokeObjectURL(url);
+        }
+
+        // Export books
+        function exportBooks() {
+            const format = document.getElementById('exportFormat').value;
+            const filter = document.getElementById('exportFilter').value;
+            
+            let books = JSON.parse(localStorage.getItem('books')) || [];
+            
+            if (filter) {
+                books = books.filter(book => book.status === filter);
+            }
+
+            if (books.length === 0) {
+                showAlert('No books to export', 'warning');
+                return;
+            }
+
+            switch (format) {
+                case 'csv':
+                    exportToCSV(books);
+                    break;
+                case 'json':
+                    exportToJSON(books);
+                    break;
+                case 'xml':
+                    exportToXML(books);
+                    break;
+            }
+        }
+
+        // Export to CSV
+        function exportToCSV(books) {
+            const headers = ['Title', 'Author', 'ISBN', 'Category', 'Status', 'Copies', 'Description', 'Year', 'Publisher'];
+            const csvContent = headers.join(',') + '\n' + 
+                books.map(book => [
+                    `"${book.title}"`,
+                    `"${book.author}"`,
+                    `"${book.isbn}"`,
+                    `"${book.category}"`,
+                    `"${book.status}"`,
+                    book.copies,
+                    `"${book.description || ''}"`,
+                    book.year || '',
+                    `"${book.publisher || ''}"`
+                ].join(',')).join('\n');
+
+            downloadFile(csvContent, 'booktrack_export.csv', 'text/csv');
+        }
+
+        // Export to JSON
+        function exportToJSON(books) {
+            const jsonContent = JSON.stringify(books, null, 2);
+            downloadFile(jsonContent, 'booktrack_export.json', 'application/json');
+        }
+
+        // Export to XML
+        function exportToXML(books) {
+            let xmlContent = '<?xml version="1.0" encoding="UTF-8"?>\n<books>\n';
+            books.forEach(book => {
+                xmlContent += `  <book>\n`;
+                xmlContent += `    <title>${book.title}</title>\n`;
+                xmlContent += `    <author>${book.author}</author>\n`;
+                xmlContent += `    <isbn>${book.isbn}</isbn>\n`;
+                xmlContent += `    <category>${book.category}</category>\n`;
+                xmlContent += `    <status>${book.status}</status>\n`;
+                xmlContent += `    <copies>${book.copies}</copies>\n`;
+                xmlContent += `    <description>${book.description || ''}</description>\n`;
+                xmlContent += `    <year>${book.year || ''}</year>\n`;
+                xmlContent += `    <publisher>${book.publisher || ''}</publisher>\n`;
+                xmlContent += `  </book>\n`;
+            });
+            xmlContent += '</books>';
+
+            downloadFile(xmlContent, 'booktrack_export.xml', 'application/xml');
+        }
+
+        // Download file
+        function downloadFile(content, filename, mimeType) {
+            const blob = new Blob([content], { type: mimeType });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            a.click();
+            window.URL.revokeObjectURL(url);
+        }
+
+        // Preview export
+        function previewExport() {
+            const filter = document.getElementById('exportFilter').value;
+            let books = JSON.parse(localStorage.getItem('books')) || [];
+            
+            if (filter) {
+                books = books.filter(book => book.status === filter);
+            }
+
+            if (books.length === 0) {
+                showAlert('No books to preview', 'warning');
+                return;
+            }
+
+            alert(`Export preview:\nTotal books: ${books.length}\nFormat: ${document.getElementById('exportFormat').value}\nFilter: ${filter || 'All books'}`);
+        }
+
+        // Update selection
+        function updateSelection() {
+            const checkboxes = document.querySelectorAll('.book-checkbox:checked');
+            selectedBooks = new Set(Array.from(checkboxes).map(cb => cb.value));
+            
+            document.getElementById('selectedCount').textContent = selectedBooks.size;
+            document.getElementById('applyBulkBtn').disabled = selectedBooks.size === 0;
+            
+            // Update select all checkbox
+            const totalCheckboxes = document.querySelectorAll('.book-checkbox').length;
+            const checkedCheckboxes = selectedBooks.size;
+            document.getElementById('selectAllCheckbox').indeterminate = checkedCheckboxes > 0 && checkedCheckboxes < totalCheckboxes;
+            document.getElementById('selectAllCheckbox').checked = checkedCheckboxes === totalCheckboxes;
+        }
+
+        // Select all books
+        function selectAllBooks() {
+            const checkboxes = document.querySelectorAll('.book-checkbox');
+            checkboxes.forEach(cb => cb.checked = true);
+            updateSelection();
+        }
+
+        // Clear selection
+        function clearSelection() {
+            const checkboxes = document.querySelectorAll('.book-checkbox');
+            checkboxes.forEach(cb => cb.checked = false);
+            document.getElementById('selectAllCheckbox').checked = false;
+            updateSelection();
+        }
+
+        // Apply bulk action
+        function applyBulkAction() {
+            const action = document.getElementById('bulkAction').value;
+            const value = document.getElementById('bulkValue').value;
+            
+            if (!action) {
+                showAlert('Please select an action', 'warning');
+                return;
+            }
+
+            if ((action === 'change_status' || action === 'change_category') && !value) {
+                showAlert('Please enter a value for the action', 'warning');
+                return;
+            }
+
+            const books = JSON.parse(localStorage.getItem('books')) || [];
+            let updatedCount = 0;
+
+            selectedBooks.forEach(bookId => {
+                const book = books.find(b => b.id == bookId);
+                if (book) {
+                    switch (action) {
+                        case 'archive':
+                            book.status = 'archived';
+                            break;
+                        case 'change_status':
+                            book.status = value.toLowerCase();
+                            break;
+                        case 'change_category':
+                            book.category = value.toLowerCase();
+                            break;
+                        case 'delete':
+                            const index = books.findIndex(b => b.id == bookId);
+                            if (index !== -1) books.splice(index, 1);
+                            break;
+                    }
+                    updatedCount++;
+                }
+            });
+
+            localStorage.setItem('books', JSON.stringify(books));
+            showAlert(`Successfully updated ${updatedCount} books!`, 'success');
+            
+            clearSelection();
+            loadBooks();
+            loadCategories();
+            updateExportStats();
+        }
+
+        // Quick archive
+        function quickArchive() {
+            if (selectedBooks.size === 0) {
+                showAlert('Please select books first', 'warning');
+                return;
+            }
+            
+            document.getElementById('bulkAction').value = 'archive';
+            applyBulkAction();
+        }
+
+        // Quick status change
+        function quickStatusChange() {
+            if (selectedBooks.size === 0) {
+                showAlert('Please select books first', 'warning');
+                return;
+            }
+            
+            const newStatus = prompt('Enter new status (available, borrowed, reserved, archived):');
+            if (newStatus) {
+                document.getElementById('bulkAction').value = 'change_status';
+                document.getElementById('bulkValue').value = newStatus;
+                applyBulkAction();
+            }
+        }
+
+        // Add category
+        function addCategory() {
+            const name = document.getElementById('newCategory').value.trim().toLowerCase();
+            const color = document.getElementById('categoryColor').value;
+            
+            if (!name) {
+                showAlert('Please enter a category name', 'warning');
+                return;
+            }
+            
+            if (categories.find(cat => cat.name === name)) {
+                showAlert('Category already exists', 'warning');
+                return;
+            }
+            
+            categories.push({ name, color, count: 0 });
+            loadCategories();
+            clearCategoryForm();
+            showAlert(`Category "${name}" added successfully!`, 'success');
+        }
+
+        // Delete category
+        function deleteCategory(name) {
+            if (confirm(`Are you sure you want to delete the category "${name}"?`)) {
+                categories = categories.filter(cat => cat.name !== name);
+                loadCategories();
+                showAlert(`Category "${name}" deleted successfully!`, 'success');
+            }
+        }
+
+        // Clear category form
+        function clearCategoryForm() {
+            document.getElementById('newCategory').value = '';
+            document.getElementById('categoryColor').value = '#b07c4f';
+        }
+
+        // Get status badge class
+        function getStatusBadgeClass(status) {
+            switch (status) {
+                case 'available': return 'bg-success';
+                case 'borrowed': return 'bg-warning';
+                case 'reserved': return 'bg-info';
+                case 'archived': return 'bg-secondary';
+                default: return 'bg-secondary';
+            }
+        }
+
+        // Show alert
+        function showAlert(message, type) {
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
+            alertDiv.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+            alertDiv.innerHTML = `
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            document.body.appendChild(alertDiv);
+            
+            setTimeout(() => {
+                if (alertDiv.parentNode) {
+                    alertDiv.remove();
+                }
+            }, 5000);
+        }
+
+        // Event listeners
+        document.getElementById('logoutBtn').addEventListener('click', logout);
+
+        // Initialize
+        checkAuth();
+        initialize();
+    </script>
+</body>
+</html>

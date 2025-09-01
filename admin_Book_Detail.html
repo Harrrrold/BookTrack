@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
+    <link href="assets/css/styles.css" rel="stylesheet">
+    <title>BookTrack · Book Details</title>
+</head>
+<body class="bt-theme d-flex flex-column min-vh-100">
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
+        <div class="container">
+            <a class="bt-brand navbar-brand" href="index.html">
+                <span class="bt-brand-mark">B</span>
+                <span>BookTrack</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item"><a class="nav-link" href="admin_Dasboard.html">Dashboard</a></li>
+                    <li class="nav-item"><a class="nav-link" href="admin_User_List.html">Users</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="admin_Book_List.html">Books</a></li>
+                    <li class="nav-item"><a class="nav-link" href="admin_Logs.html">Logs</a></li>
+                    <li class="nav-item"><a class="nav-link" href="admin_Profile.html">Profile</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#" id="logoutBtn">Logout</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <main class="flex-grow-1">
+        <div class="container py-4">
+            <!-- Breadcrumb -->
+            <nav aria-label="breadcrumb" class="mb-4">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="admin_Dasboard.html">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a href="admin_Book_List.html">Book Management</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Book Details</li>
+                </ol>
+            </nav>
+
+            <!-- Book Details Header -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="bt-card p-4">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <h1 class="h3 bt-title mb-2" id="bookTitle">Book Title</h1>
+                                <p class="bt-subtitle mb-0">by <span id="bookAuthor">Author Name</span></p>
+                            </div>
+                            <div class="d-flex gap-2">
+                                <button class="btn btn-bt" onclick="editBook()">
+                                    <i class="bi bi-pencil me-2"></i>Edit Book
+                                </button>
+                                <button class="btn btn-outline-secondary" onclick="goBack()">
+                                    <i class="bi bi-arrow-left me-2"></i>Back to List
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Book Information -->
+            <div class="row">
+                <!-- Book Cover and Basic Info -->
+                <div class="col-lg-4 mb-4">
+                    <div class="bt-card p-4">
+                        <div class="book-cover-large mb-4" id="bookCoverLarge">
+                            <span class="bt-muted">📚</span>
+                        </div>
+                        
+                        <div class="book-meta">
+                            <div class="row g-3">
+                                <div class="col-6">
+                                    <div class="fw-medium">Status</div>
+                                    <span class="badge" id="bookStatusBadge">Available</span>
+                                </div>
+                                <div class="col-6">
+                                    <div class="fw-medium">Copies</div>
+                                    <div id="bookCopies">0</div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="fw-medium">Available</div>
+                                    <div id="availableCopies">0</div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="fw-medium">Borrowed</div>
+                                    <div id="borrowedCopies">0</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-4">
+                            <h5 class="bt-title mb-3">Quick Actions</h5>
+                            <div class="d-grid gap-2">
+                                <button class="btn btn-outline-success" onclick="addCopy()">
+                                    <i class="bi bi-plus-circle me-2"></i>Add Copy
+                                </button>
+                                <button class="btn btn-outline-warning" onclick="archiveBook()">
+                                    <i class="bi bi-archive me-2"></i>Archive Book
+                                </button>
+                                <button class="btn btn-outline-danger" onclick="deleteBook()">
+                                    <i class="bi bi-trash me-2"></i>Delete Book
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Book Details -->
+                <div class="col-lg-8 mb-4">
+                    <div class="bt-card p-4">
+                        <h3 class="h5 bt-title mb-3">Book Information</h3>
+                        
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-medium">ISBN</label>
+                                <div class="form-control-plaintext" id="bookISBN">ISBN Number</div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-medium">Category</label>
+                                <div class="form-control-plaintext" id="bookCategory">Category</div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-medium">Publication Year</label>
+                                <div class="form-control-plaintext" id="bookYear">Year</div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-medium">Publisher</label>
+                                <div class="form-control-plaintext" id="bookPublisher">Publisher</div>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label fw-medium">Description</label>
+                                <div class="form-control-plaintext" id="bookDescription">Book description...</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Borrowing History -->
+                    <div class="bt-card p-4 mt-4">
+                        <h3 class="h5 bt-title mb-3">Borrowing History</h3>
+                        
+                        <div id="borrowingHistory">
+                            <div class="text-center py-4">
+                                <span class="bt-muted">No borrowing history available</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Copy Details -->
+                    <div class="bt-card p-4 mt-4">
+                        <h3 class="h5 bt-title mb-3">Copy Details</h3>
+                        
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Copy ID</th>
+                                        <th>Status</th>
+                                        <th>Location</th>
+                                        <th>Last Checked</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="copyDetailsBody">
+                                    <!-- Copy details will be loaded here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="mt-auto py-4 border-top text-center bt-muted">
+        <div class="container">
+            <p class="mb-1">&copy; 2025 BookTrack. All rights reserved.</p>
+            <small>Made with ❤️ using Bootstrap 5</small>
+        </div>
+    </footer>
+
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q"
+        crossorigin="anonymous"></script>
+    
+    <script>
+        let currentBook = null;
+
+        // Check if admin is logged in
+        function checkAuth() {
+            const isLoggedIn = sessionStorage.getItem('isLoggedIn');
+            const userRole = sessionStorage.getItem('userRole');
+            
+            if (!isLoggedIn || userRole !== 'admin') {
+                window.location.href = 'login.html';
+                return;
+            }
+        }
+
+        // Logout function
+        function logout() {
+            sessionStorage.clear();
+            window.location.href = 'login.html';
+        }
+
+        // Get book ID from URL parameters
+        function getBookId() {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get('id');
+        }
+
+        // Load book details
+        function loadBookDetails() {
+            const bookId = getBookId();
+            if (!bookId) {
+                showAlert('Book ID not found', 'danger');
+                return;
+            }
+
+            const books = JSON.parse(localStorage.getItem('books')) || [];
+            currentBook = books.find(book => book.id == bookId);
+            
+            if (!currentBook) {
+                showAlert('Book not found', 'danger');
+                return;
+            }
+
+            displayBookDetails();
+            loadCopyDetails();
+            loadBorrowingHistory();
+        }
+
+        // Display book details
+        function displayBookDetails() {
+            document.getElementById('bookTitle').textContent = currentBook.title;
+            document.getElementById('bookAuthor').textContent = currentBook.author;
+            document.getElementById('bookISBN').textContent = currentBook.isbn;
+            document.getElementById('bookCategory').textContent = currentBook.category;
+            document.getElementById('bookYear').textContent = currentBook.year || 'N/A';
+            document.getElementById('bookPublisher').textContent = currentBook.publisher || 'N/A';
+            document.getElementById('bookDescription').textContent = currentBook.description || 'No description available.';
+            document.getElementById('bookCopies').textContent = currentBook.copies;
+            
+            // Status badge
+            const statusBadge = document.getElementById('bookStatusBadge');
+            statusBadge.textContent = currentBook.status;
+            statusBadge.className = `badge ${getStatusBadgeClass(currentBook.status)}`;
+
+            // Cover image
+            if (currentBook.cover) {
+                document.getElementById('bookCoverLarge').innerHTML = `<img src="${currentBook.cover}" alt="${currentBook.title}">`;
+            }
+
+            // Calculate available and borrowed copies
+            const borrowedCount = Math.floor(Math.random() * currentBook.copies); // Simulate borrowed copies
+            const availableCount = currentBook.copies - borrowedCount;
+            
+            document.getElementById('availableCopies').textContent = availableCount;
+            document.getElementById('borrowedCopies').textContent = borrowedCount;
+        }
+
+        // Get status badge class
+        function getStatusBadgeClass(status) {
+            switch (status) {
+                case 'available': return 'bg-success';
+                case 'borrowed': return 'bg-warning';
+                case 'reserved': return 'bg-info';
+                case 'archived': return 'bg-secondary';
+                default: return 'bg-secondary';
+            }
+        }
+
+        // Load copy details
+        function loadCopyDetails() {
+            const tbody = document.getElementById('copyDetailsBody');
+            tbody.innerHTML = '';
+
+            for (let i = 1; i <= currentBook.copies; i++) {
+                const row = document.createElement('tr');
+                const copyStatus = i <= 2 ? 'Available' : 'Borrowed'; // Simulate some copies being borrowed
+                const location = 'Main Library';
+                const lastChecked = new Date(Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000).toLocaleDateString();
+                
+                row.innerHTML = `
+                    <td>Copy ${i}</td>
+                    <td><span class="badge ${copyStatus === 'Available' ? 'bg-success' : 'bg-warning'}">${copyStatus}</span></td>
+                    <td>${location}</td>
+                    <td>${lastChecked}</td>
+                    <td>
+                        <button class="btn btn-sm btn-outline-info" onclick="viewCopyDetails(${i})">
+                            <i class="bi bi-eye"></i>
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            }
+        }
+
+        // Load borrowing history
+        function loadBorrowingHistory() {
+            const container = document.getElementById('borrowingHistory');
+            
+            // Simulate borrowing history
+            const history = [
+                {
+                    user: 'John Doe',
+                    action: 'Borrowed',
+                    date: '2025-01-15',
+                    returned: '2025-01-30'
+                },
+                {
+                    user: 'Jane Smith',
+                    action: 'Borrowed',
+                    date: '2024-12-20',
+                    returned: '2025-01-10'
+                }
+            ];
+
+            if (history.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-4">
+                        <span class="bt-muted">No borrowing history available</span>
+                    </div>
+                `;
+            } else {
+                container.innerHTML = history.map(item => `
+                    <div class="d-flex align-items-center py-2 border-bottom">
+                        <div class="flex-shrink-0">
+                            <div class="bg-light rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                                <span class="bt-muted">👤</span>
+                            </div>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <div class="fw-medium">${item.user}</div>
+                            <small class="bt-muted">${item.action} on ${item.date}</small>
+                        </div>
+                        <div class="text-end">
+                            <small class="bt-muted">Returned: ${item.returned}</small>
+                        </div>
+                    </div>
+                `).join('');
+            }
+        }
+
+        // Edit book
+        function editBook() {
+            window.location.href = `admin_Book_List.html?edit=${currentBook.id}`;
+        }
+
+        // Add copy
+        function addCopy() {
+            if (confirm('Add another copy of this book?')) {
+                currentBook.copies++;
+                updateBookInStorage();
+                loadBookDetails();
+                loadCopyDetails();
+                showAlert('Copy added successfully!', 'success');
+            }
+        }
+
+        // Archive book
+        function archiveBook() {
+            if (confirm('Are you sure you want to archive this book?')) {
+                currentBook.status = 'archived';
+                updateBookInStorage();
+                displayBookDetails();
+                showAlert('Book archived successfully!', 'info');
+            }
+        }
+
+        // Delete book
+        function deleteBook() {
+            if (confirm('Are you sure you want to delete this book? This action cannot be undone.')) {
+                const books = JSON.parse(localStorage.getItem('books')) || [];
+                const updatedBooks = books.filter(book => book.id !== currentBook.id);
+                localStorage.setItem('books', JSON.stringify(updatedBooks));
+                showAlert('Book deleted successfully!', 'success');
+                setTimeout(() => {
+                    window.location.href = 'admin_Book_List.html';
+                }, 1500);
+            }
+        }
+
+        // Update book in storage
+        function updateBookInStorage() {
+            const books = JSON.parse(localStorage.getItem('books')) || [];
+            const index = books.findIndex(book => book.id === currentBook.id);
+            if (index !== -1) {
+                books[index] = currentBook;
+                localStorage.setItem('books', JSON.stringify(books));
+            }
+        }
+
+        // View copy details
+        function viewCopyDetails(copyNumber) {
+            alert(`Copy ${copyNumber} details:\nStatus: Available\nLocation: Main Library\nLast Checked: ${new Date().toLocaleDateString()}`);
+        }
+
+        // Go back to book list
+        function goBack() {
+            window.location.href = 'admin_Book_List.html';
+        }
+
+        // Show alert
+        function showAlert(message, type) {
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
+            alertDiv.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+            alertDiv.innerHTML = `
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            document.body.appendChild(alertDiv);
+            
+            setTimeout(() => {
+                if (alertDiv.parentNode) {
+                    alertDiv.remove();
+                }
+            }, 5000);
+        }
+
+        // Event listeners
+        document.getElementById('logoutBtn').addEventListener('click', logout);
+
+        // Initialize
+        checkAuth();
+        loadBookDetails();
+    </script>
+</body>
+</html>

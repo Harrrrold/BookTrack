@@ -203,4 +203,268 @@ body.bt-theme {
     box-shadow: 0 0 0 0.2rem rgba(176, 124, 79, 0.15);
 }
 
+/* Book Management Styles */
+.table {
+    margin-bottom: 0;
+}
+
+.table th {
+    border-top: none;
+    border-bottom: 2px solid var(--bt-border);
+    font-weight: 600;
+    color: var(--bt-text);
+    padding: 12px 8px;
+}
+
+.table td {
+    padding: 12px 8px;
+    vertical-align: middle;
+    border-bottom: 1px solid var(--bt-border);
+}
+
+.table tbody tr:hover {
+    background-color: rgba(176, 124, 79, 0.05);
+}
+
+/* Book cover styles */
+.book-cover-small {
+    width: 50px;
+    height: 70px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bt-input-bg);
+    border: 1px solid var(--bt-border);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.book-cover-small img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.book-cover-preview {
+    width: 150px;
+    height: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bt-input-bg);
+    border: 2px dashed var(--bt-border);
+    border-radius: 12px;
+    margin: 0 auto;
+}
+
+.book-cover-preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 10px;
+}
+
+/* Large book cover for detail page */
+.book-cover-large {
+    width: 200px;
+    height: 280px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bt-input-bg);
+    border: 2px solid var(--bt-border);
+    border-radius: 16px;
+    margin: 0 auto;
+    overflow: hidden;
+}
+
+.book-cover-large img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 14px;
+}
+
+/* Book metadata styling */
+.book-meta {
+    background: var(--bt-bg);
+    padding: 16px;
+    border-radius: 12px;
+    border: 1px solid var(--bt-border);
+}
+
+.book-meta .fw-medium {
+    color: var(--bt-text);
+    font-weight: 600;
+}
+
+/* Badge customizations */
+.badge {
+    font-size: 0.75rem;
+    padding: 0.375rem 0.75rem;
+    border-radius: 6px;
+}
+
+.badge.bg-secondary {
+    background-color: var(--bt-muted) !important;
+}
+
+/* Button group improvements */
+.btn-group-sm .btn {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+    border-radius: 6px;
+}
+
+.btn-group-sm .btn:not(:last-child) {
+    border-right: 1px solid var(--bt-border);
+}
+
+/* Button color variations */
+.btn-outline-info {
+    --bs-btn-color: #0dcaf0;
+    --bs-btn-border-color: #0dcaf0;
+    --bs-btn-hover-color: #fff;
+    --bs-btn-hover-bg: #0dcaf0;
+    --bs-btn-hover-border-color: #0dcaf0;
+    --bs-btn-active-color: #fff;
+    --bs-btn-active-bg: #0dcaf0;
+    --bs-btn-active-border-color: #0dcaf0;
+}
+
+.btn-outline-info:hover {
+    color: var(--bs-btn-hover-color);
+    background-color: var(--bs-btn-hover-bg);
+    border-color: var(--bs-btn-hover-border-color);
+}
+
+.btn-outline-info:active {
+    color: var(--bs-btn-active-color);
+    background-color: var(--bs-btn-active-bg);
+    border-color: var(--bs-btn-active-border-color);
+}
+
+/* Modal enhancements */
+.modal-content {
+    border: 1px solid var(--bt-border);
+    border-radius: 16px;
+    box-shadow: 0 20px 40px rgba(124, 92, 66, 0.15);
+}
+
+.modal-header {
+    border-bottom: 1px solid var(--bt-border);
+    background: var(--bt-card);
+    border-radius: 16px 16px 0 0;
+}
+
+.modal-footer {
+    border-top: 1px solid var(--bt-border);
+    background: var(--bt-card);
+    border-radius: 0 0 16px 16px;
+}
+
+/* Form select styling */
+.form-select.bt-input {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%238b6f57' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m1 6 7 7 7-7'/%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    background-size: 16px 12px;
+}
+
+/* Pagination styling */
+.pagination .page-link {
+    color: var(--bt-accent);
+    border-color: var(--bt-border);
+    background-color: var(--bt-card);
+}
+
+.pagination .page-link:hover {
+    color: var(--bt-accent-600);
+    background-color: var(--bt-bg);
+    border-color: var(--bt-accent);
+}
+
+.pagination .page-item.active .page-link {
+    background-color: var(--bt-accent);
+    border-color: var(--bt-accent);
+    color: white;
+}
+
+.pagination .page-item.disabled .page-link {
+    color: var(--bt-muted);
+    background-color: var(--bt-card);
+    border-color: var(--bt-border);
+}
+
+/* Alert notifications */
+.alert {
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(124, 92, 66, 0.15);
+}
+
+.alert-success {
+    background-color: rgba(25, 135, 84, 0.1);
+    color: var(--bt-success);
+    border-left: 4px solid var(--bt-success);
+}
+
+.alert-info {
+    background-color: rgba(13, 202, 240, 0.1);
+    color: #0dcaf0;
+    border-left: 4px solid #0dcaf0;
+}
+
+.alert-warning {
+    background-color: rgba(255, 193, 7, 0.1);
+    color: #ffc107;
+    border-left: 4px solid #ffc107;
+}
+
+.alert-danger {
+    background-color: rgba(220, 53, 69, 0.1);
+    color: var(--bt-error);
+    border-left: 4px solid var(--bt-error);
+}
+
+/* Breadcrumb styling */
+.breadcrumb {
+    background: transparent;
+    padding: 0;
+    margin: 0;
+}
+
+.breadcrumb-item + .breadcrumb-item::before {
+    content: ">";
+    color: var(--bt-muted);
+    font-weight: 600;
+}
+
+.breadcrumb-item.active {
+    color: var(--bt-text);
+    font-weight: 600;
+}
+
+/* Responsive table improvements */
+@media (max-width: 768px) {
+    .table-responsive {
+        border-radius: 12px;
+    }
+    
+    .btn-group-sm .btn {
+        padding: 0.375rem 0.75rem;
+        font-size: 0.875rem;
+    }
+    
+    .book-cover-small {
+        width: 40px;
+        height: 56px;
+    }
+    
+    .book-cover-large {
+        width: 150px;
+        height: 210px;
+    }
+}
+
 

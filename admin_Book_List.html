@@ -3,9 +3,661 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
+    <link href="assets/css/styles.css" rel="stylesheet">
+    <title>BookTrack · Admin Book Management</title>
 </head>
-<body>
+<body class="bt-theme d-flex flex-column min-vh-100">
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
+        <div class="container">
+            <a class="bt-brand navbar-brand" href="index.html">
+                <span class="bt-brand-mark">B</span>
+                <span>BookTrack</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item"><a class="nav-link" href="admin_Dasboard.html">Dashboard</a></li>
+                    <li class="nav-item"><a class="nav-link" href="admin_User_List.html">Users</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="admin_Book_List.html">Books</a></li>
+                    <li class="nav-item"><a class="nav-link" href="admin_Logs.html">Logs</a></li>
+                    <li class="nav-item"><a class="nav-link" href="admin_Profile.html">Profile</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#" id="logoutBtn">Logout</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <main class="flex-grow-1">
+        <div class="container py-4">
+            <!-- Breadcrumb -->
+            <nav aria-label="breadcrumb" class="mb-4">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="admin_Dasboard.html">Dashboard</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Book Management</li>
+                </ol>
+            </nav>
+
+            <!-- Header Section -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="bt-card p-4">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h1 class="h3 bt-title mb-2">Book Management</h1>
+                                <p class="bt-subtitle mb-0">Manage all books in the BookTrack library system</p>
+                            </div>
+                            <div class="d-flex gap-2">
+                                <button class="btn btn-bt" onclick="openAddBookModal()">
+                                    <i class="bi bi-plus-circle me-2"></i>Add New Book
+                                </button>
+                                <a href="admin_Book_Bulk.html" class="btn btn-outline-info">
+                                    <i class="bi bi-gear me-2"></i>Bulk Operations
+                                </a>
+                                <button class="btn btn-outline-secondary" onclick="exportBookData()">
+                                    <i class="bi bi-download me-2"></i>Export
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Search and Filter Section -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="bt-card p-4">
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <label for="searchInput" class="form-label">Search Books</label>
+                                <input type="text" class="form-control bt-input" id="searchInput" placeholder="Search by title, author, ISBN...">
+                            </div>
+                            <div class="col-md-3">
+                                <label for="categoryFilter" class="form-label">Category</label>
+                                <select class="form-select bt-input" id="categoryFilter">
+                                    <option value="">All Categories</option>
+                                    <option value="fiction">Fiction</option>
+                                    <option value="non-fiction">Non-Fiction</option>
+                                    <option value="science">Science</option>
+                                    <option value="history">History</option>
+                                    <option value="biography">Biography</option>
+                                    <option value="technology">Technology</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="statusFilter" class="form-label">Status</label>
+                                <select class="form-select bt-input" id="statusFilter">
+                                    <option value="">All Status</option>
+                                    <option value="available">Available</option>
+                                    <option value="borrowed">Borrowed</option>
+                                    <option value="reserved">Reserved</option>
+                                    <option value="archived">Archived</option>
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label">&nbsp;</label>
+                                <button class="btn btn-outline-secondary w-100" onclick="clearFilters()">Clear</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Books Table -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="bt-card p-4">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h3 class="h5 bt-title mb-0">Book List</h3>
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="bt-muted">Showing <span id="showingCount">0</span> of <span id="totalCount">0</span> books</span>
+                            </div>
+                        </div>
+                        
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Cover</th>
+                                        <th>Title & Author</th>
+                                        <th>ISBN</th>
+                                        <th>Category</th>
+                                        <th>Status</th>
+                                        <th>Copies</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="booksTableBody">
+                                    <!-- Books will be loaded here -->
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Pagination -->
+                        <nav aria-label="Book pagination" class="mt-4">
+                            <ul class="pagination justify-content-center" id="pagination">
+                                <!-- Pagination will be generated here -->
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="mt-auto py-4 border-top text-center bt-muted">
+        <div class="container">
+            <p class="mb-1">&copy; 2025 BookTrack. All rights reserved.</p>
+            <small>Made with ❤️ using Bootstrap 5</small>
+        </div>
+    </footer>
+
+    <!-- Add/Edit Book Modal -->
+    <div class="modal fade" id="bookModal" tabindex="-1" aria-labelledby="bookModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="bookModalLabel">Add New Book</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="bookForm">
+                    <div class="modal-body">
+                        <div class="row g-3">
+                            <div class="col-md-8">
+                                <div class="mb-3">
+                                    <label for="bookTitle" class="form-label">Book Title *</label>
+                                    <input type="text" class="form-control bt-input" id="bookTitle" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="bookAuthor" class="form-label">Author *</label>
+                                    <input type="text" class="form-control bt-input" id="bookAuthor" required>
+                                </div>
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label for="bookISBN" class="form-label">ISBN *</label>
+                                        <input type="text" class="form-control bt-input" id="bookISBN" required>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="bookCategory" class="form-label">Category *</label>
+                                        <select class="form-select bt-input" id="bookCategory" required>
+                                            <option value="">Select Category</option>
+                                            <option value="fiction">Fiction</option>
+                                            <option value="non-fiction">Non-Fiction</option>
+                                            <option value="science">Science</option>
+                                            <option value="history">History</option>
+                                            <option value="biography">Biography</option>
+                                            <option value="technology">Technology</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label for="bookCopies" class="form-label">Number of Copies *</label>
+                                        <input type="number" class="form-control bt-input" id="bookCopies" min="1" value="1" required>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="bookStatus" class="form-label">Status *</label>
+                                        <select class="form-select bt-input" id="bookStatus" required>
+                                            <option value="available">Available</option>
+                                            <option value="borrowed">Borrowed</option>
+                                            <option value="reserved">Reserved</option>
+                                            <option value="archived">Archived</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="bookDescription" class="form-label">Description</label>
+                                    <textarea class="form-control bt-input" id="bookDescription" rows="3" placeholder="Brief description of the book..."></textarea>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label class="form-label">Book Cover</label>
+                                    <div class="book-cover-preview" id="coverPreview">
+                                        <span class="bt-muted">📚</span>
+                                    </div>
+                                    <input type="file" class="form-control bt-input mt-2" id="bookCover" accept="image/*">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="bookYear" class="form-label">Publication Year</label>
+                                    <input type="number" class="form-control bt-input" id="bookYear" min="1800" max="2025">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="bookPublisher" class="form-label">Publisher</label>
+                                    <input type="text" class="form-control bt-input" id="bookPublisher">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-bt" id="saveBookBtn">Save Book</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteModalLabel">Confirm Delete</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to delete "<span id="deleteBookTitle"></span>"?</p>
+                    <p class="text-danger mb-0">This action cannot be undone.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Delete Book</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q"
+        crossorigin="anonymous"></script>
+    
+    <script>
+        // Global variables
+        let books = [];
+        let filteredBooks = [];
+        let currentPage = 1;
+        let booksPerPage = 10;
+        let editingBookId = null;
+
+        // Check if admin is logged in
+        function checkAuth() {
+            const isLoggedIn = sessionStorage.getItem('isLoggedIn');
+            const userRole = sessionStorage.getItem('userRole');
+            
+            if (!isLoggedIn || userRole !== 'admin') {
+                window.location.href = 'login.html';
+                return;
+            }
+        }
+
+        // Logout function
+        function logout() {
+            sessionStorage.clear();
+            window.location.href = 'login.html';
+        }
+
+        // Initialize sample data
+        function initializeSampleData() {
+            const sampleBooks = [
+                {
+                    id: 1,
+                    title: "The Great Gatsby",
+                    author: "F. Scott Fitzgerald",
+                    isbn: "978-0743273565",
+                    category: "fiction",
+                    status: "available",
+                    copies: 3,
+                    description: "A story of the fabulously wealthy Jay Gatsby and his love for the beautiful Daisy Buchanan.",
+                    year: 1925,
+                    publisher: "Scribner",
+                    cover: null
+                },
+                {
+                    id: 2,
+                    title: "To Kill a Mockingbird",
+                    author: "Harper Lee",
+                    isbn: "978-0446310789",
+                    category: "fiction",
+                    status: "borrowed",
+                    copies: 2,
+                    description: "The story of young Scout Finch and her father Atticus in a racially divided Alabama town.",
+                    year: 1960,
+                    publisher: "Grand Central Publishing",
+                    cover: null
+                },
+                {
+                    id: 3,
+                    title: "1984",
+                    author: "George Orwell",
+                    isbn: "978-0451524935",
+                    category: "fiction",
+                    status: "available",
+                    copies: 4,
+                    description: "A dystopian novel about totalitarianism and surveillance society.",
+                    year: 1949,
+                    publisher: "Signet Classic",
+                    cover: null
+                }
+            ];
+
+            if (!localStorage.getItem('books')) {
+                localStorage.setItem('books', JSON.stringify(sampleBooks));
+            }
+        }
+
+        // Load books from localStorage
+        function loadBooks() {
+            books = JSON.parse(localStorage.getItem('books')) || [];
+            filteredBooks = [...books];
+            updateBooksTable();
+            updateCounts();
+        }
+
+        // Update books table
+        function updateBooksTable() {
+            const startIndex = (currentPage - 1) * booksPerPage;
+            const endIndex = startIndex + booksPerPage;
+            const pageBooks = filteredBooks.slice(startIndex, endIndex);
+
+            const tbody = document.getElementById('booksTableBody');
+            tbody.innerHTML = '';
+
+            pageBooks.forEach(book => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>
+                        <div class="book-cover-small">
+                            ${book.cover ? `<img src="${book.cover}" alt="${book.title}">` : '<span class="bt-muted">📚</span>'}
+                        </div>
+                    </td>
+                    <td>
+                        <div class="fw-medium">${book.title}</div>
+                        <small class="bt-muted">${book.author}</small>
+                    </td>
+                    <td><code>${book.isbn}</code></td>
+                    <td><span class="badge bg-secondary">${book.category}</span></td>
+                    <td>
+                        <span class="badge ${getStatusBadgeClass(book.status)}">${book.status}</span>
+                    </td>
+                    <td>${book.copies}</td>
+                    <td>
+                        <div class="btn-group btn-group-sm">
+                            <a href="admin_Book_Detail.html?id=${book.id}" class="btn btn-outline-primary" title="View Details">
+                                <i class="bi bi-eye"></i>
+                            </a>
+                            <button class="btn btn-outline-info" onclick="editBook(${book.id})" title="Edit">
+                                <i class="bi bi-pencil"></i>
+                            </button>
+                            <button class="btn btn-outline-warning" onclick="archiveBook(${book.id})" title="Archive">
+                                <i class="bi bi-archive"></i>
+                            </button>
+                            <button class="btn btn-outline-danger" onclick="deleteBook(${book.id})" title="Delete">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+
+            updatePagination();
+        }
+
+        // Get status badge class
+        function getStatusBadgeClass(status) {
+            switch (status) {
+                case 'available': return 'bg-success';
+                case 'borrowed': return 'bg-warning';
+                case 'reserved': return 'bg-info';
+                case 'archived': return 'bg-secondary';
+                default: return 'bg-secondary';
+            }
+        }
+
+        // Update pagination
+        function updatePagination() {
+            const totalPages = Math.ceil(filteredBooks.length / booksPerPage);
+            const pagination = document.getElementById('pagination');
+            pagination.innerHTML = '';
+
+            // Previous button
+            const prevLi = document.createElement('li');
+            prevLi.className = `page-item ${currentPage === 1 ? 'disabled' : ''}`;
+            prevLi.innerHTML = `<a class="page-link" href="#" onclick="changePage(${currentPage - 1})">Previous</a>`;
+            pagination.appendChild(prevLi);
+
+            // Page numbers
+            for (let i = 1; i <= totalPages; i++) {
+                const li = document.createElement('li');
+                li.className = `page-item ${i === currentPage ? 'active' : ''}`;
+                li.innerHTML = `<a class="page-link" href="#" onclick="changePage(${i})">${i}</a>`;
+                pagination.appendChild(li);
+            }
+
+            // Next button
+            const nextLi = document.createElement('li');
+            nextLi.className = `page-item ${currentPage === totalPages ? 'disabled' : ''}`;
+            nextLi.innerHTML = `<a class="page-link" href="#" onclick="changePage(${currentPage + 1})">Next</a>`;
+            pagination.appendChild(nextLi);
+        }
+
+        // Change page
+        function changePage(page) {
+            const totalPages = Math.ceil(filteredBooks.length / booksPerPage);
+            if (page >= 1 && page <= totalPages) {
+                currentPage = page;
+                updateBooksTable();
+            }
+        }
+
+        // Update counts
+        function updateCounts() {
+            document.getElementById('totalCount').textContent = books.length;
+            document.getElementById('showingCount').textContent = Math.min(filteredBooks.length, booksPerPage);
+        }
+
+        // Search and filter books
+        function searchAndFilterBooks() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const categoryFilter = document.getElementById('categoryFilter').value;
+            const statusFilter = document.getElementById('statusFilter').value;
+
+            filteredBooks = books.filter(book => {
+                const matchesSearch = !searchTerm || 
+                    book.title.toLowerCase().includes(searchTerm) ||
+                    book.author.toLowerCase().includes(searchTerm) ||
+                    book.isbn.toLowerCase().includes(searchTerm);
+                
+                const matchesCategory = !categoryFilter || book.category === categoryFilter;
+                const matchesStatus = !statusFilter || book.status === statusFilter;
+
+                return matchesSearch && matchesCategory && matchesStatus;
+            });
+
+            currentPage = 1;
+            updateBooksTable();
+            updateCounts();
+        }
+
+        // Clear filters
+        function clearFilters() {
+            document.getElementById('searchInput').value = '';
+            document.getElementById('categoryFilter').value = '';
+            document.getElementById('statusFilter').value = '';
+            searchAndFilterBooks();
+        }
+
+        // Open add book modal
+        function openAddBookModal() {
+            editingBookId = null;
+            document.getElementById('bookModalLabel').textContent = 'Add New Book';
+            document.getElementById('bookForm').reset();
+            document.getElementById('coverPreview').innerHTML = '<span class="bt-muted">📚</span>';
+            document.getElementById('saveBookBtn').textContent = 'Save Book';
+            
+            const modal = new bootstrap.Modal(document.getElementById('bookModal'));
+            modal.show();
+        }
+
+        // Edit book
+        function editBook(bookId) {
+            const book = books.find(b => b.id === bookId);
+            if (!book) return;
+
+            editingBookId = bookId;
+            document.getElementById('bookModalLabel').textContent = 'Edit Book';
+            document.getElementById('saveBookBtn').textContent = 'Update Book';
+
+            // Populate form
+            document.getElementById('bookTitle').value = book.title;
+            document.getElementById('bookAuthor').value = book.author;
+            document.getElementById('bookISBN').value = book.isbn;
+            document.getElementById('bookCategory').value = book.category;
+            document.getElementById('bookCopies').value = book.copies;
+            document.getElementById('bookStatus').value = book.status;
+            document.getElementById('bookDescription').value = book.description || '';
+            document.getElementById('bookYear').value = book.year || '';
+            document.getElementById('bookPublisher').value = book.publisher || '';
+
+            // Show cover if exists
+            if (book.cover) {
+                document.getElementById('coverPreview').innerHTML = `<img src="${book.cover}" alt="${book.title}">`;
+            } else {
+                document.getElementById('coverPreview').innerHTML = '<span class="bt-muted">📚</span>';
+            }
+
+            const modal = new bootstrap.Modal(document.getElementById('bookModal'));
+            modal.show();
+        }
+
+        // Save book
+        function saveBook(event) {
+            event.preventDefault();
+
+            const bookData = {
+                title: document.getElementById('bookTitle').value.trim(),
+                author: document.getElementById('bookAuthor').value.trim(),
+                isbn: document.getElementById('bookISBN').value.trim(),
+                category: document.getElementById('bookCategory').value,
+                copies: parseInt(document.getElementById('bookCopies').value),
+                status: document.getElementById('bookStatus').value,
+                description: document.getElementById('bookDescription').value.trim(),
+                year: document.getElementById('bookYear').value ? parseInt(document.getElementById('bookYear').value) : null,
+                publisher: document.getElementById('bookPublisher').value.trim(),
+                cover: null // Handle cover upload separately
+            };
+
+            if (editingBookId) {
+                // Update existing book
+                const index = books.findIndex(b => b.id === editingBookId);
+                if (index !== -1) {
+                    bookData.id = editingBookId;
+                    bookData.cover = books[index].cover; // Preserve existing cover
+                    books[index] = bookData;
+                }
+            } else {
+                // Add new book
+                bookData.id = Date.now(); // Simple ID generation
+                books.push(bookData);
+            }
+
+            localStorage.setItem('books', JSON.stringify(books));
+            
+            // Close modal and refresh
+            const modal = bootstrap.Modal.getInstance(document.getElementById('bookModal'));
+            modal.hide();
+            
+            loadBooks();
+            showAlert('Book saved successfully!', 'success');
+        }
+
+        // Archive book
+        function archiveBook(bookId) {
+            const book = books.find(b => b.id === bookId);
+            if (book) {
+                book.status = 'archived';
+                localStorage.setItem('books', JSON.stringify(books));
+                loadBooks();
+                showAlert(`"${book.title}" has been archived.`, 'info');
+            }
+        }
+
+        // Delete book
+        function deleteBook(bookId) {
+            const book = books.find(b => b.id === bookId);
+            if (book) {
+                document.getElementById('deleteBookTitle').textContent = book.title;
+                const deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
+                deleteModal.show();
+                
+                // Store book ID for deletion confirmation
+                document.getElementById('confirmDeleteBtn').onclick = () => {
+                    books = books.filter(b => b.id !== bookId);
+                    localStorage.setItem('books', JSON.stringify(books));
+                    loadBooks();
+                    deleteModal.hide();
+                    showAlert(`"${book.title}" has been deleted.`, 'success');
+                };
+            }
+        }
+
+        // Export book data
+        function exportBookData() {
+            const csvContent = "data:text/csv;charset=utf-8," + 
+                "Title,Author,ISBN,Category,Status,Copies,Description,Year,Publisher\n" +
+                books.map(book => 
+                    `"${book.title}","${book.author}","${book.isbn}","${book.category}","${book.status}",${book.copies},"${book.description || ''}","${book.year || ''}","${book.publisher || ''}"`
+                ).join("\n");
+            
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "booktrack_books.csv");
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // Show alert
+        function showAlert(message, type) {
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
+            alertDiv.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+            alertDiv.innerHTML = `
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            document.body.appendChild(alertDiv);
+            
+            setTimeout(() => {
+                if (alertDiv.parentNode) {
+                    alertDiv.remove();
+                }
+            }, 5000);
+        }
+
+        // Handle cover image preview
+        document.getElementById('bookCover').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('coverPreview').innerHTML = `<img src="${e.target.result}" alt="Book cover">`;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Event listeners
+        document.getElementById('searchInput').addEventListener('input', searchAndFilterBooks);
+        document.getElementById('categoryFilter').addEventListener('change', searchAndFilterBooks);
+        document.getElementById('statusFilter').addEventListener('change', searchAndFilterBooks);
+        document.getElementById('bookForm').addEventListener('submit', saveBook);
+        document.getElementById('logoutBtn').addEventListener('click', logout);
+
+        // Initialize
+        checkAuth();
+        initializeSampleData();
+        loadBooks();
+    </script>
 </body>
 </html>
