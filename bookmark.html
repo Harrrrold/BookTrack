@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bookmarks · BookTrack</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
+    <link href="assets/css/styles.css" rel="stylesheet">
+</head>
+<body class="bt-theme d-flex flex-column min-vh-100">
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
+        <div class="container">
+            <a class="bt-brand navbar-brand" href="index.html">
+                <span class="bt-brand-mark">B</span>
+                <span>BookTrack</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item"><a class="nav-link" href="user_Dashboard.html">Dashboard</a></li>
+                    <li class="nav-item"><a class="nav-link" href="bookmark.html">My Books</a></li>
+                    <!-- Profile Dropdown -->
+                 <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="profileDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <img src="assets/img/profile-placeholder.png" alt="Profile" class="rounded-circle me-2" style="width:32px;height:32px;object-fit:cover;">
+                            <span id="navbarFullName">User</span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown" style="min-width:220px;">
+                            <li class="px-3 py-2 text-center">
+                                <img src="assets/img/profile-placeholder.png" alt="Profile" class="rounded-circle mb-2" style="width:56px;height:56px;object-fit:cover;">
+                                <div class="fw-bold" id="dropdownFullName">User</div>
+                                <div class="bt-muted small" id="dropdownEmail">user@example.com</div>
+                            </li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <a class="dropdown-item btn btn-bt w-100 text-center" href="profile.html">Go to Profile</a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="nav-item"><a class="nav-link" href="#" id="logoutBtn">Logout</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <main class="flex-grow-1 py-5">
+        <div class="container" style="max-width: 700px;">
+            <div class="bt-card p-4">
+                <h2 class="bt-title mb-4 text-center">Bookmarked Books</h2>
+                <!-- Example Bookmarked List -->
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item d-flex align-items-center justify-content-between">
+                        <div>
+                            <strong>The Great Gatsby</strong><br>
+                            <span class="bt-muted">by F. Scott Fitzgerald</span>
+                        </div>
+                        <a href="#" class="btn btn-sm btn-outline-danger">Remove</a>
+                    </li>
+                    <li class="list-group-item d-flex align-items-center justify-content-between">
+                        <div>
+                            <strong>To Kill a Mockingbird</strong><br>
+                            <span class="bt-muted">by Harper Lee</span>
+                        </div>
+                        <a href="#" class="btn btn-sm btn-outline-danger">Remove</a>
+                    </li>
+                    <li class="list-group-item d-flex align-items-center justify-content-between">
+                        <div>
+                            <strong>1984</strong><br>
+                            <span class="bt-muted">by George Orwell</span>
+                        </div>
+                        <a href="#" class="btn btn-sm btn-outline-danger">Remove</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="mt-auto py-4 border-top text-center bt-muted">
+        <div class="container">
+            <p class="mb-1">&copy; 2025 BookTrack. All rights reserved.</p>
+            <small>Made with ❤️ using Bootstrap 5</small>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q"
+        crossorigin="anonymous"></script>
+
+    <script>
+        // Check if user is logged in
+        function checkAuth() {
+            const isLoggedIn = sessionStorage.getItem('isLoggedIn');
+            const userRole = sessionStorage.getItem('userRole');
+            
+            if (!isLoggedIn || userRole !== 'user') {
+                window.location.href = 'login.html';
+                return;
+            }
+            
+            // Display user info
+            const userEmail = sessionStorage.getItem('userEmail');
+            const userName = userEmail ? userEmail.split('@')[0] : 'User';
+            document.getElementById('userName').textContent = userName;
+        }
+
+        // Fill navbar and dropdown with user info
+        const userEmail = sessionStorage.getItem('userEmail') || 'user@example.com';
+        const userFullName = sessionStorage.getItem('userFullName') || 'User';
+
+        document.getElementById('navbarFullName').textContent = userFullName;
+        document.getElementById('dropdownFullName').textContent = userFullName;
+        document.getElementById('dropdownEmail').textContent = userEmail;
+
+        // Logout function
+        function logout() {
+            sessionStorage.clear();
+            window.location.href = 'login.html';
+        }
+
+        // Event listeners
+        document.getElementById('logoutBtn').addEventListener('click', logout);
+
+        checkAuth();
+    </script>
+</body>
+</html>

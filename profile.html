@@ -22,9 +22,27 @@
             </button>
             <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
                 <ul class="navbar-nav">
-                    <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
-                    <li class="nav-item"><a class="nav-link" href="register.html">Register</a></li>
-                    <li class="nav-item"><a class="nav-link" href="login.html">Login</a></li>
+                    <li class="nav-item"><a class="nav-link" href="user_Dashboard.html">Dashboard</a></li>
+                    <li class="nav-item"><a class="nav-link" href="bookmark.html">My Books</a></li>
+                    <!-- Profile Dropdown -->
+                 <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="profileDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <img src="assets/img/profile-placeholder.png" alt="Profile" class="rounded-circle me-2" style="width:32px;height:32px;object-fit:cover;">
+                            <span id="navbarFullName">User</span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown" style="min-width:220px;">
+                            <li class="px-3 py-2 text-center">
+                                <img src="assets/img/profile-placeholder.png" alt="Profile" class="rounded-circle mb-2" style="width:56px;height:56px;object-fit:cover;">
+                                <div class="fw-bold" id="dropdownFullName">User</div>
+                                <div class="bt-muted small" id="dropdownEmail">user@example.com</div>
+                            </li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <a class="dropdown-item btn btn-bt w-100 text-center" href="profile.html">Go to Profile</a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="nav-item"><a class="nav-link" href="#" id="logoutBtn">Logout</a></li>
                 </ul>
             </div>
         </div>
@@ -38,8 +56,8 @@
                 </div>
                 <h4 class="bt-title mb-3">John Doe</h4>
                 <div class="d-grid gap-2 mb-2">
-                    <a href="viewprofile.html" class="btn btn-bt">View Profile</a>
-                    <a href="#" class="btn btn-bt">Bookmarks</a>
+                    <a href="view_Profile.html" class="btn btn-bt">View Profile</a>
+                    <a href="bookmark.html" class="btn btn-bt">Bookmarks</a>
                     <a href="#" class="btn btn-bt">Change Password</a>
                     <a href="login.html" class="btn btn-outline-danger">Logout</a>
                 </div>
@@ -58,5 +76,42 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q"
         crossorigin="anonymous"></script>
+
+    <script>
+        // Check if user is logged in
+        function checkAuth() {
+            const isLoggedIn = sessionStorage.getItem('isLoggedIn');
+            const userRole = sessionStorage.getItem('userRole');
+            
+            if (!isLoggedIn || userRole !== 'user') {
+                window.location.href = 'login.html';
+                return;
+            }
+            
+            // Display user info
+            const userEmail = sessionStorage.getItem('userEmail');
+            const userName = userEmail ? userEmail.split('@')[0] : 'User';
+            document.getElementById('userName').textContent = userName;
+        }
+
+        // Fill navbar and dropdown with user info
+        const userEmail = sessionStorage.getItem('userEmail') || 'user@example.com';
+        const userFullName = sessionStorage.getItem('userFullName') || 'User';
+
+        document.getElementById('navbarFullName').textContent = userFullName;
+        document.getElementById('dropdownFullName').textContent = userFullName;
+        document.getElementById('dropdownEmail').textContent = userEmail;
+
+        // Logout function
+        function logout() {
+            sessionStorage.clear();
+            window.location.href = 'login.html';
+        }
+
+        // Event listeners
+        document.getElementById('logoutBtn').addEventListener('click', logout);
+
+        checkAuth();
+    </script>
 </body>
 </html>

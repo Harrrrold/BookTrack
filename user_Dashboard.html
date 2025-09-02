@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -8,6 +7,7 @@
     <title>BookTrack · User Dashboard</title>
 </head>
 <body class="bt-theme d-flex flex-column min-vh-100">
+
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
         <div class="container">
@@ -23,13 +23,29 @@
                 <ul class="navbar-nav">
                     <li class="nav-item"><a class="nav-link" href="user_Dashboard.html">Dashboard</a></li>
                     <li class="nav-item"><a class="nav-link" href="bookmark.html">My Books</a></li>
-                    <li class="nav-item"><a class="nav-link" href="profile.html">Profile</a></li>
+                    <!-- Profile Dropdown -->
+                 <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="profileDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <img src="assets/img/profile-placeholder.png" alt="Profile" class="rounded-circle me-2" style="width:32px;height:32px;object-fit:cover;">
+                            <span id="navbarFullName">User</span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown" style="min-width:220px;">
+                            <li class="px-3 py-2 text-center">
+                                <img src="assets/img/profile-placeholder.png" alt="Profile" class="rounded-circle mb-2" style="width:56px;height:56px;object-fit:cover;">
+                                <div class="fw-bold" id="dropdownFullName">User</div>
+                                <div class="bt-muted small" id="dropdownEmail">user@example.com</div>
+                            </li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <a class="dropdown-item btn btn-bt w-100 text-center" href="profile.html">Go to Profile</a>
+                            </li>
+                        </ul>
+                    </li>
                     <li class="nav-item"><a class="nav-link" href="#" id="logoutBtn">Logout</a></li>
                 </ul>
             </div>
         </div>
     </nav>
-
     <main class="flex-grow-1">
         <div class="container py-4">
             <!-- Welcome Section -->
@@ -135,6 +151,14 @@
             const userName = userEmail ? userEmail.split('@')[0] : 'User';
             document.getElementById('userName').textContent = userName;
         }
+
+        // Fill navbar and dropdown with user info
+        const userEmail = sessionStorage.getItem('userEmail') || 'user@example.com';
+        const userFullName = sessionStorage.getItem('userFullName') || 'User';
+
+        document.getElementById('navbarFullName').textContent = userFullName;
+        document.getElementById('dropdownFullName').textContent = userFullName;
+        document.getElementById('dropdownEmail').textContent = userEmail;
 
         // Logout function
         function logout() {
