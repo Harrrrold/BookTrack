@@ -1,0 +1,192 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Books · BookTrack</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
+    <link href="assets/css/styles.css" rel="stylesheet">
+</head>
+<body class="bt-theme d-flex flex-column min-vh-100">
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
+        <div class="container">
+            <a class="bt-brand navbar-brand" href="index.html">
+                <span class="bt-brand-mark">B</span>
+                <span>BookTrack</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item"><a class="nav-link" href="user_Dashboard.html">Dashboard</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="my_Book.html">My Books</a></li>
+                    <!-- Profile Dropdown -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="profileDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <img src="assets/img/profile-placeholder.png" alt="Profile" class="rounded-circle me-2" style="width:32px;height:32px;object-fit:cover;">
+                            <span id="navbarFullName">User</span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown" style="min-width:220px;">
+                            <li class="px-3 py-2 text-center">
+                                <img src="assets/img/profile-placeholder.png" alt="Profile" class="rounded-circle mb-2" style="width:56px;height:56px;object-fit:cover;">
+                                <div class="fw-bold" id="dropdownFullName">User</div>
+                                <div class="bt-muted small" id="dropdownEmail">user@example.com</div>
+                            </li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <a class="dropdown-item btn btn-bt w-100 text-center" href="profile.html">Go to Profile</a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="nav-item"><a class="nav-link" href="#" id="logoutBtn">Logout</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <main class="flex-grow-1 py-4">
+        <div class="container" style="max-width:900px;">
+            <div class="bt-card p-4 mb-4">
+                <h2 class="bt-title mb-3">My Books</h2>
+                <form class="mb-3">
+                    <div class="input-group">
+                        <input type="text" class="form-control bt-input" placeholder="Search books..." id="searchBooks">
+                        <button class="btn btn-bt" type="submit">Search</button>
+                    </div>
+                </form>
+                <ul class="nav nav-tabs mb-3" id="bookTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="all-books-tab" data-bs-toggle="tab" data-bs-target="#all-books" type="button" role="tab" aria-controls="all-books" aria-selected="true">All Books</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="reserved-books-tab" data-bs-toggle="tab" data-bs-target="#reserved-books" type="button" role="tab" aria-controls="reserved-books" aria-selected="false">Reserved Books</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="borrowed-books-tab" data-bs-toggle="tab" data-bs-target="#borrowed-books" type="button" role="tab" aria-controls="borrowed-books" aria-selected="false">Borrowed Books</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="favorites-books-tab" data-bs-toggle="tab" data-bs-target="#favorites-books" type="button" role="tab" aria-controls="favorites-books" aria-selected="false">Bookmarked/Favorites</button>
+                    </li>
+                </ul>
+                <div class="tab-content" id="bookTabsContent">
+                    <!-- All Books Tab -->
+                    <div class="tab-pane fade show active" id="all-books" role="tabpanel" aria-labelledby="all-books-tab">
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <div>
+                                    <strong>The Great Gatsby</strong><br>
+                                    <span class="bt-muted">by F. Scott Fitzgerald</span>
+                                </div>
+                                <button class="btn btn-sm btn-outline-primary">Bookmark</button>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <div>
+                                    <strong>To Kill a Mockingbird</strong><br>
+                                    <span class="bt-muted">by Harper Lee</span>
+                                </div>
+                                <button class="btn btn-sm btn-outline-primary">Bookmark</button>
+                            </li>
+                        </ul>
+                    </div>
+                    <!-- Reserved Books Tab -->
+                    <div class="tab-pane fade" id="reserved-books" role="tabpanel" aria-labelledby="reserved-books-tab">
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <div>
+                                    <strong>1984</strong><br>
+                                    <span class="bt-muted">by George Orwell</span>
+                                </div>
+                                <span class="badge bg-warning text-dark">Reserved</span>
+                            </li>
+                        </ul>
+                    </div>
+                    <!-- Borrowed Books Tab -->
+                    <div class="tab-pane fade" id="borrowed-books" role="tabpanel" aria-labelledby="borrowed-books-tab">
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <div>
+                                    <strong>Pride and Prejudice</strong><br>
+                                    <span class="bt-muted">by Jane Austen</span>
+                                </div>
+                                <span class="badge bg-success">Borrowed</span>
+                            </li>
+                        </ul>
+                    </div>
+                    <!-- Favorites/Bookmarked Tab -->
+                    <div class="tab-pane fade" id="favorites-books" role="tabpanel" aria-labelledby="favorites-books-tab">
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <div>
+                                    <strong>The Great Gatsby</strong><br>
+                                    <span class="bt-muted">by F. Scott Fitzgerald</span>
+                                </div>
+                                <button class="btn btn-sm btn-outline-danger">Remove</button>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="mt-auto py-4 border-top text-center bt-muted">
+        <div class="container">
+            <p class="mb-1">&copy; 2025 BookTrack. All rights reserved.</p>
+            <small>Made with ❤️ using Bootstrap 5</small>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q"
+        crossorigin="anonymous"></script>
+    
+    <script>
+        // Check if user is logged in
+        function checkAuth() {
+            const isLoggedIn = sessionStorage.getItem('isLoggedIn');
+            const userRole = sessionStorage.getItem('userRole');
+            
+            if (!isLoggedIn || userRole !== 'user') {
+                window.location.href = 'login.html';
+                return;
+            }
+            
+            // Display user info
+            const userEmail = sessionStorage.getItem('userEmail');
+            const userName = userEmail ? userEmail.split('@')[0] : 'User';
+            document.getElementById('userName').textContent = userName;
+        }
+        // Fill navbar and dropdown with user info
+        const userEmail = sessionStorage.getItem('userEmail') || 'user@example.com';
+        const userFullName = sessionStorage.getItem('userFullName') || 'User';
+
+        document.getElementById('navbarFullName').textContent = userFullName;
+        document.getElementById('dropdownFullName').textContent = userFullName;
+        document.getElementById('dropdownEmail').textContent = userEmail;
+
+        // Logout function
+        document.getElementById('logoutBtn').addEventListener('click', function() {
+            sessionStorage.clear();
+            window.location.href = 'login.html';
+        });
+
+        // Activate tab based on hash in URL
+        document.addEventListener("DOMContentLoaded", function () {
+            const hash = window.location.hash;
+            if (hash) {
+                const tabTrigger = document.querySelector(`button[data-bs-target="${hash}"]`);
+                if (tabTrigger) {
+                    const tab = new bootstrap.Tab(tabTrigger);
+                    tab.show();
+                }
+            }
+        });
+
+        checkAuth();
+    </script>
+</body>
+</html>
