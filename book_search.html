@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Search · BookTrack</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
+    <link href="assets/css/styles.css" rel="stylesheet">
+</head>
+<body class="bt-theme d-flex flex-column min-vh-100">
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
+        <div class="container">
+            <a class="bt-brand navbar-brand" href="index.html">
+                <span class="bt-brand-mark">B</span>
+                <span>BookTrack</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item"><a class="nav-link" href="user_Dashboard.html">Dashboard</a></li>
+                    <li class="nav-item"><a class="nav-link" href="book_search.html">Search Books</a></li>
+                    <li class="nav-item"><a class="nav-link" href="my_Book.html">My Books</a></li>
+                    <li class="nav-item"><a class="nav-link" href="notifications.html">Notifications</a></li>
+                    <!-- Profile Dropdown -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="profileDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <img src="assets/img/profile-placeholder.png" alt="Profile" class="rounded-circle me-2" style="width:32px;height:32px;object-fit:cover;">
+                            <span id="navbarFullName">User</span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown" style="min-width:220px;">
+                            <li class="px-3 py-2 text-center">
+                                <img src="assets/img/profile-placeholder.png" alt="Profile" class="rounded-circle mb-2" style="width:56px;height:56px;object-fit:cover;">
+                                <div class="fw-bold" id="dropdownFullName">User</div>
+                                <div class="bt-muted small" id="dropdownEmail">user@example.com</div>
+                            </li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <a class="dropdown-item btn btn-bt w-100 text-center" href="profile.html">Go to Profile</a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="nav-item"><a class="nav-link" href="#" id="logoutBtn">Logout</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <main class="flex-grow-1 py-4">
+        <div class="container">
+            <!-- Search Header -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="bt-card p-4">
+                        <h1 class="h3 bt-title mb-3">Search Books</h1>
+                        <p class="bt-subtitle mb-0">Find your next great read from our extensive collection</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Search Form -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="bt-card p-4">
+                        <form id="searchForm">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label for="searchQuery" class="form-label">Search Books</label>
+                                    <input type="text" class="form-control bt-input" id="searchQuery" 
+                                           placeholder="Enter title, author, ISBN, or keywords...">
+                                </div>
+                                <div class="col-md-3">
+                                    <label for="categoryFilter" class="form-label">Category</label>
+                                    <select class="form-select bt-input" id="categoryFilter">
+                                        <option value="">All Categories</option>
+                                        <option value="fiction">Fiction</option>
+                                        <option value="non-fiction">Non-Fiction</option>
+                                        <option value="science">Science</option>
+                                        <option value="history">History</option>
+                                        <option value="biography">Biography</option>
+                                        <option value="technology">Technology</option>
+                                        <option value="philosophy">Philosophy</option>
+                                        <option value="art">Art & Literature</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-3">
+                                    <label for="availabilityFilter" class="form-label">Availability</label>
+                                    <select class="form-select bt-input" id="availabilityFilter">
+                                        <option value="">All Books</option>
+                                        <option value="available">Available</option>
+                                        <option value="borrowed">Borrowed</option>
+                                        <option value="reserved">Reserved</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row mt-3">
+                                <div class="col-12">
+                                    <button type="submit" class="btn btn-bt me-2">
+                                        <i class="bi bi-search"></i> Search
+                                    </button>
+                                    <button type="button" class="btn btn-outline-secondary" id="clearFilters">
+                                        Clear Filters
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Search Results -->
+            <div class="row" id="searchResults">
+                <!-- Results will be populated here -->
+            </div>
+
+            <!-- No Results Message -->
+            <div class="row d-none" id="noResults">
+                <div class="col-12">
+                    <div class="bt-card p-5 text-center">
+                        <div class="h4 bt-muted mb-3">📚</div>
+                        <h3 class="h5 bt-title mb-2">No books found</h3>
+                        <p class="bt-subtitle mb-0">Try adjusting your search criteria or browse our categories</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Loading Spinner -->
+            <div class="row d-none" id="loadingSpinner">
+                <div class="col-12 text-center">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <p class="mt-2 bt-muted">Searching for books...</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="mt-auto py-4 border-top text-center bt-muted">
+        <div class="container">
+            <p class="mb-1">&copy; 2025 BookTrack. All rights reserved.</p>
+            <small>Made with ❤️ using Bootstrap 5</small>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q"
+        crossorigin="anonymous"></script>
+
+    <script>
+        // Sample book data (in a real app, this would come from an API)
+        const sampleBooks = [
+            {
+                id: 1,
+                title: "The Great Gatsby",
+                author: "F. Scott Fitzgerald",
+                isbn: "978-0743273565",
+                category: "Fiction",
+                availability: "available",
+                cover: "assets/img/Background.jpg",
+                description: "A story of the fabulously wealthy Jay Gatsby and his love for the beautiful Daisy Buchanan.",
+                publishYear: 1925,
+                pages: 180,
+                language: "English"
+            },
+            {
+                id: 2,
+                title: "To Kill a Mockingbird",
+                author: "Harper Lee",
+                isbn: "978-0446310789",
+                category: "Fiction",
+                availability: "borrowed",
+                cover: "assets/img/Background.jpg",
+                description: "The story of young Scout Finch and her father Atticus in a racially divided Alabama town.",
+                publishYear: 1960,
+                pages: 281,
+                language: "English"
+            },
+            {
+                id: 3,
+                title: "1984",
+                author: "George Orwell",
+                isbn: "978-0451524935",
+                category: "Fiction",
+                availability: "reserved",
+                cover: "assets/img/Background.jpg",
+                description: "A dystopian novel about totalitarianism and surveillance society.",
+                publishYear: 1949,
+                pages: 328,
+                language: "English"
+            },
+            {
+                id: 4,
+                title: "The Art of War",
+                author: "Sun Tzu",
+                isbn: "978-0140439199",
+                category: "Philosophy",
+                availability: "available",
+                cover: "assets/img/Background.jpg",
+                description: "Ancient Chinese text on military strategy and tactics.",
+                publishYear: -500,
+                pages: 273,
+                language: "Chinese (Translated)"
+            },
+            {
+                id: 5,
+                title: "Sapiens: A Brief History of Humankind",
+                author: "Yuval Noah Harari",
+                isbn: "978-0062316097",
+                category: "Non-Fiction",
+                availability: "available",
+                cover: "assets/img/Background.jpg",
+                description: "A groundbreaking narrative of humanity's creation and evolution.",
+                publishYear: 2011,
+                pages: 443,
+                language: "English"
+            }
+        ];
+
+        // Check if user is logged in
+        function checkAuth() {
+            const isLoggedIn = sessionStorage.getItem('isLoggedIn');
+            const userRole = sessionStorage.getItem('userRole');
+            
+            if (!isLoggedIn || userRole !== 'user') {
+                window.location.href = 'login.html';
+                return;
+            }
+            
+            // Display user info
+            const userEmail = sessionStorage.getItem('userEmail');
+            const userName = userEmail ? userEmail.split('@')[0] : 'User';
+            document.getElementById('navbarFullName').textContent = userName;
+        }
+
+        // Fill navbar and dropdown with user info
+        const userEmail = sessionStorage.getItem('userEmail') || 'user@example.com';
+        const userFullName = sessionStorage.getItem('userFullName') || 'User';
+
+        document.getElementById('navbarFullName').textContent = userFullName;
+        document.getElementById('dropdownFullName').textContent = userFullName;
+        document.getElementById('dropdownEmail').textContent = userEmail;
+
+        // Search functionality
+        function performSearch() {
+            const query = document.getElementById('searchQuery').value.toLowerCase();
+            const category = document.getElementById('categoryFilter').value;
+            const availability = document.getElementById('availabilityFilter').value;
+
+            // Show loading spinner
+            document.getElementById('loadingSpinner').classList.remove('d-none');
+            document.getElementById('searchResults').innerHTML = '';
+            document.getElementById('noResults').classList.add('d-none');
+
+            // Simulate API delay
+            setTimeout(() => {
+                const filteredBooks = sampleBooks.filter(book => {
+                    const matchesQuery = !query || 
+                        book.title.toLowerCase().includes(query) ||
+                        book.author.toLowerCase().includes(query) ||
+                        book.isbn.includes(query) ||
+                        book.description.toLowerCase().includes(query);
+                    
+                    const matchesCategory = !category || book.category === category;
+                    const matchesAvailability = !availability || book.availability === availability;
+
+                    return matchesQuery && matchesCategory && matchesAvailability;
+                });
+
+                displayResults(filteredBooks);
+                document.getElementById('loadingSpinner').classList.add('d-none');
+            }, 800);
+        }
+
+        function displayResults(books) {
+            const resultsContainer = document.getElementById('searchResults');
+            const noResults = document.getElementById('noResults');
+
+            if (books.length === 0) {
+                noResults.classList.remove('d-none');
+                return;
+            }
+
+            noResults.classList.add('d-none');
+            
+            const resultsHTML = books.map(book => `
+                <div class="col-lg-6 col-xl-4 mb-4">
+                    <div class="bt-card h-100">
+                        <div class="p-4">
+                            <div class="d-flex mb-3">
+                                <div class="book-cover-small me-3">
+                                    <img src="${book.cover}" alt="${book.title}" class="img-fluid">
+                                </div>
+                                <div class="flex-grow-1">
+                                    <h5 class="bt-title mb-1">${book.title}</h5>
+                                    <p class="bt-muted mb-2">by ${book.author}</p>
+                                    <div class="d-flex align-items-center gap-2 mb-2">
+                                        <span class="badge bg-secondary">${book.category}</span>
+                                        <span class="badge ${getAvailabilityBadgeClass(book.availability)}">
+                                            ${getAvailabilityText(book.availability)}
+                                        </span>
+                                    </div>
+                                    <p class="small text-muted mb-0">${book.description.substring(0, 100)}...</p>
+                                </div>
+                            </div>
+                            <div class="d-flex gap-2">
+                                <a href="book_detail.html?id=${book.id}" class="btn btn-bt btn-sm flex-fill">
+                                    View Details
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+
+            resultsContainer.innerHTML = resultsHTML;
+        }
+
+        function getAvailabilityBadgeClass(availability) {
+            switch(availability) {
+                case 'available': return 'bg-success';
+                case 'borrowed': return 'bg-warning';
+                case 'reserved': return 'bg-info';
+                default: return 'bg-secondary';
+            }
+        }
+
+        function getAvailabilityText(availability) {
+            switch(availability) {
+                case 'available': return 'Available';
+                case 'borrowed': return 'Borrowed';
+                case 'reserved': return 'Reserved';
+                default: return 'Unknown';
+            }
+        }
+
+        function toggleBookmark(bookId) {
+            // Toggle bookmark functionality
+            alert(`Bookmark toggled for book ID: ${bookId}`);
+        }
+
+        function clearFilters() {
+            document.getElementById('searchForm').reset();
+            document.getElementById('searchResults').innerHTML = '';
+            document.getElementById('noResults').classList.add('d-none');
+        }
+
+        // Logout function
+        function logout() {
+            sessionStorage.clear();
+            window.location.href = 'login.html';
+        }
+
+        // Event listeners
+        document.getElementById('searchForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            performSearch();
+        });
+
+        document.getElementById('clearFilters').addEventListener('click', clearFilters);
+        document.getElementById('logoutBtn').addEventListener('click', logout);
+
+        // Initialize page
+        checkAuth();
+        
+        // Perform initial search to show all books
+        performSearch();
+    </script>
+</body>
+</html>
