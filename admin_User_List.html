@@ -3,9 +3,798 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
+    <link href="assets/css/styles.css" rel="stylesheet">
+    <title>BookTrack · User Management</title>
 </head>
-<body>
+<body class="bt-theme d-flex flex-column min-vh-100">
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
+        <div class="container">
+            <a class="bt-brand navbar-brand" href="index.html">
+                <span class="bt-brand-mark">B</span>
+                <span>BookTrack</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item"><a class="nav-link" href="admin_Dasboard.html">Dashboard</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="admin_User_List.html">Users</a></li>
+                    <li class="nav-item"><a class="nav-link" href="admin_Book_List.html">Books</a></li>
+                    <li class="nav-item"><a class="nav-link" href="admin_Logs.html">Logs</a></li>
+                    <li class="nav-item"><a class="nav-link" href="admin_Profile.html">Profile</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#" id="logoutBtn">Logout</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <main class="flex-grow-1">
+        <div class="container py-4">
+            <!-- Breadcrumb -->
+            <nav aria-label="breadcrumb" class="mb-4">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="admin_Dasboard.html">Dashboard</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">User Management</li>
+                </ol>
+            </nav>
+
+            <!-- Header Section -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="bt-card p-4">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h1 class="h3 bt-title mb-2">User Management</h1>
+                                <p class="bt-subtitle mb-0">Manage all users in the BookTrack system</p>
+                            </div>
+                            <div class="d-flex gap-2">
+                                <button class="btn btn-bt" onclick="openAddUserModal()">
+                                    <i class="bi bi-person-plus me-2"></i>Add New User
+                                </button>
+                                <button class="btn btn-outline-info" onclick="exportUserData()">
+                                    <i class="bi bi-download me-2"></i>Export Users
+                                </button>
+                                <button class="btn btn-outline-secondary" onclick="refreshUsers()">
+                                    <i class="bi bi-arrow-clockwise me-2"></i>Refresh
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Search and Filter Section -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="bt-card p-4">
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <label for="searchInput" class="form-label">Search Users</label>
+                                <input type="text" class="form-control bt-input" id="searchInput" placeholder="Search by name, email, or ID...">
+                            </div>
+                            <div class="col-md-3">
+                                <label for="roleFilter" class="form-label">Role</label>
+                                <select class="form-select bt-input" id="roleFilter">
+                                    <option value="">All Roles</option>
+                                    <option value="admin">Admin</option>
+                                    <option value="user">User</option>
+                                    <option value="moderator">Moderator</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="statusFilter" class="form-label">Status</label>
+                                <select class="form-select bt-input" id="statusFilter">
+                                    <option value="">All Status</option>
+                                    <option value="active">Active</option>
+                                    <option value="inactive">Inactive</option>
+                                    <option value="suspended">Suspended</option>
+                                    <option value="pending">Pending</option>
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label">&nbsp;</label>
+                                <button class="btn btn-outline-secondary w-100" onclick="clearFilters()">Clear</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Users Table -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="bt-card p-4">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h3 class="h5 bt-title mb-0">User List</h3>
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="bt-muted">Showing <span id="showingCount">0</span> of <span id="totalCount">0</span> users</span>
+                            </div>
+                        </div>
+                        
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Avatar</th>
+                                        <th>Name & Email</th>
+                                        <th>Role</th>
+                                        <th>Status</th>
+                                        <th>Join Date</th>
+                                        <th>Last Active</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="usersTableBody">
+                                    <!-- Users will be loaded here -->
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Pagination -->
+                        <nav aria-label="User pagination" class="mt-4">
+                            <ul class="pagination justify-content-center" id="pagination">
+                                <!-- Pagination will be generated here -->
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="mt-auto py-4 border-top text-center bt-muted">
+        <div class="container">
+            <p class="mb-1">&copy; 2025 BookTrack. All rights reserved.</p>
+            <small>Made with ❤️ using Bootstrap 5</small>
+        </div>
+    </footer>
+
+    <!-- Add/Edit User Modal -->
+    <div class="modal fade" id="userModal" tabindex="-1" aria-labelledby="userModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="userModalLabel">Add New User</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="userForm">
+                    <div class="modal-body">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="userFirstName" class="form-label">First Name *</label>
+                                    <input type="text" class="form-control bt-input" id="userFirstName" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="userLastName" class="form-label">Last Name *</label>
+                                    <input type="text" class="form-control bt-input" id="userLastName" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="userEmail" class="form-label">Email *</label>
+                                    <input type="email" class="form-control bt-input" id="userEmail" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="userRole" class="form-label">Role *</label>
+                                    <select class="form-select bt-input" id="userRole" required>
+                                        <option value="">Select Role</option>
+                                        <option value="user">User</option>
+                                        <option value="moderator">Moderator</option>
+                                        <option value="admin">Admin</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="userStatus" class="form-label">Status *</label>
+                                    <select class="form-select bt-input" id="userStatus" required>
+                                        <option value="active">Active</option>
+                                        <option value="inactive">Inactive</option>
+                                        <option value="suspended">Suspended</option>
+                                        <option value="pending">Pending</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="userPhone" class="form-label">Phone</label>
+                                    <input type="tel" class="form-control bt-input" id="userPhone">
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="mb-3">
+                                    <label for="userBio" class="form-label">Bio</label>
+                                    <textarea class="form-control bt-input" id="userBio" rows="3" placeholder="Brief description about the user..."></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-bt" id="saveUserBtn">Save User</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- View User Details Modal -->
+    <div class="modal fade" id="viewUserModal" tabindex="-1" aria-labelledby="viewUserModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="viewUserModalLabel">User Details</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row g-4">
+                        <div class="col-md-4 text-center">
+                            <div class="user-avatar-large mb-3" id="viewUserAvatar">
+                                <span class="bt-muted">👤</span>
+                            </div>
+                            <h4 id="viewUserName" class="mb-1">User Name</h4>
+                            <p id="viewUserEmail" class="bt-muted mb-0">user@example.com</p>
+                        </div>
+                        <div class="col-md-8">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <div class="book-meta">
+                                        <div class="fw-medium">Role</div>
+                                        <div id="viewUserRole" class="bt-muted">User</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="book-meta">
+                                        <div class="fw-medium">Status</div>
+                                        <div id="viewUserStatus" class="bt-muted">Active</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="book-meta">
+                                        <div class="fw-medium">Join Date</div>
+                                        <div id="viewUserJoinDate" class="bt-muted">2025-01-01</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="book-meta">
+                                        <div class="fw-medium">Last Active</div>
+                                        <div id="viewUserLastActive" class="bt-muted">2025-01-01</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="book-meta">
+                                        <div class="fw-medium">Phone</div>
+                                        <div id="viewUserPhone" class="bt-muted">-</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="book-meta">
+                                        <div class="fw-medium">Books Borrowed</div>
+                                        <div id="viewUserBooksBorrowed" class="bt-muted">0</div>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <div class="book-meta">
+                                        <div class="fw-medium">Bio</div>
+                                        <div id="viewUserBio" class="bt-muted">No bio available</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-bt" onclick="editUserFromView()">Edit User</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteModalLabel">Confirm Delete</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to delete user "<span id="deleteUserName"></span>"?</p>
+                    <p class="text-danger mb-0">This action cannot be undone and will remove all user data.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Delete User</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q"
+        crossorigin="anonymous"></script>
+    
+    <script>
+        // Global variables
+        let users = [];
+        let filteredUsers = [];
+        let currentPage = 1;
+        let usersPerPage = 10;
+        let editingUserId = null;
+        let viewingUserId = null;
+
+        // Check if admin is logged in
+        function checkAuth() {
+            const isLoggedIn = sessionStorage.getItem('isLoggedIn');
+            const userRole = sessionStorage.getItem('userRole');
+            
+            if (!isLoggedIn || userRole !== 'admin') {
+                window.location.href = 'login.html';
+                return;
+            }
+        }
+
+        // Logout function
+        function logout() {
+            sessionStorage.clear();
+            window.location.href = 'login.html';
+        }
+
+        // Initialize sample data
+        function initializeSampleData() {
+            const sampleUsers = [
+                {
+                    id: 1,
+                    firstName: "John",
+                    lastName: "Doe",
+                    email: "john.doe@example.com",
+                    role: "user",
+                    status: "active",
+                    phone: "+1-555-0123",
+                    bio: "Book enthusiast and avid reader",
+                    joinDate: "2024-01-15",
+                    lastActive: "2025-01-15",
+                    booksBorrowed: 3,
+                    avatar: null
+                },
+                {
+                    id: 2,
+                    firstName: "Jane",
+                    lastName: "Smith",
+                    email: "jane.smith@example.com",
+                    role: "moderator",
+                    status: "active",
+                    phone: "+1-555-0124",
+                    bio: "Library moderator with a passion for organizing books",
+                    joinDate: "2024-02-20",
+                    lastActive: "2025-01-14",
+                    booksBorrowed: 7,
+                    avatar: null
+                },
+                {
+                    id: 3,
+                    firstName: "Admin",
+                    lastName: "User",
+                    email: "admin@booktrack.com",
+                    role: "admin",
+                    status: "active",
+                    phone: "+1-555-0125",
+                    bio: "System administrator",
+                    joinDate: "2024-01-01",
+                    lastActive: "2025-01-15",
+                    booksBorrowed: 0,
+                    avatar: null
+                },
+                {
+                    id: 4,
+                    firstName: "Bob",
+                    lastName: "Johnson",
+                    email: "bob.johnson@example.com",
+                    role: "user",
+                    status: "inactive",
+                    phone: "+1-555-0126",
+                    bio: "Occasional reader",
+                    joinDate: "2024-03-10",
+                    lastActive: "2024-12-01",
+                    booksBorrowed: 1,
+                    avatar: null
+                },
+                {
+                    id: 5,
+                    firstName: "Alice",
+                    lastName: "Brown",
+                    email: "alice.brown@example.com",
+                    role: "user",
+                    status: "suspended",
+                    phone: "+1-555-0127",
+                    bio: "Suspended for overdue books",
+                    joinDate: "2024-04-05",
+                    lastActive: "2024-11-15",
+                    booksBorrowed: 0,
+                    avatar: null
+                }
+            ];
+
+            if (!localStorage.getItem('users')) {
+                localStorage.setItem('users', JSON.stringify(sampleUsers));
+            }
+        }
+
+        // Load users from localStorage
+        function loadUsers() {
+            users = JSON.parse(localStorage.getItem('users')) || [];
+            filteredUsers = [...users];
+            updateUsersTable();
+            updateCounts();
+        }
+
+        // Update users table
+        function updateUsersTable() {
+            const startIndex = (currentPage - 1) * usersPerPage;
+            const endIndex = startIndex + usersPerPage;
+            const pageUsers = filteredUsers.slice(startIndex, endIndex);
+
+            const tbody = document.getElementById('usersTableBody');
+            tbody.innerHTML = '';
+
+            pageUsers.forEach(user => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>
+                        <div class="user-avatar-small">
+                            ${user.avatar ? `<img src="${user.avatar}" alt="${user.firstName} ${user.lastName}">` : '<span class="bt-muted">👤</span>'}
+                        </div>
+                    </td>
+                    <td>
+                        <div class="fw-medium">${user.firstName} ${user.lastName}</div>
+                        <small class="bt-muted">${user.email}</small>
+                    </td>
+                    <td><span class="badge ${getRoleBadgeClass(user.role)}">${user.role}</span></td>
+                    <td>
+                        <span class="badge ${getStatusBadgeClass(user.status)}">${user.status}</span>
+                    </td>
+                    <td>${formatDate(user.joinDate)}</td>
+                    <td>${formatDate(user.lastActive)}</td>
+                    <td>
+                        <div class="btn-group btn-group-sm">
+                            <button class="btn btn-outline-primary" onclick="viewUser(${user.id})" title="View Details">
+                                <i class="bi bi-eye"></i>
+                            </button>
+                            <button class="btn btn-outline-info" onclick="editUser(${user.id})" title="Edit">
+                                <i class="bi bi-pencil"></i>
+                            </button>
+                            <button class="btn btn-outline-warning" onclick="toggleUserStatus(${user.id})" title="Toggle Status">
+                                <i class="bi bi-toggle-${user.status === 'active' ? 'on' : 'off'}"></i>
+                            </button>
+                            <button class="btn btn-outline-danger" onclick="deleteUser(${user.id})" title="Delete">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+
+            updatePagination();
+        }
+
+        // Get role badge class
+        function getRoleBadgeClass(role) {
+            switch (role) {
+                case 'admin': return 'bg-danger';
+                case 'moderator': return 'bg-warning';
+                case 'user': return 'bg-primary';
+                default: return 'bg-secondary';
+            }
+        }
+
+        // Get status badge class
+        function getStatusBadgeClass(status) {
+            switch (status) {
+                case 'active': return 'bg-success';
+                case 'inactive': return 'bg-secondary';
+                case 'suspended': return 'bg-danger';
+                case 'pending': return 'bg-warning';
+                default: return 'bg-secondary';
+            }
+        }
+
+        // Format date
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('en-US', { 
+                year: 'numeric', 
+                month: 'short', 
+                day: 'numeric' 
+            });
+        }
+
+        // Update pagination
+        function updatePagination() {
+            const totalPages = Math.ceil(filteredUsers.length / usersPerPage);
+            const pagination = document.getElementById('pagination');
+            pagination.innerHTML = '';
+
+            // Previous button
+            const prevLi = document.createElement('li');
+            prevLi.className = `page-item ${currentPage === 1 ? 'disabled' : ''}`;
+            prevLi.innerHTML = `<a class="page-link" href="#" onclick="changePage(${currentPage - 1})">Previous</a>`;
+            pagination.appendChild(prevLi);
+
+            // Page numbers
+            for (let i = 1; i <= totalPages; i++) {
+                const li = document.createElement('li');
+                li.className = `page-item ${i === currentPage ? 'active' : ''}`;
+                li.innerHTML = `<a class="page-link" href="#" onclick="changePage(${i})">${i}</a>`;
+                pagination.appendChild(li);
+            }
+
+            // Next button
+            const nextLi = document.createElement('li');
+            nextLi.className = `page-item ${currentPage === totalPages ? 'disabled' : ''}`;
+            nextLi.innerHTML = `<a class="page-link" href="#" onclick="changePage(${currentPage + 1})">Next</a>`;
+            pagination.appendChild(nextLi);
+        }
+
+        // Change page
+        function changePage(page) {
+            const totalPages = Math.ceil(filteredUsers.length / usersPerPage);
+            if (page >= 1 && page <= totalPages) {
+                currentPage = page;
+                updateUsersTable();
+            }
+        }
+
+        // Update counts
+        function updateCounts() {
+            document.getElementById('totalCount').textContent = users.length;
+            document.getElementById('showingCount').textContent = Math.min(filteredUsers.length, usersPerPage);
+        }
+
+        // Search and filter users
+        function searchAndFilterUsers() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const roleFilter = document.getElementById('roleFilter').value;
+            const statusFilter = document.getElementById('statusFilter').value;
+
+            filteredUsers = users.filter(user => {
+                const matchesSearch = !searchTerm || 
+                    user.firstName.toLowerCase().includes(searchTerm) ||
+                    user.lastName.toLowerCase().includes(searchTerm) ||
+                    user.email.toLowerCase().includes(searchTerm) ||
+                    user.id.toString().includes(searchTerm);
+                
+                const matchesRole = !roleFilter || user.role === roleFilter;
+                const matchesStatus = !statusFilter || user.status === statusFilter;
+
+                return matchesSearch && matchesRole && matchesStatus;
+            });
+
+            currentPage = 1;
+            updateUsersTable();
+            updateCounts();
+        }
+
+        // Clear filters
+        function clearFilters() {
+            document.getElementById('searchInput').value = '';
+            document.getElementById('roleFilter').value = '';
+            document.getElementById('statusFilter').value = '';
+            searchAndFilterUsers();
+        }
+
+        // Open add user modal
+        function openAddUserModal() {
+            editingUserId = null;
+            document.getElementById('userModalLabel').textContent = 'Add New User';
+            document.getElementById('userForm').reset();
+            document.getElementById('saveUserBtn').textContent = 'Save User';
+            
+            const modal = new bootstrap.Modal(document.getElementById('userModal'));
+            modal.show();
+        }
+
+        // View user details
+        function viewUser(userId) {
+            const user = users.find(u => u.id === userId);
+            if (!user) return;
+
+            viewingUserId = userId;
+            document.getElementById('viewUserName').textContent = `${user.firstName} ${user.lastName}`;
+            document.getElementById('viewUserEmail').textContent = user.email;
+            document.getElementById('viewUserRole').innerHTML = `<span class="badge ${getRoleBadgeClass(user.role)}">${user.role}</span>`;
+            document.getElementById('viewUserStatus').innerHTML = `<span class="badge ${getStatusBadgeClass(user.status)}">${user.status}</span>`;
+            document.getElementById('viewUserJoinDate').textContent = formatDate(user.joinDate);
+            document.getElementById('viewUserLastActive').textContent = formatDate(user.lastActive);
+            document.getElementById('viewUserPhone').textContent = user.phone || '-';
+            document.getElementById('viewUserBooksBorrowed').textContent = user.booksBorrowed || 0;
+            document.getElementById('viewUserBio').textContent = user.bio || 'No bio available';
+
+            // Set avatar
+            const avatarDiv = document.getElementById('viewUserAvatar');
+            if (user.avatar) {
+                avatarDiv.innerHTML = `<img src="${user.avatar}" alt="${user.firstName} ${user.lastName}" class="rounded-circle" style="width: 80px; height: 80px; object-fit: cover;">`;
+            } else {
+                avatarDiv.innerHTML = '<span class="bt-muted" style="font-size: 48px;">👤</span>';
+            }
+
+            const modal = new bootstrap.Modal(document.getElementById('viewUserModal'));
+            modal.show();
+        }
+
+        // Edit user from view modal
+        function editUserFromView() {
+            if (viewingUserId) {
+                editUser(viewingUserId);
+                const viewModal = bootstrap.Modal.getInstance(document.getElementById('viewUserModal'));
+                viewModal.hide();
+            }
+        }
+
+        // Edit user
+        function editUser(userId) {
+            const user = users.find(u => u.id === userId);
+            if (!user) return;
+
+            editingUserId = userId;
+            document.getElementById('userModalLabel').textContent = 'Edit User';
+            document.getElementById('saveUserBtn').textContent = 'Update User';
+
+            // Populate form
+            document.getElementById('userFirstName').value = user.firstName;
+            document.getElementById('userLastName').value = user.lastName;
+            document.getElementById('userEmail').value = user.email;
+            document.getElementById('userRole').value = user.role;
+            document.getElementById('userStatus').value = user.status;
+            document.getElementById('userPhone').value = user.phone || '';
+            document.getElementById('userBio').value = user.bio || '';
+
+            const modal = new bootstrap.Modal(document.getElementById('userModal'));
+            modal.show();
+        }
+
+        // Save user
+        function saveUser(event) {
+            event.preventDefault();
+
+            const userData = {
+                firstName: document.getElementById('userFirstName').value.trim(),
+                lastName: document.getElementById('userLastName').value.trim(),
+                email: document.getElementById('userEmail').value.trim(),
+                role: document.getElementById('userRole').value,
+                status: document.getElementById('userStatus').value,
+                phone: document.getElementById('userPhone').value.trim(),
+                bio: document.getElementById('userBio').value.trim(),
+                avatar: null // Handle avatar upload separately
+            };
+
+            if (editingUserId) {
+                // Update existing user
+                const index = users.findIndex(u => u.id === editingUserId);
+                if (index !== -1) {
+                    userData.id = editingUserId;
+                    userData.joinDate = users[index].joinDate;
+                    userData.lastActive = users[index].lastActive;
+                    userData.booksBorrowed = users[index].booksBorrowed;
+                    userData.avatar = users[index].avatar; // Preserve existing avatar
+                    users[index] = userData;
+                }
+            } else {
+                // Add new user
+                userData.id = Date.now(); // Simple ID generation
+                userData.joinDate = new Date().toISOString().split('T')[0];
+                userData.lastActive = new Date().toISOString().split('T')[0];
+                userData.booksBorrowed = 0;
+                users.push(userData);
+            }
+
+            localStorage.setItem('users', JSON.stringify(users));
+            
+            // Close modal and refresh
+            const modal = bootstrap.Modal.getInstance(document.getElementById('userModal'));
+            modal.hide();
+            
+            loadUsers();
+            showAlert('User saved successfully!', 'success');
+        }
+
+        // Toggle user status
+        function toggleUserStatus(userId) {
+            const user = users.find(u => u.id === userId);
+            if (user) {
+                user.status = user.status === 'active' ? 'inactive' : 'active';
+                user.lastActive = new Date().toISOString().split('T')[0];
+                localStorage.setItem('users', JSON.stringify(users));
+                loadUsers();
+                showAlert(`User "${user.firstName} ${user.lastName}" status updated to ${user.status}.`, 'info');
+            }
+        }
+
+        // Delete user
+        function deleteUser(userId) {
+            const user = users.find(u => u.id === userId);
+            if (user) {
+                document.getElementById('deleteUserName').textContent = `${user.firstName} ${user.lastName}`;
+                const deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
+                deleteModal.show();
+                
+                // Store user ID for deletion confirmation
+                document.getElementById('confirmDeleteBtn').onclick = () => {
+                    users = users.filter(u => u.id !== userId);
+                    localStorage.setItem('users', JSON.stringify(users));
+                    loadUsers();
+                    deleteModal.hide();
+                    showAlert(`User "${user.firstName} ${user.lastName}" has been deleted.`, 'success');
+                };
+            }
+        }
+
+        // Export user data
+        function exportUserData() {
+            const csvContent = "data:text/csv;charset=utf-8," + 
+                "ID,First Name,Last Name,Email,Role,Status,Phone,Join Date,Last Active,Books Borrowed,Bio\n" +
+                users.map(user => 
+                    `${user.id},"${user.firstName}","${user.lastName}","${user.email}","${user.role}","${user.status}","${user.phone || ''}","${user.joinDate}","${user.lastActive}",${user.booksBorrowed || 0},"${user.bio || ''}"`
+                ).join("\n");
+            
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "booktrack_users.csv");
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // Refresh users
+        function refreshUsers() {
+            loadUsers();
+            showAlert('User list refreshed!', 'info');
+        }
+
+        // Show alert
+        function showAlert(message, type) {
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
+            alertDiv.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+            alertDiv.innerHTML = `
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            document.body.appendChild(alertDiv);
+            
+            setTimeout(() => {
+                if (alertDiv.parentNode) {
+                    alertDiv.remove();
+                }
+            }, 5000);
+        }
+
+        // Event listeners
+        document.getElementById('searchInput').addEventListener('input', searchAndFilterUsers);
+        document.getElementById('roleFilter').addEventListener('change', searchAndFilterUsers);
+        document.getElementById('statusFilter').addEventListener('change', searchAndFilterUsers);
+        document.getElementById('userForm').addEventListener('submit', saveUser);
+        document.getElementById('logoutBtn').addEventListener('click', logout);
+
+        // Initialize
+        checkAuth();
+        initializeSampleData();
+        loadUsers();
+    </script>
 </body>
 </html>

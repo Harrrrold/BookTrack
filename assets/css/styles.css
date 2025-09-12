@@ -445,6 +445,103 @@ body.bt-theme {
     font-weight: 600;
 }
 
+/* User Management Styles */
+.user-avatar-small {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bt-input-bg);
+    border: 1px solid var(--bt-border);
+    border-radius: 50%;
+    overflow: hidden;
+}
+
+.user-avatar-small img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.user-avatar-large {
+    width: 80px;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bt-input-bg);
+    border: 2px solid var(--bt-border);
+    border-radius: 50%;
+    margin: 0 auto;
+    overflow: hidden;
+}
+
+.user-avatar-large img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* User status indicators */
+.badge.bg-primary {
+    background-color: var(--bt-accent) !important;
+}
+
+.badge.bg-warning {
+    background-color: #ffc107 !important;
+    color: #000 !important;
+}
+
+.badge.bg-danger {
+    background-color: var(--bt-error) !important;
+}
+
+.badge.bg-success {
+    background-color: var(--bt-success) !important;
+}
+
+/* User table improvements */
+.table th:first-child,
+.table td:first-child {
+    width: 60px;
+    text-align: center;
+}
+
+.table th:last-child,
+.table td:last-child {
+    width: 200px;
+    text-align: center;
+}
+
+/* User action buttons */
+.btn-group-sm .btn {
+    border-radius: 6px;
+    margin: 0 1px;
+}
+
+.btn-group-sm .btn:first-child {
+    margin-left: 0;
+}
+
+.btn-group-sm .btn:last-child {
+    margin-right: 0;
+}
+
+/* User modal improvements */
+.modal-body .row.g-4 {
+    margin: 0;
+}
+
+.modal-body .col-md-4 {
+    border-right: 1px solid var(--bt-border);
+    padding-right: 2rem;
+}
+
+.modal-body .col-md-8 {
+    padding-left: 2rem;
+}
+
 /* Responsive table improvements */
 @media (max-width: 768px) {
     .table-responsive {
@@ -464,6 +561,28 @@ body.bt-theme {
     .book-cover-large {
         width: 150px;
         height: 210px;
+    }
+    
+    .user-avatar-small {
+        width: 35px;
+        height: 35px;
+    }
+    
+    .user-avatar-large {
+        width: 60px;
+        height: 60px;
+    }
+    
+    .modal-body .col-md-4 {
+        border-right: none;
+        border-bottom: 1px solid var(--bt-border);
+        padding-right: 1rem;
+        padding-bottom: 1rem;
+        margin-bottom: 1rem;
+    }
+    
+    .modal-body .col-md-8 {
+        padding-left: 1rem;
     }
 }
 
