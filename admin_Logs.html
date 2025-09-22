@@ -3,9 +3,236 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
+    <link href="assets/css/styles.css" rel="stylesheet">
+    <title>BookTrack · Admin Logs</title>
 </head>
-<body>
+<body class="bt-theme d-flex flex-column min-vh-100">
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
+        <div class="container">
+            <a class="bt-brand navbar-brand" href="index.html">
+                <span class="bt-brand-mark">B</span>
+                <span>BookTrack</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item"><a class="nav-link" href="admin_Dasboard.html">Dashboard</a></li>
+                    <li class="nav-item"><a class="nav-link" href="admin_User_List.html">Users</a></li>
+                    <li class="nav-item"><a class="nav-link" href="admin_Book_List.html">Books</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="admin_Logs.html">Logs</a></li>
+                    <li class="nav-item"><a class="nav-link" href="admin_Profile.html">Profile</a></li>
+                    <li class="nav-item"><a class="nav-link" href="admin_Settings.html">Settings</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#" id="logoutBtn">Logout</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <main class="flex-grow-1">
+        <div class="container py-4">
+            <!-- Breadcrumb -->
+            <nav aria-label="breadcrumb" class="mb-4">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="admin_Dasboard.html">Dashboard</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">System Logs</li>
+                </ol>
+            </nav>
+
+            <!-- Header Section -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="bt-card p-4">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h1 class="h3 bt-title mb-2">System Logs</h1>
+                                <p class="bt-subtitle mb-0">Monitor system activity and events</p>
+                            </div>
+                            <div class="d-flex gap-2">
+                                <button class="btn btn-bt" onclick="refreshLogs()">
+                                    <i class="bi bi-arrow-clockwise me-2"></i>Refresh
+                                </button>
+                                <button class="btn btn-outline-secondary" onclick="exportLogs()">
+                                    <i class="bi bi-download me-2"></i>Export Logs
+                                </button>
+                                <button class="btn btn-outline-danger" onclick="clearLogs()">
+                                    <i class="bi bi-trash me-2"></i>Clear Logs
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Logs Content -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="bt-card p-4">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h3 class="h5 bt-title mb-0">Recent Activity</h3>
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="bt-muted">Showing <span id="logCount">0</span> log entries</span>
+                            </div>
+                        </div>
+                        
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Timestamp</th>
+                                        <th>Level</th>
+                                        <th>User</th>
+                                        <th>Action</th>
+                                        <th>Details</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="logsTableBody">
+                                    <!-- Logs will be loaded here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="mt-auto py-4 border-top text-center bt-muted">
+        <div class="container">
+            <p class="mb-1">&copy; 2025 BookTrack. All rights reserved.</p>
+            <small>Made with ❤️ using Bootstrap 5</small>
+        </div>
+    </footer>
+
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q"
+        crossorigin="anonymous"></script>
+    
+    <script>
+        // Check if admin is logged in
+        function checkAuth() {
+            const isLoggedIn = sessionStorage.getItem('isLoggedIn');
+            const userRole = sessionStorage.getItem('userRole');
+            
+            if (!isLoggedIn || userRole !== 'admin') {
+                window.location.href = 'login.html';
+                return;
+            }
+        }
+
+        // Logout function
+        function logout() {
+            sessionStorage.clear();
+            window.location.href = 'login.html';
+        }
+
+        // Load logs
+        function loadLogs() {
+            const logs = JSON.parse(localStorage.getItem('systemLogs')) || [];
+            const tbody = document.getElementById('logsTableBody');
+            tbody.innerHTML = '';
+
+            if (logs.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="5" class="text-center py-4">
+                            <span class="bt-muted">No log entries found</span>
+                        </td>
+                    </tr>
+                `;
+            } else {
+                logs.slice(-50).reverse().forEach(log => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${new Date(log.timestamp).toLocaleString()}</td>
+                        <td><span class="badge ${getLogLevelBadgeClass(log.level)}">${log.level}</span></td>
+                        <td>${log.user || 'System'}</td>
+                        <td>${log.action}</td>
+                        <td>${log.details}</td>
+                    `;
+                    tbody.appendChild(row);
+                });
+            }
+
+            document.getElementById('logCount').textContent = logs.length;
+        }
+
+        // Get log level badge class
+        function getLogLevelBadgeClass(level) {
+            switch (level.toLowerCase()) {
+                case 'error': return 'bg-danger';
+                case 'warning': return 'bg-warning';
+                case 'info': return 'bg-info';
+                case 'success': return 'bg-success';
+                default: return 'bg-secondary';
+            }
+        }
+
+        // Refresh logs
+        function refreshLogs() {
+            loadLogs();
+            showAlert('Logs refreshed!', 'info');
+        }
+
+        // Export logs
+        function exportLogs() {
+            const logs = JSON.parse(localStorage.getItem('systemLogs')) || [];
+            const csvContent = "data:text/csv;charset=utf-8," + 
+                "Timestamp,Level,User,Action,Details\n" +
+                logs.map(log => 
+                    `"${new Date(log.timestamp).toLocaleString()}","${log.level}","${log.user || 'System'}","${log.action}","${log.details}"`
+                ).join("\n");
+            
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "booktrack_logs.csv");
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // Clear logs
+        function clearLogs() {
+            if (confirm('Are you sure you want to clear all logs? This action cannot be undone.')) {
+                localStorage.removeItem('systemLogs');
+                loadLogs();
+                showAlert('Logs cleared successfully!', 'success');
+            }
+        }
+
+        // Show alert
+        function showAlert(message, type) {
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
+            alertDiv.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+            alertDiv.innerHTML = `
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            document.body.appendChild(alertDiv);
+            
+            setTimeout(() => {
+                if (alertDiv.parentNode) {
+                    alertDiv.remove();
+                }
+            }, 5000);
+        }
+
+        // Event listeners
+        document.getElementById('logoutBtn').addEventListener('click', logout);
+
+        // Initialize
+        checkAuth();
+        loadLogs();
+    </script>
 </body>
 </html>

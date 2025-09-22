@@ -3,9 +3,253 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
+    <link href="assets/css/styles.css" rel="stylesheet">
+    <title>BookTrack · Admin Settings</title>
 </head>
-<body>
+<body class="bt-theme d-flex flex-column min-vh-100">
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
+        <div class="container">
+            <a class="bt-brand navbar-brand" href="index.html">
+                <span class="bt-brand-mark">B</span>
+                <span>BookTrack</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item"><a class="nav-link" href="admin_Dasboard.html">Dashboard</a></li>
+                    <li class="nav-item"><a class="nav-link" href="admin_User_List.html">Users</a></li>
+                    <li class="nav-item"><a class="nav-link" href="admin_Book_List.html">Books</a></li>
+                    <li class="nav-item"><a class="nav-link" href="admin_Logs.html">Logs</a></li>
+                    <li class="nav-item"><a class="nav-link" href="admin_Profile.html">Profile</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="admin_Settings.html">Settings</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#" id="logoutBtn">Logout</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <main class="flex-grow-1">
+        <div class="container py-4">
+            <!-- Breadcrumb -->
+            <nav aria-label="breadcrumb" class="mb-4">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="admin_Dasboard.html">Dashboard</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">System Settings</li>
+                </ol>
+            </nav>
+
+            <!-- Header Section -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="bt-card p-4">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h1 class="h3 bt-title mb-2">System Settings</h1>
+                                <p class="bt-subtitle mb-0">Configure and manage BookTrack system settings</p>
+                            </div>
+                            <div class="d-flex gap-2">
+                                <button class="btn btn-bt" onclick="saveAllSettings()">
+                                    <i class="bi bi-check-circle me-2"></i>Save All Settings
+                                </button>
+                                <button class="btn btn-outline-secondary" onclick="resetToDefaults()">
+                                    <i class="bi bi-arrow-clockwise me-2"></i>Reset to Defaults
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Settings Content -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="bt-card p-4">
+                        <h4 class="bt-title mb-3">General Settings</h4>
+                        
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="maxBooksPerUser" class="form-label">Max Books Per User</label>
+                                <input type="number" class="form-control bt-input" id="maxBooksPerUser" value="5" min="1" max="20">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="borrowingPeriod" class="form-label">Default Borrowing Period (days)</label>
+                                <input type="number" class="form-control bt-input" id="borrowingPeriod" value="14" min="1" max="90">
+                            </div>
+                        </div>
+
+                        <div class="mt-4">
+                            <h5 class="bt-title mb-3">System Information</h5>
+                            <div class="row g-3">
+                                <div class="col-md-4">
+                                    <div class="text-center">
+                                        <div class="h4 mb-1 text-primary">1.0.0</div>
+                                        <small class="bt-muted">Version</small>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="text-center">
+                                        <div class="h4 mb-1 text-success">Online</div>
+                                        <small class="bt-muted">Database</small>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="text-center">
+                                        <div class="h4 mb-1 text-info">Active</div>
+                                        <small class="bt-muted">Status</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-4">
+                            <h5 class="bt-title mb-3">Backup & Restore</h5>
+                            <div class="d-flex gap-2">
+                                <button class="btn btn-bt" onclick="createBackup()">
+                                    <i class="bi bi-cloud-arrow-up me-2"></i>Create Backup
+                                </button>
+                                <button class="btn btn-outline-secondary" onclick="restoreFromBackup()">
+                                    <i class="bi bi-cloud-arrow-down me-2"></i>Restore Backup
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="mt-auto py-4 border-top text-center bt-muted">
+        <div class="container">
+            <p class="mb-1">&copy; 2025 BookTrack. All rights reserved.</p>
+            <small>Made with ❤️ using Bootstrap 5</small>
+        </div>
+    </footer>
+
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q"
+        crossorigin="anonymous"></script>
+    
+    <script>
+        // Check if admin is logged in
+        function checkAuth() {
+            const isLoggedIn = sessionStorage.getItem('isLoggedIn');
+            const userRole = sessionStorage.getItem('userRole');
+            
+            if (!isLoggedIn || userRole !== 'admin') {
+                window.location.href = 'login.html';
+                return;
+            }
+        }
+
+        // Logout function
+        function logout() {
+            sessionStorage.clear();
+            window.location.href = 'login.html';
+        }
+
+        // Save all settings
+        function saveAllSettings() {
+            const settings = {
+                maxBooksPerUser: parseInt(document.getElementById('maxBooksPerUser').value),
+                borrowingPeriod: parseInt(document.getElementById('borrowingPeriod').value)
+            };
+
+            localStorage.setItem('systemSettings', JSON.stringify(settings));
+            showAlert('Settings saved successfully!', 'success');
+        }
+
+        // Reset to defaults
+        function resetToDefaults() {
+            if (confirm('Are you sure you want to reset all settings to default values?')) {
+                document.getElementById('maxBooksPerUser').value = 5;
+                document.getElementById('borrowingPeriod').value = 14;
+                showAlert('Settings reset to defaults!', 'info');
+            }
+        }
+
+        // Create backup
+        function createBackup() {
+            const backup = {
+                timestamp: new Date().toISOString(),
+                users: JSON.parse(localStorage.getItem('users')) || [],
+                books: JSON.parse(localStorage.getItem('books')) || [],
+                adminProfile: JSON.parse(localStorage.getItem('adminProfile')) || {},
+                systemSettings: JSON.parse(localStorage.getItem('systemSettings')) || {}
+            };
+
+            const backupData = JSON.stringify(backup, null, 2);
+            const blob = new Blob([backupData], { type: 'application/json' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `booktrack_backup_${new Date().toISOString().split('T')[0]}.json`;
+            a.click();
+            window.URL.revokeObjectURL(url);
+            
+            showAlert('Backup created and downloaded successfully!', 'success');
+        }
+
+        // Restore from backup
+        function restoreFromBackup() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.json';
+            input.onchange = function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        try {
+                            const backup = JSON.parse(e.target.result);
+                            
+                            if (backup.users) localStorage.setItem('users', JSON.stringify(backup.users));
+                            if (backup.books) localStorage.setItem('books', JSON.stringify(backup.books));
+                            if (backup.adminProfile) localStorage.setItem('adminProfile', JSON.stringify(backup.adminProfile));
+                            if (backup.systemSettings) localStorage.setItem('systemSettings', JSON.stringify(backup.systemSettings));
+                            
+                            showAlert('Backup restored successfully!', 'success');
+                        } catch (error) {
+                            showAlert('Error restoring backup: Invalid file format', 'danger');
+                        }
+                    };
+                    reader.readAsText(file);
+                }
+            };
+            input.click();
+        }
+
+        // Show alert
+        function showAlert(message, type) {
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
+            alertDiv.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+            alertDiv.innerHTML = `
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            document.body.appendChild(alertDiv);
+            
+            setTimeout(() => {
+                if (alertDiv.parentNode) {
+                    alertDiv.remove();
+                }
+            }, 5000);
+        }
+
+        // Event listeners
+        document.getElementById('logoutBtn').addEventListener('click', logout);
+
+        // Initialize
+        checkAuth();
+    </script>
 </body>
 </html>

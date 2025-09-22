@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Profile · BookTrack</title>
+    <title>View Admin Profile · BookTrack</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
     <link href="assets/css/styles.css" rel="stylesheet">
 </head>
@@ -35,17 +35,18 @@
     </nav>
 
     <main class="flex-grow-1 d-flex align-items-center justify-content-center">
-        <div class="w-100" style="max-width:420px;">
+        <div class="w-100" style="max-width:500px;">
             <div class="bt-card p-4 p-md-5">
                 <div class="text-center mb-4">
-                    <img src="assets/img/profile-placeholder.png" alt="Admin Profile Picture" class="rounded-circle border" style="width: 96px; height: 96px; object-fit: cover;">
+                    <img src="assets/img/profile-placeholder.png" alt="Admin Profile Picture" class="rounded-circle border" style="width: 120px; height: 120px; object-fit: cover;">
                 </div>
                 <h4 class="bt-title text-center mb-3" id="adminFullName">Admin User</h4>
                 <div class="mb-3 text-center bt-muted">
                     <div><strong>Email:</strong> <span id="adminEmail">admin@booktrack.com</span></div>
-                    <div><strong>Role:</strong> <span class="badge bg-danger">Administrator</span></div>
+                    <div class="mt-2"><strong>Role:</strong> <span class="badge bg-danger">Administrator</span></div>
                 </div>
-                <div class="row g-2 mb-3">
+                
+                <div class="row g-3 mb-4">
                     <div class="col-6">
                         <div class="form-label mb-0"><strong>First Name</strong></div>
                         <div id="adminFirstName">Admin</div>
@@ -55,6 +56,14 @@
                         <div id="adminLastName">User</div>
                     </div>
                     <div class="col-6">
+                        <div class="form-label mb-0"><strong>Phone</strong></div>
+                        <div id="adminPhone">+1-555-0125</div>
+                    </div>
+                    <div class="col-6">
+                        <div class="form-label mb-0"><strong>Department</strong></div>
+                        <div id="adminDepartment">System Administration</div>
+                    </div>
+                    <div class="col-6">
                         <div class="form-label mb-0"><strong>Join Date</strong></div>
                         <div id="adminJoinDate">2024-01-01</div>
                     </div>
@@ -62,12 +71,30 @@
                         <div class="form-label mb-0"><strong>Last Active</strong></div>
                         <div id="adminLastActive">Just now</div>
                     </div>
+                    <div class="col-12">
+                        <div class="form-label mb-0"><strong>Bio</strong></div>
+                        <div id="adminBio">System administrator responsible for managing the BookTrack platform, user accounts, and system maintenance.</div>
+                    </div>
                 </div>
+
+                <!-- Admin Statistics -->
+                <div class="bt-card p-3 mb-4" style="background: var(--bt-bg);">
+                    <h6 class="bt-title mb-3">Administrative Statistics</h6>
+                    <div class="row g-3">
+                        <div class="col-6 text-center">
+                            <div class="h5 mb-1 text-primary" id="totalUsersManaged">0</div>
+                            <small class="bt-muted">Users Managed</small>
+                        </div>
+                        <div class="col-6 text-center">
+                            <div class="h5 mb-1 text-success" id="totalBooksManaged">0</div>
+                            <small class="bt-muted">Books Managed</small>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="d-grid gap-2">
-                    <a href="admin_View_Profile.html" class="btn btn-bt">View Full Profile</a>
                     <a href="admin_Edit_Profile.html" class="btn btn-bt">Edit Profile</a>
-                    <a href="admin_Settings.html" class="btn btn-outline-secondary">System Settings</a>
-                    <a href="admin_Dasboard.html" class="btn btn-outline-secondary">Back to Dashboard</a>
+                    <a href="admin_Profile.html" class="btn btn-outline-secondary">Back to Profile</a>
                 </div>
             </div>
         </div>
@@ -106,16 +133,34 @@
                 firstName: 'Admin',
                 lastName: 'User',
                 email: 'admin@booktrack.com',
+                phone: '+1-555-0125',
+                department: 'System Administration',
                 joinDate: '2024-01-01',
-                lastActive: new Date().toLocaleDateString()
+                lastActive: new Date().toLocaleDateString(),
+                bio: 'System administrator responsible for managing the BookTrack platform, user accounts, and system maintenance.'
             };
 
             document.getElementById('adminFullName').textContent = `${adminData.firstName} ${adminData.lastName}`;
             document.getElementById('adminEmail').textContent = adminData.email;
             document.getElementById('adminFirstName').textContent = adminData.firstName;
             document.getElementById('adminLastName').textContent = adminData.lastName;
+            document.getElementById('adminPhone').textContent = adminData.phone;
+            document.getElementById('adminDepartment').textContent = adminData.department;
             document.getElementById('adminJoinDate').textContent = adminData.joinDate;
             document.getElementById('adminLastActive').textContent = adminData.lastActive;
+            document.getElementById('adminBio').textContent = adminData.bio;
+
+            // Load admin statistics
+            loadAdminStatistics();
+        }
+
+        // Load admin statistics
+        function loadAdminStatistics() {
+            const users = JSON.parse(localStorage.getItem('users')) || [];
+            const books = JSON.parse(localStorage.getItem('books')) || [];
+            
+            document.getElementById('totalUsersManaged').textContent = users.length;
+            document.getElementById('totalBooksManaged').textContent = books.length;
         }
 
         // Logout function

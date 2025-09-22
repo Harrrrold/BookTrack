@@ -26,6 +26,7 @@
                     <li class="nav-item"><a class="nav-link" href="admin_Book_List.html">Books</a></li>
                     <li class="nav-item"><a class="nav-link" href="admin_Logs.html">Logs</a></li>
                     <li class="nav-item"><a class="nav-link" href="admin_Profile.html">Profile</a></li>
+                    <li class="nav-item"><a class="nav-link" href="admin_Settings.html">Settings</a></li>
                     <li class="nav-item"><a class="nav-link" href="#" id="logoutBtn">Logout</a></li>
                 </ul>
             </div>
@@ -54,28 +55,22 @@
 
             <!-- Stats Cards -->
             <div class="row mb-4">
-                <div class="col-md-3 mb-3">
+                <div class="col-md-4 mb-3">
                     <div class="bt-card p-4 text-center">
                         <div class="h2 mb-2 text-primary" id="activeUsers">0</div>
                         <div class="bt-muted">Active Users</div>
                     </div>
                 </div>
-                <div class="col-md-3 mb-3">
+                <div class="col-md-4 mb-3">
                     <div class="bt-card p-4 text-center">
                         <div class="h2 mb-2 text-success" id="totalBooks">0</div>
                         <div class="bt-muted">Total Books</div>
                     </div>
                 </div>
-                <div class="col-md-3 mb-3">
+                <div class="col-md-4 mb-3">
                     <div class="bt-card p-4 text-center">
                         <div class="h2 mb-2 text-warning" id="pendingRequests">0</div>
                         <div class="bt-muted">Pending Requests</div>
-                    </div>
-                </div>
-                <div class="col-md-3 mb-3">
-                    <div class="bt-card p-4 text-center">
-                        <div class="h2 mb-2 text-info" id="systemHealth">100%</div>
-                        <div class="bt-muted">System Health</div>
                     </div>
                 </div>
             </div>
@@ -188,7 +183,6 @@
                 activeUsers: 0,
                 totalBooks: 0,
                 pendingRequests: 0,
-                systemHealth: '100%',
                 systemActivity: []
             };
             
@@ -196,7 +190,6 @@
             document.getElementById('activeUsers').textContent = adminData.activeUsers;
             document.getElementById('totalBooks').textContent = adminData.totalBooks;
             document.getElementById('pendingRequests').textContent = adminData.pendingRequests;
-            document.getElementById('systemHealth').textContent = adminData.systemHealth;
             
             // Load system activity
             const activityContainer = document.getElementById('systemActivity');
