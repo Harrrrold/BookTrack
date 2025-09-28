@@ -563,6 +563,13 @@
 
             localStorage.setItem('books', JSON.stringify(books));
             
+            // Log the action
+            if (editingBookId) {
+                logActivity('info', 'Book Updated', `Updated book: ${bookData.title} by ${bookData.author}`);
+            } else {
+                logActivity('success', 'Book Created', `Created new book: ${bookData.title} by ${bookData.author}`);
+            }
+            
             // Close modal and refresh
             const modal = bootstrap.Modal.getInstance(document.getElementById('bookModal'));
             modal.hide();
@@ -577,6 +584,10 @@
             if (book) {
                 book.status = 'archived';
                 localStorage.setItem('books', JSON.stringify(books));
+                
+                // Log the action
+                logActivity('warning', 'Book Archived', `Archived book: ${book.title} by ${book.author}`);
+                
                 loadBooks();
                 showAlert(`"${book.title}" has been archived.`, 'info');
             }
@@ -594,6 +605,10 @@
                 document.getElementById('confirmDeleteBtn').onclick = () => {
                     books = books.filter(b => b.id !== bookId);
                     localStorage.setItem('books', JSON.stringify(books));
+                    
+                    // Log the action
+                    logActivity('error', 'Book Deleted', `Deleted book: ${book.title} by ${book.author}`);
+                    
                     loadBooks();
                     deleteModal.hide();
                     showAlert(`"${book.title}" has been deleted.`, 'success');
@@ -616,6 +631,20 @@
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
+        }
+
+        // Log system activity
+        function logActivity(level, action, details, user = null) {
+            const logs = JSON.parse(localStorage.getItem('systemLogs')) || [];
+            const logEntry = {
+                timestamp: new Date().toISOString(),
+                level: level,
+                user: user || sessionStorage.getItem('userEmail') || 'System',
+                action: action,
+                details: details
+            };
+            logs.push(logEntry);
+            localStorage.setItem('systemLogs', JSON.stringify(logs));
         }
 
         // Show alert

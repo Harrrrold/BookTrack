@@ -177,23 +177,27 @@
 
         // Load admin dashboard data
         function loadAdminData() {
-            // Simulate loading admin data
-            const adminData = JSON.parse(localStorage.getItem('adminData')) || {
-                totalUsers: 0,
-                activeUsers: 0,
-                totalBooks: 0,
-                pendingRequests: 0,
-                systemActivity: []
-            };
+            // Load real data from localStorage
+            const users = JSON.parse(localStorage.getItem('users')) || [];
+            const books = JSON.parse(localStorage.getItem('books')) || [];
+            const logs = JSON.parse(localStorage.getItem('systemLogs')) || [];
             
-            document.getElementById('totalUsers').textContent = adminData.totalUsers;
-            document.getElementById('activeUsers').textContent = adminData.activeUsers;
-            document.getElementById('totalBooks').textContent = adminData.totalBooks;
-            document.getElementById('pendingRequests').textContent = adminData.pendingRequests;
+            // Calculate statistics
+            const totalUsers = users.length;
+            const activeUsers = users.filter(user => user.status === 'active').length;
+            const totalBooks = books.length;
+            const pendingRequests = logs.filter(log => log.level === 'warning' || log.level === 'info').length;
             
-            // Load system activity
+            document.getElementById('totalUsers').textContent = totalUsers;
+            document.getElementById('activeUsers').textContent = activeUsers;
+            document.getElementById('totalBooks').textContent = totalBooks;
+            document.getElementById('pendingRequests').textContent = pendingRequests;
+            
+            // Load system activity from logs
             const activityContainer = document.getElementById('systemActivity');
-            if (adminData.systemActivity.length === 0) {
+            const recentLogs = logs.slice(-5).reverse(); // Get last 5 logs
+            
+            if (recentLogs.length === 0) {
                 activityContainer.innerHTML = `
                     <div class="d-flex align-items-center py-2 border-bottom">
                         <div class="flex-shrink-0">
@@ -211,31 +215,75 @@
                     </div>
                 `;
             } else {
-                // Display actual system activity here
-                activityContainer.innerHTML = adminData.systemActivity.map(activity => `
-                    <div class="d-flex align-items-center py-2 border-bottom">
-                        <div class="flex-shrink-0">
-                            <div class="bg-light rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
-                                <span class="bt-muted">${activity.icon}</span>
+                // Display actual system activity from logs
+                activityContainer.innerHTML = recentLogs.map(log => {
+                    const icon = log.level === 'error' ? '❌' : 
+                                log.level === 'warning' ? '⚠️' : 
+                                log.level === 'success' ? '✅' : 'ℹ️';
+                    return `
+                        <div class="d-flex align-items-center py-2 border-bottom">
+                            <div class="flex-shrink-0">
+                                <div class="bg-light rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                                    <span class="bt-muted">${icon}</span>
+                                </div>
+                            </div>
+                            <div class="flex-grow-1 ms-3">
+                                <div class="fw-medium">${log.action}</div>
+                                <small class="bt-muted">${log.details}</small>
+                            </div>
+                            <div class="text-end">
+                                <small class="bt-muted">${new Date(log.timestamp).toLocaleString()}</small>
                             </div>
                         </div>
-                        <div class="flex-grow-1 ms-3">
-                            <div class="fw-medium">${activity.title}</div>
-                            <small class="bt-muted">${activity.description}</small>
-                        </div>
-                        <div class="text-end">
-                            <small class="bt-muted">${activity.time}</small>
-                        </div>
-                    </div>
-                `).join('');
+                    `;
+                }).join('');
             }
         }
 
         // Event listeners
         document.getElementById('logoutBtn').addEventListener('click', logout);
 
+        // Initialize sample logs if none exist
+        function initializeSampleLogs() {
+            const existingLogs = JSON.parse(localStorage.getItem('systemLogs')) || [];
+            if (existingLogs.length === 0) {
+                const sampleLogs = [
+                    {
+                        timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(), // 2 hours ago
+                        level: 'success',
+                        user: 'admin@booktrack.com',
+                        action: 'System Initialized',
+                        details: 'BookTrack admin system started successfully'
+                    },
+                    {
+                        timestamp: new Date(Date.now() - 1 * 60 * 60 * 1000).toISOString(), // 1 hour ago
+                        level: 'info',
+                        user: 'admin@booktrack.com',
+                        action: 'User Created',
+                        details: 'Created new user: John Doe (john.doe@example.com)'
+                    },
+                    {
+                        timestamp: new Date(Date.now() - 30 * 60 * 1000).toISOString(), // 30 minutes ago
+                        level: 'info',
+                        user: 'admin@booktrack.com',
+                        action: 'Book Added',
+                        details: 'Added new book: The Great Gatsby by F. Scott Fitzgerald'
+                    },
+                    {
+                        timestamp: new Date(Date.now() - 15 * 60 * 1000).toISOString(), // 15 minutes ago
+                        level: 'warning',
+                        user: 'admin@booktrack.com',
+                        action: 'User Status Changed',
+                        details: 'Changed status of Alice Brown from active to suspended'
+                    }
+                ];
+                localStorage.setItem('systemLogs', JSON.stringify(sampleLogs));
+            }
+        }
+
         // Initialize admin dashboard
         checkAuth();
+        initializeSampleLogs();
         loadAdminData();
     </script>
 </body>

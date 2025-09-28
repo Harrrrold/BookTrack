@@ -705,6 +705,13 @@
 
             localStorage.setItem('users', JSON.stringify(users));
             
+            // Log the action
+            if (editingUserId) {
+                logActivity('info', 'User Updated', `Updated user: ${userData.firstName} ${userData.lastName} (${userData.email})`);
+            } else {
+                logActivity('success', 'User Created', `Created new user: ${userData.firstName} ${userData.lastName} (${userData.email})`);
+            }
+            
             // Close modal and refresh
             const modal = bootstrap.Modal.getInstance(document.getElementById('userModal'));
             modal.hide();
@@ -717,9 +724,14 @@
         function toggleUserStatus(userId) {
             const user = users.find(u => u.id === userId);
             if (user) {
+                const oldStatus = user.status;
                 user.status = user.status === 'active' ? 'inactive' : 'active';
                 user.lastActive = new Date().toISOString().split('T')[0];
                 localStorage.setItem('users', JSON.stringify(users));
+                
+                // Log the action
+                logActivity('warning', 'User Status Changed', `Changed status of ${user.firstName} ${user.lastName} from ${oldStatus} to ${user.status}`);
+                
                 loadUsers();
                 showAlert(`User "${user.firstName} ${user.lastName}" status updated to ${user.status}.`, 'info');
             }
@@ -737,6 +749,10 @@
                 document.getElementById('confirmDeleteBtn').onclick = () => {
                     users = users.filter(u => u.id !== userId);
                     localStorage.setItem('users', JSON.stringify(users));
+                    
+                    // Log the action
+                    logActivity('error', 'User Deleted', `Deleted user: ${user.firstName} ${user.lastName} (${user.email})`);
+                    
                     loadUsers();
                     deleteModal.hide();
                     showAlert(`User "${user.firstName} ${user.lastName}" has been deleted.`, 'success');
@@ -765,6 +781,20 @@
         function refreshUsers() {
             loadUsers();
             showAlert('User list refreshed!', 'info');
+        }
+
+        // Log system activity
+        function logActivity(level, action, details, user = null) {
+            const logs = JSON.parse(localStorage.getItem('systemLogs')) || [];
+            const logEntry = {
+                timestamp: new Date().toISOString(),
+                level: level,
+                user: user || sessionStorage.getItem('userEmail') || 'System',
+                action: action,
+                details: details
+            };
+            logs.push(logEntry);
+            localStorage.setItem('systemLogs', JSON.stringify(logs));
         }
 
         // Show alert

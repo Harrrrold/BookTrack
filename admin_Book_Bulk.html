@@ -620,6 +620,10 @@
             });
 
             localStorage.setItem('books', JSON.stringify(books));
+            
+            // Log the action
+            logActivity('success', 'Books Imported', `Imported ${importedCount} books from CSV file`);
+            
             showAlert(`Successfully imported ${importedCount} books!`, 'success');
             
             if (errors.length > 0) {
@@ -828,6 +832,10 @@
             });
 
             localStorage.setItem('books', JSON.stringify(books));
+            
+            // Log the action
+            logActivity('info', 'Bulk Action Applied', `Applied ${action} to ${updatedCount} books`);
+            
             showAlert(`Successfully updated ${updatedCount} books!`, 'success');
             
             clearSelection();
@@ -907,6 +915,20 @@
                 case 'archived': return 'bg-secondary';
                 default: return 'bg-secondary';
             }
+        }
+
+        // Log system activity
+        function logActivity(level, action, details, user = null) {
+            const logs = JSON.parse(localStorage.getItem('systemLogs')) || [];
+            const logEntry = {
+                timestamp: new Date().toISOString(),
+                level: level,
+                user: user || sessionStorage.getItem('userEmail') || 'System',
+                action: action,
+                details: details
+            };
+            logs.push(logEntry);
+            localStorage.setItem('systemLogs', JSON.stringify(logs));
         }
 
         // Show alert
