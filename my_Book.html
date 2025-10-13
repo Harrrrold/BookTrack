@@ -56,7 +56,7 @@
                 <div class="col-12">
                     <div class="bt-card p-4">
                         <h1 class="h3 bt-title mb-3">My Library</h1>
-                        <p class="bt-subtitle mb-0">View, add, edit, and manage your personal book collection</p>
+                        <p class="bt-subtitle mb-0">Manage your personal book collection</p>
                     </div>
                 </div>
             </div>
@@ -105,7 +105,7 @@
                     <h5 class="modal-title" id="addBookModalLabel">Add Book</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body">
+                                <div class="modal-body">
                     <div class="mb-3 text-center">
                         <img id="modalBookCoverPreview" src="assets/img/Background.jpg" alt="Book Cover" class="img-fluid rounded mb-2" style="max-height:120px;">
                         <input type="file" class="form-control" id="modalBookCover" accept="image/*">
@@ -140,6 +140,10 @@
                             <option value="reserved">Reserved</option>
                             <option value="borrowed">Borrowed</option>
                         </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="modalBookDescription" class="form-label">Description</label>
+                        <textarea class="form-control bt-input" id="modalBookDescription" rows="3" placeholder="Enter a short description"></textarea>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -293,42 +297,63 @@
         });
 
         // Handle Add/Edit Book Modal Form
-        document.getElementById('addBookFormModal').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const title = document.getElementById('modalBookTitle').value.trim();
-            const author = document.getElementById('modalBookAuthor').value.trim();
-            const category = document.getElementById('modalBookCategory').value;
-            const status = document.getElementById('modalBookStatus').value;
-            const cover = document.getElementById('modalBookCoverPreview').src;
-            if (!title || !author) return;
-            let books = getUserBooks();
-            const editIdx = this.dataset.editIdx;
-            if (editIdx !== '') {
-                books[editIdx] = { ...books[editIdx], title, author, category, status, cover };
-            } else {
-                books.push({ title, author, category, status, cover });
-            }
-            setUserBooks(books);
-            renderUserBooks(document.getElementById('searchBooks').value.trim().toLowerCase());
-            this.reset();
-            bootstrap.Modal.getInstance(document.getElementById('addBookModal')).hide();
-        });
-
-        // Edit book
-        function editBook(idx) {
-            const books = getUserBooks();
-            const book = books[idx];
-            document.getElementById('addBookModalLabel').textContent = 'Edit Book';
-            document.getElementById('modalBookSaveBtn').textContent = 'Save Changes';
-            document.getElementById('modalBookTitle').value = book.title;
-            document.getElementById('modalBookAuthor').value = book.author;
-            document.getElementById('modalBookCategory').value = book.category || '';
-            document.getElementById('modalBookStatus').value = book.status || 'available';
-            document.getElementById('modalBookCoverPreview').src = book.cover || 'assets/img/Background.jpg';
-            document.getElementById('addBookFormModal').dataset.editIdx = idx;
-            const modal = new bootstrap.Modal(document.getElementById('addBookModal'));
-            modal.show();
+    document.getElementById('addBookFormModal').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const title = document.getElementById('modalBookTitle').value.trim();
+        const author = document.getElementById('modalBookAuthor').value.trim();
+        const category = document.getElementById('modalBookCategory').value;
+        const status = document.getElementById('modalBookStatus').value;
+        const cover = document.getElementById('modalBookCoverPreview').src;
+        const description = document.getElementById('modalBookDescription').value.trim();
+        if (!title || !author) return;
+        let books = getUserBooks();
+        const editIdx = this.dataset.editIdx;
+        if (editIdx !== '') {
+            books[editIdx] = { ...books[editIdx], title, author, category, status, cover, description };
+        } else {
+            books.push({ title, author, category, status, cover, description });
         }
+        setUserBooks(books);
+        renderUserBooks(document.getElementById('searchBooks').value.trim().toLowerCase());
+        this.reset();
+        bootstrap.Modal.getInstance(document.getElementById('addBookModal')).hide();
+    });
+
+    // Edit book (fill description)
+    function editBook(idx) {
+        const books = getUserBooks();
+        const book = books[idx];
+        document.getElementById('addBookModalLabel').textContent = 'Edit Book';
+        document.getElementById('modalBookSaveBtn').textContent = 'Save Changes';
+        document.getElementById('modalBookTitle').value = book.title;
+        document.getElementById('modalBookAuthor').value = book.author;
+        document.getElementById('modalBookCategory').value = book.category || '';
+        document.getElementById('modalBookStatus').value = book.status || 'available';
+        document.getElementById('modalBookCoverPreview').src = book.cover || 'assets/img/Background.jpg';
+        document.getElementById('modalBookDescription').value = book.description || '';
+        document.getElementById('addBookFormModal').dataset.editIdx = idx;
+        const modal = new bootstrap.Modal(document.getElementById('addBookModal'));
+        modal.show();
+    }
+
+    // Show book info modal (add description)
+    function viewBook(idx) {
+        const books = getUserBooks();
+        const book = books[idx];
+        const modalBody = document.getElementById('bookInfoBody');
+        modalBody.innerHTML = `
+            <div class="text-center mb-3">
+                <img src="${book.cover || 'assets/img/Background.jpg'}" alt="Book Cover" class="img-fluid rounded" style="max-height:120px;">
+            </div>
+            <h5>${book.title}</h5>
+            <p><strong>Author:</strong> ${book.author}</p>
+            <p><strong>Category:</strong> ${book.category ? capitalize(book.category) : 'Uncategorized'}</p>
+            <p><strong>Status:</strong> ${capitalize(book.status || 'available')}</p>
+            <p><strong>Description:</strong> ${book.description ? book.description : '<em>No description</em>'}</p>
+        `;
+        const modal = new bootstrap.Modal(document.getElementById('bookInfoModal'));
+        modal.show();
+    }
 
         // Handle cover preview
         document.getElementById('modalBookCover').addEventListener('change', function(e) {
