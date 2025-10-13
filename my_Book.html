@@ -1,8 +1,9 @@
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Books · BookTrack</title>
+    <title>My Library · BookTrack</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
     <link href="assets/css/styles.css" rel="stylesheet">
 </head>
@@ -22,7 +23,9 @@
             <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
                 <ul class="navbar-nav">
                     <li class="nav-item"><a class="nav-link" href="user_Dashboard.html">Dashboard</a></li>
-                    <li class="nav-item"><a class="nav-link active" href="my_Book.html">My Books</a></li>
+                    <li class="nav-item"><a class="nav-link" href="book_search.html">Search Books</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="my_Book.html">My Library</a></li>
+                    <li class="nav-item"><a class="nav-link" href="notifications.html">Notifications</a></li>
                     <!-- Profile Dropdown -->
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="profileDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -48,89 +51,122 @@
     </nav>
 
     <main class="flex-grow-1 py-4">
-        <div class="container" style="max-width:900px;">
+        <div class="container">
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="bt-card p-4">
+                        <h1 class="h3 bt-title mb-3">My Library</h1>
+                        <p class="bt-subtitle mb-0">View, add, edit, and manage your personal book collection</p>
+                    </div>
+                </div>
+            </div>
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="bt-card p-4">
+                        <form class="mb-3" id="searchForm">
+                            <div class="row g-3">
+                                <div class="col-md-8">
+                                    <label for="searchBooks" class="form-label">Search Books</label>
+                                    <input type="text" class="form-control bt-input" id="searchBooks" placeholder="Enter title, author, or keywords...">
+                                </div>
+                                <div class="col-md-4 d-flex align-items-end">
+                                    <button type="submit" class="btn btn-bt me-2">Search</button>
+                                    <button type="button" class="btn btn-outline-secondary" id="clearSearch">Clear</button>
+                                    <button type="button" class="btn btn-success ms-2" id="showAddBookModal">Add Book</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
             <div class="bt-card p-4 mb-4">
-                <h2 class="bt-title mb-3">My Books</h2>
-                <form class="mb-3">
-                    <div class="input-group">
-                        <input type="text" class="form-control bt-input" placeholder="Search books..." id="searchBooks">
-                        <button class="btn btn-bt" type="submit">Search</button>
-                    </div>
-                </form>
-                <ul class="nav nav-tabs mb-3" id="bookTabs" role="tablist">
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link active" id="all-books-tab" data-bs-toggle="tab" data-bs-target="#all-books" type="button" role="tab" aria-controls="all-books" aria-selected="true">All Books</button>
-                    </li>
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="reserved-books-tab" data-bs-toggle="tab" data-bs-target="#reserved-books" type="button" role="tab" aria-controls="reserved-books" aria-selected="false">Reserved Books</button>
-                    </li>
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="borrowed-books-tab" data-bs-toggle="tab" data-bs-target="#borrowed-books" type="button" role="tab" aria-controls="borrowed-books" aria-selected="false">Borrowed Books</button>
-                    </li>
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="favorites-books-tab" data-bs-toggle="tab" data-bs-target="#favorites-books" type="button" role="tab" aria-controls="favorites-books" aria-selected="false">Bookmarked/Favorites</button>
-                    </li>
-                </ul>
-                <div class="tab-content" id="bookTabsContent">
-                    <!-- All Books Tab -->
-                    <div class="tab-pane fade show active" id="all-books" role="tabpanel" aria-labelledby="all-books-tab">
-                        <ul class="list-group list-group-flush">
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                <div>
-                                    <strong>The Great Gatsby</strong><br>
-                                    <span class="bt-muted">by F. Scott Fitzgerald</span>
-                                </div>
-                                <button class="btn btn-sm btn-outline-primary">Bookmark</button>
-                            </li>
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                <div>
-                                    <strong>To Kill a Mockingbird</strong><br>
-                                    <span class="bt-muted">by Harper Lee</span>
-                                </div>
-                                <button class="btn btn-sm btn-outline-primary">Bookmark</button>
-                            </li>
-                        </ul>
-                    </div>
-                    <!-- Reserved Books Tab -->
-                    <div class="tab-pane fade" id="reserved-books" role="tabpanel" aria-labelledby="reserved-books-tab">
-                        <ul class="list-group list-group-flush">
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                <div>
-                                    <strong>1984</strong><br>
-                                    <span class="bt-muted">by George Orwell</span>
-                                </div>
-                                <span class="badge bg-warning text-dark">Reserved</span>
-                            </li>
-                        </ul>
-                    </div>
-                    <!-- Borrowed Books Tab -->
-                    <div class="tab-pane fade" id="borrowed-books" role="tabpanel" aria-labelledby="borrowed-books-tab">
-                        <ul class="list-group list-group-flush">
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                <div>
-                                    <strong>Pride and Prejudice</strong><br>
-                                    <span class="bt-muted">by Jane Austen</span>
-                                </div>
-                                <span class="badge bg-success">Borrowed</span>
-                            </li>
-                        </ul>
-                    </div>
-                    <!-- Favorites/Bookmarked Tab -->
-                    <div class="tab-pane fade" id="favorites-books" role="tabpanel" aria-labelledby="favorites-books-tab">
-                        <ul class="list-group list-group-flush">
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                <div>
-                                    <strong>The Great Gatsby</strong><br>
-                                    <span class="bt-muted">by F. Scott Fitzgerald</span>
-                                </div>
-                                <button class="btn btn-sm btn-outline-danger">Remove</button>
-                            </li>
-                        </ul>
+                <h4 class="bt-title mb-3">Your Books</h4>
+                <div class="row" id="userBooksList">
+                    <!-- User's books will be rendered here -->
+                </div>
+                <div class="row d-none" id="noUserBooks">
+                    <div class="col-12">
+                        <div class="bt-card p-5 text-center">
+                            <div class="h4 bt-muted mb-3">📚</div>
+                            <h3 class="h5 bt-title mb-2">No books in your library</h3>
+                            <p class="bt-subtitle mb-0">Add books to start building your collection!</p>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </main>
+
+    <!-- Add/Edit Book Modal -->
+    <div class="modal fade" id="addBookModal" tabindex="-1" aria-labelledby="addBookModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <form class="modal-content" id="addBookFormModal">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addBookModalLabel">Add Book</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3 text-center">
+                        <img id="modalBookCoverPreview" src="assets/img/Background.jpg" alt="Book Cover" class="img-fluid rounded mb-2" style="max-height:120px;">
+                        <input type="file" class="form-control" id="modalBookCover" accept="image/*">
+                        <small class="text-muted">Choose a cover image (optional)</small>
+                    </div>
+                    <div class="mb-3">
+                        <label for="modalBookTitle" class="form-label">Title</label>
+                        <input type="text" class="form-control bt-input" id="modalBookTitle" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="modalBookAuthor" class="form-label">Author</label>
+                        <input type="text" class="form-control bt-input" id="modalBookAuthor" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="modalBookCategory" class="form-label">Category</label>
+                        <select class="form-select bt-input" id="modalBookCategory">
+                            <option value="">Select Category</option>
+                            <option value="fiction">Fiction</option>
+                            <option value="non-fiction">Non-Fiction</option>
+                            <option value="science">Science</option>
+                            <option value="history">History</option>
+                            <option value="biography">Biography</option>
+                            <option value="technology">Technology</option>
+                            <option value="philosophy">Philosophy</option>
+                            <option value="art">Art & Literature</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="modalBookStatus" class="form-label">Status</label>
+                        <select class="form-select bt-input" id="modalBookStatus">
+                            <option value="available">Available</option>
+                            <option value="reserved">Reserved</option>
+                            <option value="borrowed">Borrowed</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-bt" id="modalBookSaveBtn">Add Book</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Book Info Modal -->
+    <div class="modal fade" id="bookInfoModal" tabindex="-1" aria-labelledby="bookInfoModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="bookInfoModalLabel">Book Information</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="bookInfoBody">
+                    <!-- Book info will be rendered here -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Footer -->
     <footer class="mt-auto py-4 border-top text-center bt-muted">
@@ -140,26 +176,8 @@
         </div>
     </footer>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q"
-        crossorigin="anonymous"></script>
-    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
     <script>
-        // Check if user is logged in
-        function checkAuth() {
-            const isLoggedIn = sessionStorage.getItem('isLoggedIn');
-            const userRole = sessionStorage.getItem('userRole');
-            
-            if (!isLoggedIn || userRole !== 'user') {
-                window.location.href = 'login.html';
-                return;
-            }
-            
-            // Display user info
-            const userEmail = sessionStorage.getItem('userEmail');
-            const userName = userEmail ? userEmail.split('@')[0] : 'User';
-            document.getElementById('userName').textContent = userName;
-        }
         // Fill navbar and dropdown with user info
         const userEmail = sessionStorage.getItem('userEmail') || 'user@example.com';
         const userFullName = sessionStorage.getItem('userFullName') || 'User';
@@ -174,19 +192,171 @@
             window.location.href = 'login.html';
         });
 
-        // Activate tab based on hash in URL
-        document.addEventListener("DOMContentLoaded", function () {
-            const hash = window.location.hash;
-            if (hash) {
-                const tabTrigger = document.querySelector(`button[data-bs-target="${hash}"]`);
-                if (tabTrigger) {
-                    const tab = new bootstrap.Tab(tabTrigger);
-                    tab.show();
-                }
+        // User's books (simulate with localStorage for demo)
+        function getUserBooks() {
+            return JSON.parse(localStorage.getItem('userBooks') || '[]');
+        }
+        function setUserBooks(books) {
+            localStorage.setItem('userBooks', JSON.stringify(books));
+        }
+
+        // Render user's books with status and cover
+        function renderUserBooks(search = "") {
+            let books = getUserBooks();
+            if (search) {
+                books = books.filter(book =>
+                    book.title.toLowerCase().includes(search) ||
+                    book.author.toLowerCase().includes(search) ||
+                    (book.category && book.category.toLowerCase().includes(search))
+                );
+            }
+            const container = document.getElementById('userBooksList');
+            const noBooks = document.getElementById('noUserBooks');
+            if (books.length === 0) {
+                container.innerHTML = '';
+                noBooks.classList.remove('d-none');
+                return;
+            }
+            noBooks.classList.add('d-none');
+            container.innerHTML = books.map((book, idx) => `
+                <div class="col-lg-6 col-xl-4 mb-4">
+                    <div class="bt-card h-100">
+                        <div class="p-4">
+                            <div class="mb-2 text-center">
+                                <img src="${book.cover || 'assets/img/Background.jpg'}" alt="Book Cover" class="img-fluid rounded mb-2" style="max-height:100px;">
+                            </div>
+                            <div>
+                                <h5 class="bt-title mb-1">${book.title}</h5>
+                                <p class="bt-muted mb-2">by ${book.author}</p>
+                                <span class="badge bg-secondary">${book.category ? book.category.charAt(0).toUpperCase() + book.category.slice(1) : 'Uncategorized'}</span>
+                                <span class="badge ${getStatusBadgeClass(book.status)} ms-1">${capitalize(book.status || 'available')}</span>
+                            </div>
+                            <div class="d-flex gap-2 mt-3">
+                                <button class="btn btn-bt btn-sm flex-fill" onclick="viewBook(${idx})">View</button>
+                                <button class="btn btn-outline-primary btn-sm flex-fill" onclick="editBook(${idx})">Edit</button>
+                                <button class="btn btn-outline-danger btn-sm flex-fill" onclick="removeBook(${idx})">Remove</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function getStatusBadgeClass(status) {
+            switch (status) {
+                case 'reserved': return 'bg-warning text-dark';
+                case 'borrowed': return 'bg-info text-dark';
+                default: return 'bg-success';
+            }
+        }
+        function capitalize(str) {
+            if (!str) return '';
+            return str.charAt(0).toUpperCase() + str.slice(1);
+        }
+
+        // Show book info modal
+        function viewBook(idx) {
+            const books = getUserBooks();
+            const book = books[idx];
+            const modalBody = document.getElementById('bookInfoBody');
+            modalBody.innerHTML = `
+                <div class="text-center mb-3">
+                    <img src="${book.cover || 'assets/img/Background.jpg'}" alt="Book Cover" class="img-fluid rounded" style="max-height:120px;">
+                </div>
+                <h5>${book.title}</h5>
+                <p><strong>Author:</strong> ${book.author}</p>
+                <p><strong>Category:</strong> ${book.category ? capitalize(book.category) : 'Uncategorized'}</p>
+                <p><strong>Status:</strong> ${capitalize(book.status || 'available')}</p>
+            `;
+            const modal = new bootstrap.Modal(document.getElementById('bookInfoModal'));
+            modal.show();
+        }
+
+        function removeBook(idx) {
+            if (confirm('Remove this book from your library?')) {
+                const books = getUserBooks();
+                books.splice(idx, 1);
+                setUserBooks(books);
+                renderUserBooks(document.getElementById('searchBooks').value.trim().toLowerCase());
+            }
+        }
+
+        // Show Add Book Modal
+        document.getElementById('showAddBookModal').addEventListener('click', function() {
+            document.getElementById('addBookModalLabel').textContent = 'Add Book';
+            document.getElementById('modalBookSaveBtn').textContent = 'Add Book';
+            document.getElementById('addBookFormModal').reset();
+            document.getElementById('modalBookCoverPreview').src = 'assets/img/Background.jpg';
+            document.getElementById('addBookFormModal').dataset.editIdx = '';
+            const modal = new bootstrap.Modal(document.getElementById('addBookModal'));
+            modal.show();
+        });
+
+        // Handle Add/Edit Book Modal Form
+        document.getElementById('addBookFormModal').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const title = document.getElementById('modalBookTitle').value.trim();
+            const author = document.getElementById('modalBookAuthor').value.trim();
+            const category = document.getElementById('modalBookCategory').value;
+            const status = document.getElementById('modalBookStatus').value;
+            const cover = document.getElementById('modalBookCoverPreview').src;
+            if (!title || !author) return;
+            let books = getUserBooks();
+            const editIdx = this.dataset.editIdx;
+            if (editIdx !== '') {
+                books[editIdx] = { ...books[editIdx], title, author, category, status, cover };
+            } else {
+                books.push({ title, author, category, status, cover });
+            }
+            setUserBooks(books);
+            renderUserBooks(document.getElementById('searchBooks').value.trim().toLowerCase());
+            this.reset();
+            bootstrap.Modal.getInstance(document.getElementById('addBookModal')).hide();
+        });
+
+        // Edit book
+        function editBook(idx) {
+            const books = getUserBooks();
+            const book = books[idx];
+            document.getElementById('addBookModalLabel').textContent = 'Edit Book';
+            document.getElementById('modalBookSaveBtn').textContent = 'Save Changes';
+            document.getElementById('modalBookTitle').value = book.title;
+            document.getElementById('modalBookAuthor').value = book.author;
+            document.getElementById('modalBookCategory').value = book.category || '';
+            document.getElementById('modalBookStatus').value = book.status || 'available';
+            document.getElementById('modalBookCoverPreview').src = book.cover || 'assets/img/Background.jpg';
+            document.getElementById('addBookFormModal').dataset.editIdx = idx;
+            const modal = new bootstrap.Modal(document.getElementById('addBookModal'));
+            modal.show();
+        }
+
+        // Handle cover preview
+        document.getElementById('modalBookCover').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(evt) {
+                    document.getElementById('modalBookCoverPreview').src = evt.target.result;
+                };
+                reader.readAsDataURL(file);
+            } else {
+                document.getElementById('modalBookCoverPreview').src = 'assets/img/Background.jpg';
             }
         });
 
-        checkAuth();
+        document.getElementById('searchForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const search = document.getElementById('searchBooks').value.trim().toLowerCase();
+            renderUserBooks(search);
+        });
+
+        document.getElementById('clearSearch').addEventListener('click', function() {
+            document.getElementById('searchForm').reset();
+            renderUserBooks();
+        });
+
+        // Initial render
+        renderUserBooks();
     </script>
 </body>
 </html>
