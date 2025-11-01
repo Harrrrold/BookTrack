@@ -96,149 +96,23 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q"
         crossorigin="anonymous"></script>
+    <script src="assets/js/api.js"></script>
 
     <script>
-        // Sample book data (in a real app, this would come from an API)
-        const sampleBooks = [
-            {
-                id: 1,
-                title: "The Great Gatsby",
-                author: "F. Scott Fitzgerald",
-                isbn: "978-0743273565",
-                category: "fiction",
-                availability: "available",
-                cover: "assets/img/Background.jpg",
-                description: "A story of the fabulously wealthy Jay Gatsby and his love for the beautiful Daisy Buchanan. Set in the Jazz Age on Long Island, near New York City, the novel depicts first-person narrator Nick Carraway's interactions with mysterious millionaire Jay Gatsby and Gatsby's obsession to reunite with his former lover, Daisy Buchanan.",
-                publishYear: 1925,
-                pages: 180,
-                language: "English",
-                publisher: "Charles Scribner's Sons",
-                genre: "Literary Fiction",
-                rating: 4.2,
-                reviews: 1250,
-                location: "Main Library - Fiction Section",
-                callNumber: "FIC FIT",
-                addedDate: "2020-03-15",
-                lastBorrowed: "2024-11-20",
-                totalBorrows: 45
-            },
-            {
-                id: 2,
-                title: "To Kill a Mockingbird",
-                author: "Harper Lee",
-                isbn: "978-0446310789",
-                category: "fiction",
-                availability: "borrowed",
-                cover: "assets/img/Background.jpg",
-                description: "The story of young Scout Finch and her father Atticus in a racially divided Alabama town. Through the eyes of Scout, a feisty six-year-old tomboy, we see the world of Maycomb, Alabama, through her father's eyes as he defends a black man accused of a crime.",
-                publishYear: 1960,
-                pages: 281,
-                language: "English",
-                publisher: "J. B. Lippincott & Co.",
-                genre: "Literary Fiction",
-                rating: 4.3,
-                reviews: 2100,
-                location: "Main Library - Fiction Section",
-                callNumber: "FIC LEE",
-                addedDate: "2019-08-22",
-                lastBorrowed: "2024-12-01",
-                totalBorrows: 67,
-                returnDate: "2024-12-15",
-                borrowedBy: "John Smith"
-            },
-            {
-                id: 3,
-                title: "1984",
-                author: "George Orwell",
-                isbn: "978-0451524935",
-                category: "fiction",
-                availability: "reserved",
-                cover: "assets/img/Background.jpg",
-                description: "A dystopian novel about totalitarianism and surveillance society. The story follows the life of Winston Smith, a low-ranking member of 'the Party', who is frustrated by the omnipresent eyes of the party, and its sinister ruler Big Brother.",
-                publishYear: 1949,
-                pages: 328,
-                language: "English",
-                publisher: "Secker & Warburg",
-                genre: "Dystopian Fiction",
-                rating: 4.1,
-                reviews: 1800,
-                location: "Main Library - Fiction Section",
-                callNumber: "FIC ORW",
-                addedDate: "2021-01-10",
-                lastBorrowed: "2024-10-15",
-                totalBorrows: 38,
-                reservedUntil: "2024-12-10",
-                reservedBy: "Sarah Johnson"
-            },
-            {
-                id: 4,
-                title: "The Art of War",
-                author: "Sun Tzu",
-                isbn: "978-0140439199",
-                category: "philosophy",
-                availability: "available",
-                cover: "assets/img/Background.jpg",
-                description: "Ancient Chinese text on military strategy and tactics. The work contains a detailed explanation and analysis of the Chinese military, from weapons and strategy to rank and discipline.",
-                publishYear: -500,
-                pages: 273,
-                language: "Chinese (Translated)",
-                publisher: "Penguin Classics",
-                genre: "Military Strategy",
-                rating: 4.0,
-                reviews: 890,
-                location: "Main Library - Philosophy Section",
-                callNumber: "355.02 SUN",
-                addedDate: "2018-11-05",
-                lastBorrowed: "2024-09-28",
-                totalBorrows: 23
-            },
-            {
-                id: 5,
-                title: "Sapiens: A Brief History of Humankind",
-                author: "Yuval Noah Harari",
-                isbn: "978-0062316097",
-                category: "non-fiction",
-                availability: "available",
-                cover: "assets/img/Background.jpg",
-                description: "A groundbreaking narrative of humanity's creation and evolution. Harari explores the ways in which biology and history have defined us and enhanced our understanding of what it means to be 'human'.",
-                publishYear: 2011,
-                pages: 443,
-                language: "English",
-                publisher: "Harper",
-                genre: "History",
-                rating: 4.4,
-                reviews: 3200,
-                location: "Main Library - History Section",
-                callNumber: "909 HAR",
-                addedDate: "2022-06-18",
-                lastBorrowed: "2024-11-25",
-                totalBorrows: 89
-            }
-        ];
-
         // Check if user is logged in
         function checkAuth() {
-            const isLoggedIn = sessionStorage.getItem('isLoggedIn');
-            const userRole = sessionStorage.getItem('userRole');
-            
-            if (!isLoggedIn || userRole !== 'user') {
-                window.location.href = 'login.html';
-                return;
-            }
+            if (!requireAuth()) return;
             
             // Display user info
-            const userEmail = sessionStorage.getItem('userEmail');
-            const userName = userEmail ? userEmail.split('@')[0] : 'User';
-            document.getElementById('navbarFullName').textContent = userName;
+            const user = getCurrentUser();
+            if (user.fullName) {
+                document.getElementById('navbarFullName').textContent = user.fullName;
+                document.getElementById('dropdownFullName').textContent = user.fullName;
+            }
+            if (user.email) {
+                document.getElementById('dropdownEmail').textContent = user.email;
+            }
         }
-
-        // Fill navbar and dropdown with user info
-        const userEmail = sessionStorage.getItem('userEmail') || 'user@example.com';
-        const userFullName = sessionStorage.getItem('userFullName') || 'User';
-
-        document.getElementById('navbarFullName').textContent = userFullName;
-        document.getElementById('dropdownFullName').textContent = userFullName;
-        document.getElementById('dropdownEmail').textContent = userEmail;
 
         // Get book ID from URL parameters
         function getBookId() {
@@ -246,18 +120,29 @@
             return parseInt(urlParams.get('id'));
         }
 
-        // Load book details
-        function loadBookDetails() {
+        // Load book details from API
+        async function loadBookDetails() {
             const bookId = getBookId();
-            const book = sampleBooks.find(b => b.id === bookId);
-
-            if (!book) {
+            if (!bookId) {
                 document.getElementById('loadingSpinner').classList.add('d-none');
                 document.getElementById('bookNotFound').classList.remove('d-none');
                 return;
             }
 
-            displayBookDetails(book);
+            try {
+                const data = await apiGetBook(bookId);
+                
+                if (data.success && data.book) {
+                    displayBookDetails(data.book);
+                } else {
+                    document.getElementById('loadingSpinner').classList.add('d-none');
+                    document.getElementById('bookNotFound').classList.remove('d-none');
+                }
+            } catch (error) {
+                console.error('Error loading book:', error);
+                document.getElementById('loadingSpinner').classList.add('d-none');
+                document.getElementById('bookNotFound').classList.remove('d-none');
+            }
         }
 
         function displayBookDetails(book) {
@@ -270,7 +155,7 @@
                 <div class="col-lg-4 mb-4">
                     <div class="bt-card p-4 text-center">
                         <div class="book-cover-large mb-3">
-                            <img src="${book.cover}" alt="${book.title}" class="img-fluid">
+                            <img src="${book.cover || 'assets/img/Background.jpg'}" alt="${book.title}" class="img-fluid">
                         </div>
                         <div class="d-grid gap-2">
                             ${getActionButtons(book)}
@@ -295,37 +180,37 @@
                                 <div class="col-md-6">
                                     <div class="d-flex align-items-center mb-2">
                                         <strong class="me-2">ISBN:</strong>
-                                        <span>${book.isbn}</span>
+                                        <span>${book.isbn || 'N/A'}</span>
                                     </div>
                                     <div class="d-flex align-items-center mb-2">
                                         <strong class="me-2">Category:</strong>
-                                        <span class="badge bg-secondary">${book.category}</span>
+                                        <span class="badge bg-secondary">${book.category || 'Uncategorized'}</span>
                                     </div>
                                     <div class="d-flex align-items-center mb-2">
                                         <strong class="me-2">Genre:</strong>
-                                        <span>${book.genre}</span>
+                                        <span>${book.genre || 'N/A'}</span>
                                     </div>
                                     <div class="d-flex align-items-center mb-2">
                                         <strong class="me-2">Publisher:</strong>
-                                        <span>${book.publisher}</span>
+                                        <span>${book.publisher || 'N/A'}</span>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="d-flex align-items-center mb-2">
                                         <strong class="me-2">Published:</strong>
-                                        <span>${book.publishYear}</span>
+                                        <span>${book.publish_year || 'N/A'}</span>
                                     </div>
                                     <div class="d-flex align-items-center mb-2">
                                         <strong class="me-2">Pages:</strong>
-                                        <span>${book.pages}</span>
+                                        <span>${book.pages || 'N/A'}</span>
                                     </div>
                                     <div class="d-flex align-items-center mb-2">
                                         <strong class="me-2">Language:</strong>
-                                        <span>${book.language}</span>
+                                        <span>${book.language || 'N/A'}</span>
                                     </div>
                                     <div class="d-flex align-items-center mb-2">
                                         <strong class="me-2">Rating:</strong>
-                                        <span>⭐ ${book.rating}/5 (${book.reviews} reviews)</span>
+                                        <span>⭐ ${book.rating || 0}/5 (${book.reviews || 0} reviews)</span>
                                     </div>
                                 </div>
                             </div>
@@ -333,7 +218,7 @@
                         
                         <div class="mb-4">
                             <h4 class="h5 bt-title mb-2">Description</h4>
-                            <p class="mb-0">${book.description}</p>
+                            <p class="mb-0">${book.description || 'No description available.'}</p>
                         </div>
                         
                         <div class="book-meta mb-4">
@@ -342,27 +227,26 @@
                                 <div class="col-md-6">
                                     <div class="d-flex align-items-center mb-2">
                                         <strong class="me-2">Location:</strong>
-                                        <span>${book.location}</span>
+                                        <span>${book.location || 'N/A'}</span>
                                     </div>
                                     <div class="d-flex align-items-center mb-2">
                                         <strong class="me-2">Call Number:</strong>
-                                        <span class="badge bg-light text-dark">${book.callNumber}</span>
+                                        <span class="badge bg-light text-dark">${book.call_number || 'N/A'}</span>
                                     </div>
                                     <div class="d-flex align-items-center mb-2">
                                         <strong class="me-2">Added:</strong>
-                                        <span>${formatDate(book.addedDate)}</span>
+                                        <span>${formatDate(book.added_date)}</span>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="d-flex align-items-center mb-2">
                                         <strong class="me-2">Total Borrows:</strong>
-                                        <span>${book.totalBorrows}</span>
+                                        <span>${book.total_borrows || 0}</span>
                                     </div>
                                     <div class="d-flex align-items-center mb-2">
                                         <strong class="me-2">Last Borrowed:</strong>
-                                        <span>${formatDate(book.lastBorrowed)}</span>
+                                        <span>${formatDate(book.last_borrowed)}</span>
                                     </div>
-                                    ${getAvailabilityDetails(book)}
                                 </div>
                             </div>
                         </div>
@@ -425,35 +309,6 @@
             return buttons;
         }
 
-        function getAvailabilityDetails(book) {
-            switch(book.availability) {
-                case 'borrowed':
-                    return `
-                        <div class="d-flex align-items-center mb-2">
-                            <strong class="me-2">Return Date:</strong>
-                            <span class="text-warning">${formatDate(book.returnDate)}</span>
-                        </div>
-                        <div class="d-flex align-items-center mb-2">
-                            <strong class="me-2">Borrowed By:</strong>
-                            <span>${book.borrowedBy}</span>
-                        </div>
-                    `;
-                case 'reserved':
-                    return `
-                        <div class="d-flex align-items-center mb-2">
-                            <strong class="me-2">Reserved Until:</strong>
-                            <span class="text-info">${formatDate(book.reservedUntil)}</span>
-                        </div>
-                        <div class="d-flex align-items-center mb-2">
-                            <strong class="me-2">Reserved By:</strong>
-                            <span>${book.reservedBy}</span>
-                        </div>
-                    `;
-                default:
-                    return '';
-            }
-        }
-
         function getAvailabilityBadgeClass(availability) {
             switch(availability) {
                 case 'available': return 'bg-success';
@@ -482,32 +337,65 @@
             });
         }
 
-        function borrowBook(bookId) {
+        async function borrowBook(bookId) {
             if (confirm('Are you sure you want to borrow this book?')) {
-                alert(`Book borrowed successfully! Book ID: ${bookId}`);
-                // In a real app, this would make an API call
-                setTimeout(() => {
-                    window.location.reload();
-                }, 1000);
+                try {
+                    const data = await apiBorrowBook(bookId);
+                    if (data.success) {
+                        alert('Book borrowed successfully! Due date: ' + data.due_date);
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 1000);
+                    } else {
+                        alert('Failed to borrow book: ' + data.message);
+                    }
+                } catch (error) {
+                    alert('Error borrowing book. Please try again.');
+                }
             }
         }
 
-        function reserveBook(bookId) {
+        async function reserveBook(bookId) {
             if (confirm('Are you sure you want to reserve this book?')) {
-                alert(`Book reserved successfully! Book ID: ${bookId}`);
-                // In a real app, this would make an API call
-                setTimeout(() => {
-                    window.location.reload();
-                }, 1000);
+                try {
+                    const data = await apiCreateReservation(bookId);
+                    if (data.success) {
+                        alert('Book reserved successfully!');
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 1000);
+                    } else {
+                        alert('Failed to reserve book: ' + data.message);
+                    }
+                } catch (error) {
+                    alert('Error reserving book. Please try again.');
+                }
             }
         }
 
-        function toggleBookmark(bookId) {
-            alert(`Bookmark toggled for book ID: ${bookId}`);
+        async function toggleBookmark(bookId) {
+            try {
+                // Check if already bookmarked (would need to fetch bookmarks first)
+                const data = await apiAddBookmark(bookId);
+                if (data.success) {
+                    alert('Book bookmarked successfully!');
+                } else if (data.message && data.message.includes('already')) {
+                    // Remove bookmark
+                    const removeData = await apiRemoveBookmark(bookId);
+                    if (removeData.success) {
+                        alert('Bookmark removed.');
+                    }
+                } else {
+                    alert(data.message || 'Failed to toggle bookmark');
+                }
+            } catch (error) {
+                alert('Error toggling bookmark. Please try again.');
+            }
         }
 
         // Logout function
-        function logout() {
+        async function logout() {
+            await apiLogout();
             sessionStorage.clear();
             window.location.href = 'login.html';
         }

@@ -1,0 +1,53 @@
+# BookTrack .gitignore
+
+# Local configuration files (contains sensitive data)
+config/database.local.php
+.env
+.env.local
+
+# System files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Logs
+*.log
+logs/
+error_log
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# Uploaded files (if any)
+uploads/
+files/
+
+# Session files
+sessions/
+
+# Composer
+vendor/
+composer.lock
+
+# Node modules (if using npm)
+node_modules/
+package-lock.json
+
+# Backup files
+*.bak
+*.backup
+*.sql.backup
+
+# Test files (optional - remove if you want to commit tests)
+test/
+tests/
+

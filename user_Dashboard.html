@@ -137,34 +137,28 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q"
         crossorigin="anonymous"></script>
+    <script src="assets/js/api.js"></script>
     
     <script>
         // Check if user is logged in
         function checkAuth() {
-            const isLoggedIn = sessionStorage.getItem('isLoggedIn');
-            const userRole = sessionStorage.getItem('userRole');
-            
-            if (!isLoggedIn || userRole !== 'user') {
-                window.location.href = 'login.html';
-                return;
-            }
+            if (!requireAuth()) return;
             
             // Display user info
-            const userEmail = sessionStorage.getItem('userEmail');
-            const userName = userEmail ? userEmail.split('@')[0] : 'User';
-            document.getElementById('userName').textContent = userName;
+            const user = getCurrentUser();
+            if (user.fullName) {
+                document.getElementById('userName').textContent = user.fullName.split(' ')[0];
+                document.getElementById('navbarFullName').textContent = user.fullName;
+                document.getElementById('dropdownFullName').textContent = user.fullName;
+            }
+            if (user.email) {
+                document.getElementById('dropdownEmail').textContent = user.email;
+            }
         }
 
-        // Fill navbar and dropdown with user info
-        const userEmail = sessionStorage.getItem('userEmail') || 'user@example.com';
-        const userFullName = sessionStorage.getItem('userFullName') || 'User';
-
-        document.getElementById('navbarFullName').textContent = userFullName;
-        document.getElementById('dropdownFullName').textContent = userFullName;
-        document.getElementById('dropdownEmail').textContent = userEmail;
-
         // Logout function
-        function logout() {
+        async function logout() {
+            await apiLogout();
             sessionStorage.clear();
             window.location.href = 'login.html';
         }
@@ -174,53 +168,57 @@
             alert('Export functionality will be implemented soon!');
         }
 
-        // Load dashboard data
-        function loadDashboardData() {
-            // Simulate loading data from localStorage or API
-            const userData = JSON.parse(localStorage.getItem('userData')) || {
-                totalBooks: 0,
-                readingBooks: 0,
-                completedBooks: 0,
-                wishlistBooks: 0,
-                recentActivity: []
-            };
-            
-            document.getElementById('totalBooks').textContent = userData.totalBooks;
-            document.getElementById('readingBooks').textContent = userData.readingBooks;
-            document.getElementById('completedBooks').textContent = userData.completedBooks;
-            document.getElementById('wishlistBooks').textContent = userData.wishlistBooks;
-            
-            // Load recent activity
-            const activityContainer = document.getElementById('recentActivity');
-            if (userData.recentActivity.length === 0) {
-                activityContainer.innerHTML = `
-                    <div class="d-flex align-items-center py-2 border-bottom">
-                        <div class="flex-shrink-0">
-                            <div class="bg-light rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
-                                <span class="bt-muted">📚</span>
+        // Load dashboard data from API
+        async function loadDashboardData() {
+            try {
+                const data = await apiGetDashboard('user');
+                
+                if (data.success && data.dashboard) {
+                    const dash = data.dashboard;
+                    
+                    document.getElementById('totalBooks').textContent = dash.total_books || 0;
+                    document.getElementById('readingBooks').textContent = dash.reading_books || 0;
+                    document.getElementById('completedBooks').textContent = dash.completed_books || 0;
+                    document.getElementById('wishlistBooks').textContent = dash.wishlist_books || 0;
+                    
+                    // Load recent activity
+                    const activityContainer = document.getElementById('recentActivity');
+                    const activities = dash.recent_activity || [];
+                    
+                    if (activities.length === 0) {
+                        activityContainer.innerHTML = `
+                            <div class="d-flex align-items-center py-2 border-bottom">
+                                <div class="flex-shrink-0">
+                                    <div class="bg-light rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                                        <span class="bt-muted">📚</span>
+                                    </div>
+                                </div>
+                                <div class="flex-grow-1 ms-3">
+                                    <div class="fw-medium">No recent activity</div>
+                                    <small class="bt-muted">Start reading to see your activity here</small>
+                                </div>
                             </div>
-                        </div>
-                        <div class="flex-grow-1 ms-3">
-                            <div class="fw-medium">No recent activity</div>
-                            <small class="bt-muted">Start reading to see your activity here</small>
-                        </div>
-                    </div>
-                `;
-            } else {
-                // Display actual activity items here
-                activityContainer.innerHTML = userData.recentActivity.map(activity => `
-                    <div class="d-flex align-items-center py-2 border-bottom">
-                        <div class="flex-shrink-0">
-                            <div class="bg-light rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
-                                <span class="bt-muted">📖</span>
+                        `;
+                    } else {
+                        activityContainer.innerHTML = activities.map(activity => `
+                            <div class="d-flex align-items-center py-2 border-bottom">
+                                <div class="flex-shrink-0">
+                                    <div class="bg-light rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                                        <span class="bt-muted">${activity.type === 'borrow' ? '📖' : '📚'}</span>
+                                    </div>
+                                </div>
+                                <div class="flex-grow-1 ms-3">
+                                    <div class="fw-medium">${activity.description}</div>
+                                    <small class="bt-muted">${new Date(activity.date).toLocaleDateString()}</small>
+                                </div>
                             </div>
-                        </div>
-                        <div class="flex-grow-1 ms-3">
-                            <div class="fw-medium">${activity.title}</div>
-                            <small class="bt-muted">${activity.description}</small>
-                        </div>
-                    </div>
-                `).join('');
+                        `).join('');
+                    }
+                } else {
+                    console.error('Failed to load dashboard data');
+                }
+            } catch (error) {
+                console.error('Error loading dashboard:', error);
             }
         }
 

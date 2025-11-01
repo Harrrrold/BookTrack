@@ -151,104 +151,27 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q"
         crossorigin="anonymous"></script>
+    <script src="assets/js/api.js"></script>
 
     <script>
-        // Sample book data (in a real app, this would come from an API)
-        const sampleBooks = [
-            {
-                id: 1,
-                title: "The Great Gatsby",
-                author: "F. Scott Fitzgerald",
-                isbn: "978-0743273565",
-                category: "Fiction",
-                availability: "available",
-                cover: "assets/img/Background.jpg",
-                description: "A story of the fabulously wealthy Jay Gatsby and his love for the beautiful Daisy Buchanan.",
-                publishYear: 1925,
-                pages: 180,
-                language: "English"
-            },
-            {
-                id: 2,
-                title: "To Kill a Mockingbird",
-                author: "Harper Lee",
-                isbn: "978-0446310789",
-                category: "Fiction",
-                availability: "borrowed",
-                cover: "assets/img/Background.jpg",
-                description: "The story of young Scout Finch and her father Atticus in a racially divided Alabama town.",
-                publishYear: 1960,
-                pages: 281,
-                language: "English"
-            },
-            {
-                id: 3,
-                title: "1984",
-                author: "George Orwell",
-                isbn: "978-0451524935",
-                category: "Fiction",
-                availability: "reserved",
-                cover: "assets/img/Background.jpg",
-                description: "A dystopian novel about totalitarianism and surveillance society.",
-                publishYear: 1949,
-                pages: 328,
-                language: "English"
-            },
-            {
-                id: 4,
-                title: "The Art of War",
-                author: "Sun Tzu",
-                isbn: "978-0140439199",
-                category: "Philosophy",
-                availability: "available",
-                cover: "assets/img/Background.jpg",
-                description: "Ancient Chinese text on military strategy and tactics.",
-                publishYear: -500,
-                pages: 273,
-                language: "Chinese (Translated)"
-            },
-            {
-                id: 5,
-                title: "Sapiens: A Brief History of Humankind",
-                author: "Yuval Noah Harari",
-                isbn: "978-0062316097",
-                category: "Non-Fiction",
-                availability: "available",
-                cover: "assets/img/Background.jpg",
-                description: "A groundbreaking narrative of humanity's creation and evolution.",
-                publishYear: 2011,
-                pages: 443,
-                language: "English"
-            }
-        ];
-
         // Check if user is logged in
         function checkAuth() {
-            const isLoggedIn = sessionStorage.getItem('isLoggedIn');
-            const userRole = sessionStorage.getItem('userRole');
-            
-            if (!isLoggedIn || userRole !== 'user') {
-                window.location.href = 'login.html';
-                return;
-            }
+            if (!requireAuth()) return;
             
             // Display user info
-            const userEmail = sessionStorage.getItem('userEmail');
-            const userName = userEmail ? userEmail.split('@')[0] : 'User';
-            document.getElementById('navbarFullName').textContent = userName;
+            const user = getCurrentUser();
+            if (user.fullName) {
+                document.getElementById('navbarFullName').textContent = user.fullName;
+                document.getElementById('dropdownFullName').textContent = user.fullName;
+            }
+            if (user.email) {
+                document.getElementById('dropdownEmail').textContent = user.email;
+            }
         }
 
-        // Fill navbar and dropdown with user info
-        const userEmail = sessionStorage.getItem('userEmail') || 'user@example.com';
-        const userFullName = sessionStorage.getItem('userFullName') || 'User';
-
-        document.getElementById('navbarFullName').textContent = userFullName;
-        document.getElementById('dropdownFullName').textContent = userFullName;
-        document.getElementById('dropdownEmail').textContent = userEmail;
-
-        // Search functionality
-        function performSearch() {
-            const query = document.getElementById('searchQuery').value.toLowerCase();
+        // Search functionality - now uses API
+        async function performSearch() {
+            const query = document.getElementById('searchQuery').value;
             const category = document.getElementById('categoryFilter').value;
             const availability = document.getElementById('availabilityFilter').value;
 
@@ -257,24 +180,25 @@
             document.getElementById('searchResults').innerHTML = '';
             document.getElementById('noResults').classList.add('d-none');
 
-            // Simulate API delay
-            setTimeout(() => {
-                const filteredBooks = sampleBooks.filter(book => {
-                    const matchesQuery = !query || 
-                        book.title.toLowerCase().includes(query) ||
-                        book.author.toLowerCase().includes(query) ||
-                        book.isbn.includes(query) ||
-                        book.description.toLowerCase().includes(query);
-                    
-                    const matchesCategory = !category || book.category === category;
-                    const matchesAvailability = !availability || book.availability === availability;
-
-                    return matchesQuery && matchesCategory && matchesAvailability;
-                });
-
-                displayResults(filteredBooks);
+            try {
+                const filters = {};
+                if (category) filters.category = category;
+                if (availability) filters.availability = availability;
+                
+                const data = await apiSearchBooks(query, filters);
+                
+                if (data.success) {
+                    displayResults(data.books);
+                } else {
+                    console.error('Search failed:', data.message);
+                    displayResults([]);
+                }
+            } catch (error) {
+                console.error('Search error:', error);
+                displayResults([]);
+            } finally {
                 document.getElementById('loadingSpinner').classList.add('d-none');
-            }, 800);
+            }
         }
 
         function displayResults(books) {
@@ -294,18 +218,18 @@
                         <div class="p-4">
                             <div class="d-flex mb-3">
                                 <div class="book-cover-small me-3">
-                                    <img src="${book.cover}" alt="${book.title}" class="img-fluid">
+                                    <img src="${book.cover || 'assets/img/Background.jpg'}" alt="${book.title}" class="img-fluid">
                                 </div>
                                 <div class="flex-grow-1">
                                     <h5 class="bt-title mb-1">${book.title}</h5>
                                     <p class="bt-muted mb-2">by ${book.author}</p>
                                     <div class="d-flex align-items-center gap-2 mb-2">
-                                        <span class="badge bg-secondary">${book.category}</span>
+                                        <span class="badge bg-secondary">${book.category || 'Uncategorized'}</span>
                                         <span class="badge ${getAvailabilityBadgeClass(book.availability)}">
                                             ${getAvailabilityText(book.availability)}
                                         </span>
                                     </div>
-                                    <p class="small text-muted mb-0">${book.description.substring(0, 100)}...</p>
+                                    <p class="small text-muted mb-0">${(book.description || '').substring(0, 100)}...</p>
                                 </div>
                             </div>
                             <div class="d-flex gap-2">
@@ -339,19 +263,16 @@
             }
         }
 
-        function toggleBookmark(bookId) {
-            // Toggle bookmark functionality
-            alert(`Bookmark toggled for book ID: ${bookId}`);
-        }
-
         function clearFilters() {
             document.getElementById('searchForm').reset();
             document.getElementById('searchResults').innerHTML = '';
             document.getElementById('noResults').classList.add('d-none');
+            performSearch(); // Reload all books
         }
 
         // Logout function
-        function logout() {
+        async function logout() {
+            await apiLogout();
             sessionStorage.clear();
             window.location.href = 'login.html';
         }

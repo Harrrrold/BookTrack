@@ -97,12 +97,6 @@
         crossorigin="anonymous"></script>
     
     <script>
-        // Demo credentials
-        const credentials = {
-            'admin@booktrack.com': { password: 'admin123', role: 'admin' },
-            'user@booktrack.com': { password: 'user123', role: 'user' }
-        };
-
         // Email validation function
         function isValidEmail(email) {
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -150,7 +144,7 @@
         }
 
         // Handle form submission
-        document.getElementById('loginForm').addEventListener('submit', function(e) {
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
             const email = document.getElementById('email').value.trim();
@@ -187,19 +181,31 @@
             // Show loading state
             setLoading(true);
             
-            // Simulate API call delay
-            setTimeout(() => {
-                // Check credentials
-                if (credentials[email] && credentials[email].password === password) {
-                    const role = credentials[email].role;
-                    
+            try {
+                // Call login API
+                const response = await fetch('api/auth.php?action=login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        email: email,
+                        password: password
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success && data.user) {
                     // Store login info in sessionStorage
-                    sessionStorage.setItem('userEmail', email);
-                    sessionStorage.setItem('userRole', role);
+                    sessionStorage.setItem('userEmail', data.user.email);
+                    sessionStorage.setItem('userFullName', data.user.full_name);
+                    sessionStorage.setItem('userRole', data.user.role);
+                    sessionStorage.setItem('userId', data.user.id);
                     sessionStorage.setItem('isLoggedIn', 'true');
                     
                     // Redirect based on role
-                    if (role === 'admin') {
+                    if (data.user.role === 'admin') {
                         window.location.href = 'admin_Dasboard.html';
                     } else {
                         window.location.href = 'user_Dashboard.html';
@@ -207,7 +213,7 @@
                 } else {
                     // Show error message
                     setLoading(false);
-                    showError(document.getElementById('password'), 'Invalid email or password');
+                    showError(document.getElementById('password'), data.message || 'Invalid email or password');
                     
                     // Shake animation for wrong credentials
                     const card = document.querySelector('.bt-card');
@@ -216,7 +222,11 @@
                         card.style.animation = '';
                     }, 500);
                 }
-            }, 1000);
+            } catch (error) {
+                console.error('Login error:', error);
+                setLoading(false);
+                showError(document.getElementById('password'), 'Login failed. Please check your connection and try again.');
+            }
         });
 
         // Real-time validation

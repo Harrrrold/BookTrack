@@ -41,7 +41,7 @@
                     <p class="bt-subtitle mb-0">Start tracking books and reading goals</p>
                 </div>
 
-                <form novalidate>
+                <form id="registerForm" novalidate>
                     <div class="row g-3 bt-name-grid">
                         <div class="col-6 col-sm-4">
                             <label for="firstName" class="form-label">First name</label>
@@ -101,6 +101,238 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"
     integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q"
     crossorigin="anonymous"></script>
+
+    <script>
+        // Form validation and submission
+        const form = document.getElementById('registerForm');
+        let isSubmitting = false;
+        
+        // Email validation
+        function isValidEmail(email) {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return emailRegex.test(email);
+        }
+        
+        // Password validation
+        function isValidPassword(password) {
+            return password.length >= 6;
+        }
+        
+        // Show error message
+        function showError(input, message) {
+            input.classList.add('is-invalid');
+            let errorDiv = input.parentElement.querySelector('.invalid-feedback');
+            if (!errorDiv) {
+                errorDiv = document.createElement('div');
+                errorDiv.className = 'invalid-feedback';
+                input.parentElement.appendChild(errorDiv);
+            }
+            errorDiv.textContent = message;
+        }
+        
+        // Clear error message
+        function clearError(input) {
+            if (input) {
+                input.classList.remove('is-invalid');
+                const errorDiv = input.parentElement.querySelector('.invalid-feedback');
+                if (errorDiv) {
+                    errorDiv.textContent = '';
+                }
+            }
+        }
+        
+        // Clear all errors
+        function clearAllErrors() {
+            document.querySelectorAll('.is-invalid').forEach(el => {
+                el.classList.remove('is-invalid');
+            });
+            document.querySelectorAll('.invalid-feedback').forEach(el => {
+                el.textContent = '';
+            });
+        }
+        
+        // Handle form submission
+        form.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            // Prevent multiple submissions
+            if (isSubmitting) {
+                console.log('Already submitting, ignoring...');
+                return false;
+            }
+            
+            const firstName = document.getElementById('firstName').value.trim();
+            const middleName = document.getElementById('middleName').value.trim();
+            const lastName = document.getElementById('lastName').value.trim();
+            const suffix = document.getElementById('suffix').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            const terms = document.getElementById('terms').checked;
+            
+            // Clear previous errors
+            clearAllErrors();
+            
+            let isValid = true;
+            const errors = [];
+            
+            // Validate first name
+            if (!firstName) {
+                showError(document.getElementById('firstName'), 'First name is required');
+                isValid = false;
+                errors.push('First name is required');
+            }
+            
+            // Validate last name
+            if (!lastName) {
+                showError(document.getElementById('lastName'), 'Last name is required');
+                isValid = false;
+                errors.push('Last name is required');
+            }
+            
+            // Validate email
+            if (!email) {
+                showError(document.getElementById('email'), 'Email is required');
+                isValid = false;
+                errors.push('Email is required');
+            } else if (!isValidEmail(email)) {
+                showError(document.getElementById('email'), 'Please enter a valid email address');
+                isValid = false;
+                errors.push('Invalid email format');
+            }
+            
+            // Validate password
+            if (!password) {
+                showError(document.getElementById('password'), 'Password is required');
+                isValid = false;
+                errors.push('Password is required');
+            } else if (!isValidPassword(password)) {
+                showError(document.getElementById('password'), 'Password must be at least 6 characters');
+                isValid = false;
+                errors.push('Password must be at least 6 characters');
+            }
+            
+            // Validate confirm password
+            if (!confirmPassword) {
+                showError(document.getElementById('confirmPassword'), 'Please confirm your password');
+                isValid = false;
+                errors.push('Please confirm your password');
+            } else if (password !== confirmPassword) {
+                showError(document.getElementById('confirmPassword'), 'Passwords do not match');
+                isValid = false;
+                errors.push('Passwords do not match');
+            }
+            
+            // Validate terms
+            if (!terms) {
+                alert('Please agree to the terms and privacy policy');
+                isValid = false;
+                errors.push('Terms not agreed');
+            }
+            
+            if (!isValid) {
+                console.log('Validation failed:', errors);
+                // Scroll to first error
+                const firstError = document.querySelector('.is-invalid');
+                if (firstError) {
+                    firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    firstError.focus();
+                }
+                return false;
+            }
+            
+            // Set submitting flag
+            isSubmitting = true;
+            
+            // Show loading state
+            const submitBtn = form.querySelector('button[type="submit"]');
+            const originalText = submitBtn.textContent;
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Creating account...';
+            
+            try {
+                console.log('Sending registration request...', { email, firstName, lastName });
+                
+                // Send registration request
+                const response = await fetch('api/auth.php?action=register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        firstName: firstName,
+                        middleName: middleName || null,
+                        lastName: lastName,
+                        suffix: suffix || null,
+                        email: email,
+                        password: password,
+                        confirmPassword: confirmPassword
+                    })
+                });
+                
+                console.log('Response status:', response.status);
+                const data = await response.json();
+                console.log('Response data:', data);
+                
+                if (data.success) {
+                    alert('Registration successful! Redirecting to login...');
+                    window.location.href = 'login.html';
+                } else {
+                    // Show error message
+                    const errorMsg = data.message || 'Registration failed. Please try again.';
+                    alert(errorMsg);
+                    
+                    // If it's an email conflict, highlight the email field
+                    if (errorMsg.includes('already registered') || errorMsg.includes('email')) {
+                        showError(document.getElementById('email'), errorMsg);
+                        document.getElementById('email').focus();
+                    }
+                    
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = originalText;
+                    isSubmitting = false;
+                }
+            } catch (error) {
+                console.error('Registration error:', error);
+                alert('Registration failed: ' + error.message + '\n\nCheck browser console (F12) for details.');
+                submitBtn.disabled = false;
+                submitBtn.textContent = originalText;
+                isSubmitting = false;
+            }
+            
+            return false;
+        });
+        
+        // Real-time validation
+        document.getElementById('email').addEventListener('blur', function() {
+            const email = this.value.trim();
+            if (email && !isValidEmail(email)) {
+                showError(this, 'Please enter a valid email address');
+            } else {
+                clearError(this);
+            }
+        });
+        
+        document.getElementById('password').addEventListener('blur', function() {
+            const password = this.value;
+            if (password && !isValidPassword(password)) {
+                showError(this, 'Password must be at least 6 characters');
+            } else {
+                clearError(this);
+            }
+        });
+        
+        document.getElementById('confirmPassword').addEventListener('blur', function() {
+            const password = document.getElementById('password').value;
+            const confirmPassword = this.value;
+            if (confirmPassword && password !== confirmPassword) {
+                showError(this, 'Passwords do not match');
+            } else {
+                clearError(this);
+            }
+        });
+    </script>
 
 </body>
 </html>
