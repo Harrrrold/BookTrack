@@ -96,7 +96,6 @@
                                     <option value="available">Available</option>
                                     <option value="borrowed">Borrowed</option>
                                     <option value="reserved">Reserved</option>
-                                    <option value="archived">Archived</option>
                                 </select>
                             </div>
                             <div class="col-md-2">
@@ -128,7 +127,7 @@
                                         <th>ISBN</th>
                                         <th>Category</th>
                                         <th>Status</th>
-                                        <th>Copies</th>
+                                        <th>Total Borrows</th>
                                         <th>Actions</th>
                                     </tr>
                                 </thead>
@@ -198,17 +197,36 @@
                                 </div>
                                 <div class="row g-3">
                                     <div class="col-md-6">
-                                        <label for="bookCopies" class="form-label">Number of Copies *</label>
-                                        <input type="number" class="form-control bt-input" id="bookCopies" min="1" value="1" required>
+                                        <label for="bookLanguage" class="form-label">Language</label>
+                                        <input type="text" class="form-control bt-input" id="bookLanguage" placeholder="e.g., English">
                                     </div>
                                     <div class="col-md-6">
-                                        <label for="bookStatus" class="form-label">Status *</label>
+                                        <label for="bookStatus" class="form-label">Availability *</label>
                                         <select class="form-select bt-input" id="bookStatus" required>
                                             <option value="available">Available</option>
                                             <option value="borrowed">Borrowed</option>
                                             <option value="reserved">Reserved</option>
-                                            <option value="archived">Archived</option>
                                         </select>
+                                    </div>
+                                </div>
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label for="bookLocation" class="form-label">Location</label>
+                                        <input type="text" class="form-control bt-input" id="bookLocation" placeholder="e.g., Main Library - Fiction Section">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="bookCallNumber" class="form-label">Call Number</label>
+                                        <input type="text" class="form-control bt-input" id="bookCallNumber" placeholder="e.g., FIC FIT">
+                                    </div>
+                                </div>
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label for="bookPages" class="form-label">Pages</label>
+                                        <input type="number" class="form-control bt-input" id="bookPages" min="1" placeholder="Number of pages">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="bookGenre" class="form-label">Genre</label>
+                                        <input type="text" class="form-control bt-input" id="bookGenre" placeholder="e.g., Literary Fiction">
                                     </div>
                                 </div>
                                 <div class="mb-3">
@@ -279,6 +297,7 @@
         let currentPage = 1;
         let booksPerPage = 10;
         let editingBookId = null;
+        let categories = []; // Store category mapping
 
         // Check if admin is logged in
         function checkAuth() {
@@ -292,61 +311,68 @@
             window.location.href = 'login.html';
         }
 
-        // Initialize sample data
-        function initializeSampleData() {
-            const sampleBooks = [
-                {
-                    id: 1,
-                    title: "The Great Gatsby",
-                    author: "F. Scott Fitzgerald",
-                    isbn: "978-0743273565",
-                    category: "fiction",
-                    status: "available",
-                    copies: 3,
-                    description: "A story of the fabulously wealthy Jay Gatsby and his love for the beautiful Daisy Buchanan.",
-                    year: 1925,
-                    publisher: "Scribner",
-                    cover: null
-                },
-                {
-                    id: 2,
-                    title: "To Kill a Mockingbird",
-                    author: "Harper Lee",
-                    isbn: "978-0446310789",
-                    category: "fiction",
-                    status: "borrowed",
-                    copies: 2,
-                    description: "The story of young Scout Finch and her father Atticus in a racially divided Alabama town.",
-                    year: 1960,
-                    publisher: "Grand Central Publishing",
-                    cover: null
-                },
-                {
-                    id: 3,
-                    title: "1984",
-                    author: "George Orwell",
-                    isbn: "978-0451524935",
-                    category: "fiction",
-                    status: "available",
-                    copies: 4,
-                    description: "A dystopian novel about totalitarianism and surveillance society.",
-                    year: 1949,
-                    publisher: "Signet Classic",
-                    cover: null
+        // Load books from API
+        async function loadBooks() {
+            try {
+                const response = await apiGetBooks();
+                if (!response.success) {
+                    showAlert(response.message || 'Failed to load books', 'danger');
+                    return;
                 }
-            ];
 
-            if (!localStorage.getItem('books')) {
-                localStorage.setItem('books', JSON.stringify(sampleBooks));
+                // Map API response to local format
+                books = response.books.map(book => ({
+                    id: book.id,
+                    title: book.title,
+                    author: book.author,
+                    isbn: book.isbn || '',
+                    category: book.category || '',
+                    category_id: book.category_id,
+                    genre: book.genre || '',
+                    status: book.availability || 'available', // Map availability to status
+                    availability: book.availability,
+                    description: book.description || '',
+                    year: book.publish_year,
+                    publisher: book.publisher || '',
+                    pages: book.pages,
+                    language: book.language || '',
+                    location: book.location || '',
+                    call_number: book.call_number || '',
+                    cover: book.cover || null,
+                    rating: book.rating || 0,
+                    total_borrows: book.total_borrows || 0
+                }));
+
+                filteredBooks = [...books];
+                updateBooksTable();
+                updateCounts();
+            } catch (error) {
+                console.error('Error loading books:', error);
+                showAlert('Failed to load books. Please try again.', 'danger');
             }
         }
 
-        // Load books from localStorage
-        function loadBooks() {
-            books = JSON.parse(localStorage.getItem('books')) || [];
-            filteredBooks = [...books];
-            updateBooksTable();
-            updateCounts();
+        // Load categories for dropdown (we'll use the category names from the books)
+        function loadCategories() {
+            // Extract unique categories from books
+            const uniqueCategories = [...new Set(books.map(b => b.category).filter(Boolean))];
+            categories = uniqueCategories;
+            
+            // Update category filter dropdown
+            const categoryFilter = document.getElementById('categoryFilter');
+            const currentValue = categoryFilter.value;
+            categoryFilter.innerHTML = '<option value="">All Categories</option>';
+            
+            uniqueCategories.forEach(cat => {
+                const option = document.createElement('option');
+                option.value = cat;
+                option.textContent = cat.charAt(0).toUpperCase() + cat.slice(1);
+                categoryFilter.appendChild(option);
+            });
+            
+            if (currentValue) {
+                categoryFilter.value = currentValue;
+            }
         }
 
         // Update books table
@@ -370,12 +396,12 @@
                         <div class="fw-medium">${book.title}</div>
                         <small class="bt-muted">${book.author}</small>
                     </td>
-                    <td><code>${book.isbn}</code></td>
-                    <td><span class="badge bg-secondary">${book.category}</span></td>
+                    <td><code>${book.isbn || 'N/A'}</code></td>
+                    <td><span class="badge bg-secondary">${book.category || 'Uncategorized'}</span></td>
                     <td>
                         <span class="badge ${getStatusBadgeClass(book.status)}">${book.status}</span>
                     </td>
-                    <td>${book.copies}</td>
+                    <td>${book.total_borrows || 0}</td>
                     <td>
                         <div class="btn-group btn-group-sm">
                             <a href="admin_Book_Detail.html?id=${book.id}" class="btn btn-outline-primary" title="View Details">
@@ -384,8 +410,8 @@
                             <button class="btn btn-outline-info" onclick="editBook(${book.id})" title="Edit">
                                 <i class="bi bi-pencil"></i>
                             </button>
-                            <button class="btn btn-outline-warning" onclick="archiveBook(${book.id})" title="Archive">
-                                <i class="bi bi-archive"></i>
+                            <button class="btn btn-outline-warning" onclick="toggleBookAvailability(${book.id})" title="Toggle Availability">
+                                <i class="bi bi-arrow-repeat"></i>
                             </button>
                             <button class="btn btn-outline-danger" onclick="deleteBook(${book.id})" title="Delete">
                                 <i class="bi bi-trash"></i>
@@ -405,7 +431,6 @@
                 case 'available': return 'bg-success';
                 case 'borrowed': return 'bg-warning';
                 case 'reserved': return 'bg-info';
-                case 'archived': return 'bg-secondary';
                 default: return 'bg-secondary';
             }
         }
@@ -490,6 +515,7 @@
             document.getElementById('bookForm').reset();
             document.getElementById('coverPreview').innerHTML = '<span class="bt-muted">📚</span>';
             document.getElementById('saveBookBtn').textContent = 'Save Book';
+            document.getElementById('bookStatus').value = 'available'; // Set default
             
             const modal = new bootstrap.Modal(document.getElementById('bookModal'));
             modal.show();
@@ -507,13 +533,17 @@
             // Populate form
             document.getElementById('bookTitle').value = book.title;
             document.getElementById('bookAuthor').value = book.author;
-            document.getElementById('bookISBN').value = book.isbn;
-            document.getElementById('bookCategory').value = book.category;
-            document.getElementById('bookCopies').value = book.copies;
-            document.getElementById('bookStatus').value = book.status;
+            document.getElementById('bookISBN').value = book.isbn || '';
+            document.getElementById('bookCategory').value = book.category || '';
+            document.getElementById('bookStatus').value = book.availability || 'available';
             document.getElementById('bookDescription').value = book.description || '';
             document.getElementById('bookYear').value = book.year || '';
             document.getElementById('bookPublisher').value = book.publisher || '';
+            document.getElementById('bookLanguage').value = book.language || '';
+            document.getElementById('bookLocation').value = book.location || '';
+            document.getElementById('bookCallNumber').value = book.call_number || '';
+            document.getElementById('bookPages').value = book.pages || '';
+            document.getElementById('bookGenre').value = book.genre || '';
 
             // Show cover if exists
             if (book.cover) {
@@ -527,97 +557,138 @@
         }
 
         // Save book
-        function saveBook(event) {
+        async function saveBook(event) {
             event.preventDefault();
 
+            const title = document.getElementById('bookTitle').value.trim();
+            const author = document.getElementById('bookAuthor').value.trim();
+            const isbn = document.getElementById('bookISBN').value.trim() || null;
+            const categoryName = document.getElementById('bookCategory').value;
+            const availability = document.getElementById('bookStatus').value;
+            const description = document.getElementById('bookDescription').value.trim() || null;
+            const publishYear = document.getElementById('bookYear').value ? parseInt(document.getElementById('bookYear').value) : null;
+            const publisher = document.getElementById('bookPublisher').value.trim() || null;
+            const language = document.getElementById('bookLanguage').value.trim() || null;
+            const location = document.getElementById('bookLocation').value.trim() || null;
+            const callNumber = document.getElementById('bookCallNumber').value.trim() || null;
+            const pages = document.getElementById('bookPages').value ? parseInt(document.getElementById('bookPages').value) : null;
+            const genre = document.getElementById('bookGenre').value.trim() || null;
+
+            if (!title || !author) {
+                showAlert('Title and author are required.', 'danger');
+                return;
+            }
+
             const bookData = {
-                title: document.getElementById('bookTitle').value.trim(),
-                author: document.getElementById('bookAuthor').value.trim(),
-                isbn: document.getElementById('bookISBN').value.trim(),
-                category: document.getElementById('bookCategory').value,
-                copies: parseInt(document.getElementById('bookCopies').value),
-                status: document.getElementById('bookStatus').value,
-                description: document.getElementById('bookDescription').value.trim(),
-                year: document.getElementById('bookYear').value ? parseInt(document.getElementById('bookYear').value) : null,
-                publisher: document.getElementById('bookPublisher').value.trim(),
-                cover: null // Handle cover upload separately
+                title,
+                author,
+                isbn,
+                category: categoryName || null, // Send category name, API will resolve to category_id
+                genre,
+                description,
+                publisher,
+                publish_year: publishYear,
+                pages,
+                language,
+                location,
+                call_number: callNumber,
+                availability
             };
 
-            if (editingBookId) {
-                // Update existing book
-                const index = books.findIndex(b => b.id === editingBookId);
-                if (index !== -1) {
-                    bookData.id = editingBookId;
-                    bookData.cover = books[index].cover; // Preserve existing cover
-                    books[index] = bookData;
+            try {
+                let result;
+                if (editingBookId) {
+                    // For updates, also include category_id if we have it from the book
+                    const existingBook = books.find(b => b.id === editingBookId);
+                    if (existingBook && existingBook.category_id && categoryName === existingBook.category) {
+                        bookData.category_id = existingBook.category_id;
+                    }
+                    result = await apiUpdateBook(editingBookId, bookData);
+                } else {
+                    result = await apiCreateBook(bookData);
                 }
-            } else {
-                // Add new book
-                bookData.id = Date.now(); // Simple ID generation
-                books.push(bookData);
-            }
 
-            localStorage.setItem('books', JSON.stringify(books));
-            
-            // Log the action
-            if (editingBookId) {
-                logActivity('info', 'Book Updated', `Updated book: ${bookData.title} by ${bookData.author}`);
-            } else {
-                logActivity('success', 'Book Created', `Created new book: ${bookData.title} by ${bookData.author}`);
+                if (!result.success) {
+                    showAlert(result.message || 'Failed to save book.', 'danger');
+                    return;
+                }
+
+                // Close modal and refresh
+                const modal = bootstrap.Modal.getInstance(document.getElementById('bookModal'));
+                modal.hide();
+                
+                await loadBooks();
+                showAlert(editingBookId ? 'Book updated successfully!' : 'Book created successfully!', 'success');
+            } catch (error) {
+                console.error('Error saving book:', error);
+                showAlert('Failed to save book. Please try again.', 'danger');
             }
-            
-            // Close modal and refresh
-            const modal = bootstrap.Modal.getInstance(document.getElementById('bookModal'));
-            modal.hide();
-            
-            loadBooks();
-            showAlert('Book saved successfully!', 'success');
         }
 
-        // Archive book
-        function archiveBook(bookId) {
+        // Toggle book availability
+        async function toggleBookAvailability(bookId) {
             const book = books.find(b => b.id === bookId);
-            if (book) {
-                book.status = 'archived';
-                localStorage.setItem('books', JSON.stringify(books));
-                
-                // Log the action
-                logActivity('warning', 'Book Archived', `Archived book: ${book.title} by ${book.author}`);
-                
-                loadBooks();
-                showAlert(`"${book.title}" has been archived.`, 'info');
+            if (!book) return;
+
+            // Cycle through: available -> borrowed -> reserved -> available
+            const availabilityMap = {
+                'available': 'borrowed',
+                'borrowed': 'reserved',
+                'reserved': 'available'
+            };
+            const newAvailability = availabilityMap[book.availability] || 'available';
+
+            try {
+                const result = await apiUpdateBook(bookId, { availability: newAvailability });
+                if (!result.success) {
+                    showAlert(result.message || 'Failed to update book availability.', 'danger');
+                    return;
+                }
+
+                await loadBooks();
+                showAlert(`"${book.title}" availability updated to ${newAvailability}.`, 'info');
+            } catch (error) {
+                console.error('Error updating book availability:', error);
+                showAlert('Failed to update book availability. Please try again.', 'danger');
             }
         }
 
         // Delete book
         function deleteBook(bookId) {
             const book = books.find(b => b.id === bookId);
-            if (book) {
-                document.getElementById('deleteBookTitle').textContent = book.title;
-                const deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
-                deleteModal.show();
-                
-                // Store book ID for deletion confirmation
-                document.getElementById('confirmDeleteBtn').onclick = () => {
-                    books = books.filter(b => b.id !== bookId);
-                    localStorage.setItem('books', JSON.stringify(books));
-                    
-                    // Log the action
-                    logActivity('error', 'Book Deleted', `Deleted book: ${book.title} by ${book.author}`);
-                    
-                    loadBooks();
+            if (!book) return;
+
+            document.getElementById('deleteBookTitle').textContent = book.title;
+            const deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
+            deleteModal.show();
+            
+            // Store book ID for deletion confirmation
+            document.getElementById('confirmDeleteBtn').onclick = async () => {
+                try {
+                    const result = await apiDeleteBook(bookId);
+                    if (!result.success) {
+                        showAlert(result.message || 'Failed to delete book.', 'danger');
+                        deleteModal.hide();
+                        return;
+                    }
+
+                    await loadBooks();
                     deleteModal.hide();
                     showAlert(`"${book.title}" has been deleted.`, 'success');
-                };
-            }
+                } catch (error) {
+                    console.error('Error deleting book:', error);
+                    showAlert('Failed to delete book. Please try again.', 'danger');
+                    deleteModal.hide();
+                }
+            };
         }
 
         // Export book data
         function exportBookData() {
             const csvContent = "data:text/csv;charset=utf-8," + 
-                "Title,Author,ISBN,Category,Status,Copies,Description,Year,Publisher\n" +
+                "Title,Author,ISBN,Category,Availability,Total Borrows,Description,Year,Publisher,Language,Location\n" +
                 books.map(book => 
-                    `"${book.title}","${book.author}","${book.isbn}","${book.category}","${book.status}",${book.copies},"${book.description || ''}","${book.year || ''}","${book.publisher || ''}"`
+                    `"${book.title}","${book.author}","${book.isbn || ''}","${book.category || ''}","${book.availability}","${book.total_borrows || 0}","${(book.description || '').replace(/"/g, '""')}","${book.year || ''}","${book.publisher || ''}","${book.language || ''}","${book.location || ''}"`
                 ).join("\n");
             
             const encodedUri = encodeURI(csvContent);
@@ -627,20 +698,6 @@
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
-        }
-
-        // Log system activity
-        function logActivity(level, action, details, user = null) {
-            const logs = JSON.parse(localStorage.getItem('systemLogs')) || [];
-            const logEntry = {
-                timestamp: new Date().toISOString(),
-                level: level,
-                user: user || sessionStorage.getItem('userEmail') || 'System',
-                action: action,
-                details: details
-            };
-            logs.push(logEntry);
-            localStorage.setItem('systemLogs', JSON.stringify(logs));
         }
 
         // Show alert
@@ -680,10 +737,30 @@
         document.getElementById('bookForm').addEventListener('submit', saveBook);
         document.getElementById('logoutBtn').addEventListener('click', logout);
 
+        // Make editBook function globally accessible for cross-page navigation
+        window.editBookById = editBook;
+
+        // Check for edit parameter in URL
+        function checkEditParameter() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const editId = urlParams.get('edit');
+            if (editId) {
+                // Wait for books to load, then open edit modal
+                setTimeout(() => {
+                    const book = books.find(b => b.id == editId);
+                    if (book) {
+                        editBook(parseInt(editId));
+                    }
+                }, 500);
+            }
+        }
+
         // Initialize
         checkAuth();
-        initializeSampleData();
-        loadBooks();
+        loadBooks().then(() => {
+            loadCategories();
+            checkEditParameter();
+        });
     </script>
 </body>
 </html>

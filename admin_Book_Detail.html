@@ -217,24 +217,54 @@
         }
 
         // Load book details
-        function loadBookDetails() {
+        async function loadBookDetails() {
             const bookId = getBookId();
             if (!bookId) {
                 showAlert('Book ID not found', 'danger');
                 return;
             }
 
-            const books = JSON.parse(localStorage.getItem('books')) || [];
-            currentBook = books.find(book => book.id == bookId);
-            
-            if (!currentBook) {
-                showAlert('Book not found', 'danger');
-                return;
-            }
+            try {
+                const response = await apiGetBook(bookId);
+                if (!response.success || !response.book) {
+                    showAlert(response.message || 'Book not found', 'danger');
+                    return;
+                }
 
-            displayBookDetails();
-            loadCopyDetails();
-            loadBorrowingHistory();
+                // Map API response to local format
+                const book = response.book;
+                currentBook = {
+                    id: book.id,
+                    title: book.title,
+                    author: book.author,
+                    isbn: book.isbn || '',
+                    category: book.category || '',
+                    category_id: book.category_id,
+                    genre: book.genre || '',
+                    status: book.availability || 'available',
+                    availability: book.availability,
+                    description: book.description || '',
+                    year: book.publish_year,
+                    publisher: book.publisher || '',
+                    pages: book.pages,
+                    language: book.language || '',
+                    location: book.location || '',
+                    call_number: book.call_number || '',
+                    cover: book.cover || null,
+                    rating: book.rating || 0,
+                    total_borrows: book.total_borrows || 0,
+                    reviews: book.reviews || 0,
+                    added_date: book.added_date,
+                    last_borrowed: book.last_borrowed
+                };
+
+                displayBookDetails();
+                loadCopyDetails();
+                loadBorrowingHistory();
+            } catch (error) {
+                console.error('Error loading book details:', error);
+                showAlert('Failed to load book details. Please try again.', 'danger');
+            }
         }
 
         // Display book details
@@ -246,24 +276,23 @@
             document.getElementById('bookYear').textContent = currentBook.year || 'N/A';
             document.getElementById('bookPublisher').textContent = currentBook.publisher || 'N/A';
             document.getElementById('bookDescription').textContent = currentBook.description || 'No description available.';
-            document.getElementById('bookCopies').textContent = currentBook.copies;
-            
             // Status badge
             const statusBadge = document.getElementById('bookStatusBadge');
-            statusBadge.textContent = currentBook.status;
-            statusBadge.className = `badge ${getStatusBadgeClass(currentBook.status)}`;
+            statusBadge.textContent = currentBook.availability || 'available';
+            statusBadge.className = `badge ${getStatusBadgeClass(currentBook.availability || 'available')}`;
 
             // Cover image
             if (currentBook.cover) {
                 document.getElementById('bookCoverLarge').innerHTML = `<img src="${currentBook.cover}" alt="${currentBook.title}">`;
             }
 
-            // Calculate available and borrowed copies
-            const borrowedCount = Math.floor(Math.random() * currentBook.copies); // Simulate borrowed copies
-            const availableCount = currentBook.copies - borrowedCount;
+            // For now, we don't have a copies field, so show total borrows
+            document.getElementById('bookCopies').textContent = currentBook.total_borrows || 0;
             
-            document.getElementById('availableCopies').textContent = availableCount;
-            document.getElementById('borrowedCopies').textContent = borrowedCount;
+            // Calculate available and borrowed (simplified - would need actual borrowings data)
+            const totalBorrows = currentBook.total_borrows || 0;
+            document.getElementById('availableCopies').textContent = currentBook.availability === 'available' ? 1 : 0;
+            document.getElementById('borrowedCopies').textContent = totalBorrows;
         }
 
         // Get status badge class
@@ -272,7 +301,6 @@
                 case 'available': return 'bg-success';
                 case 'borrowed': return 'bg-warning';
                 case 'reserved': return 'bg-info';
-                case 'archived': return 'bg-secondary';
                 default: return 'bg-secondary';
             }
         }
@@ -282,25 +310,24 @@
             const tbody = document.getElementById('copyDetailsBody');
             tbody.innerHTML = '';
 
-            for (let i = 1; i <= currentBook.copies; i++) {
-                const row = document.createElement('tr');
-                const copyStatus = i <= 2 ? 'Available' : 'Borrowed'; // Simulate some copies being borrowed
-                const location = 'Main Library';
-                const lastChecked = new Date(Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000).toLocaleDateString();
-                
-                row.innerHTML = `
-                    <td>Copy ${i}</td>
-                    <td><span class="badge ${copyStatus === 'Available' ? 'bg-success' : 'bg-warning'}">${copyStatus}</span></td>
-                    <td>${location}</td>
-                    <td>${lastChecked}</td>
-                    <td>
-                        <button class="btn btn-sm btn-outline-info" onclick="viewCopyDetails(${i})">
-                            <i class="bi bi-eye"></i>
-                        </button>
-                    </td>
-                `;
-                tbody.appendChild(row);
-            }
+            // Since we don't have individual copy tracking, show book info
+            const location = currentBook.location || 'Main Library';
+            const callNumber = currentBook.call_number || 'N/A';
+            const lastBorrowed = currentBook.last_borrowed ? new Date(currentBook.last_borrowed).toLocaleDateString() : 'Never';
+            
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>Book ID ${currentBook.id}</td>
+                <td><span class="badge ${getStatusBadgeClass(currentBook.availability)}">${currentBook.availability}</span></td>
+                <td>${location}</td>
+                <td>${lastBorrowed}</td>
+                <td>
+                    <button class="btn btn-sm btn-outline-info" onclick="viewCopyDetails(1)">
+                        <i class="bi bi-eye"></i>
+                    </button>
+                </td>
+            `;
+            tbody.appendChild(row);
         }
 
         // Load borrowing history
@@ -354,47 +381,60 @@
             window.location.href = `admin_Book_List.html?edit=${currentBook.id}`;
         }
 
-        // Add copy
+        // Add copy (not applicable with current schema - would need copy tracking)
         function addCopy() {
-            if (confirm('Add another copy of this book?')) {
-                currentBook.copies++;
-                updateBookInStorage();
-                loadBookDetails();
-                loadCopyDetails();
-                showAlert('Copy added successfully!', 'success');
-            }
+            showAlert('Copy tracking is not yet implemented. Each book entry represents a single copy.', 'info');
         }
 
-        // Archive book
-        function archiveBook() {
-            if (confirm('Are you sure you want to archive this book?')) {
-                currentBook.status = 'archived';
-                updateBookInStorage();
-                displayBookDetails();
-                showAlert('Book archived successfully!', 'info');
+        // Toggle availability
+        async function archiveBook() {
+            if (!confirm('Are you sure you want to change the availability of this book?')) {
+                return;
+            }
+
+            // Cycle availability
+            const availabilityMap = {
+                'available': 'borrowed',
+                'borrowed': 'reserved',
+                'reserved': 'available'
+            };
+            const newAvailability = availabilityMap[currentBook.availability] || 'available';
+
+            try {
+                const result = await apiUpdateBook(currentBook.id, { availability: newAvailability });
+                if (!result.success) {
+                    showAlert(result.message || 'Failed to update book availability.', 'danger');
+                    return;
+                }
+
+                await loadBookDetails();
+                showAlert('Book availability updated successfully!', 'info');
+            } catch (error) {
+                console.error('Error updating book:', error);
+                showAlert('Failed to update book. Please try again.', 'danger');
             }
         }
 
         // Delete book
-        function deleteBook() {
-            if (confirm('Are you sure you want to delete this book? This action cannot be undone.')) {
-                const books = JSON.parse(localStorage.getItem('books')) || [];
-                const updatedBooks = books.filter(book => book.id !== currentBook.id);
-                localStorage.setItem('books', JSON.stringify(updatedBooks));
+        async function deleteBook() {
+            if (!confirm('Are you sure you want to delete this book? This action cannot be undone.')) {
+                return;
+            }
+
+            try {
+                const result = await apiDeleteBook(currentBook.id);
+                if (!result.success) {
+                    showAlert(result.message || 'Failed to delete book.', 'danger');
+                    return;
+                }
+
                 showAlert('Book deleted successfully!', 'success');
                 setTimeout(() => {
                     window.location.href = 'admin_Book_List.html';
                 }, 1500);
-            }
-        }
-
-        // Update book in storage
-        function updateBookInStorage() {
-            const books = JSON.parse(localStorage.getItem('books')) || [];
-            const index = books.findIndex(book => book.id === currentBook.id);
-            if (index !== -1) {
-                books[index] = currentBook;
-                localStorage.setItem('books', JSON.stringify(books));
+            } catch (error) {
+                console.error('Error deleting book:', error);
+                showAlert('Failed to delete book. Please try again.', 'danger');
             }
         }
 

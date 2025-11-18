@@ -201,6 +201,7 @@ function createBook() {
     $author = $data['author'] ?? '';
     $isbn = $data['isbn'] ?? null;
     $categoryId = $data['category_id'] ?? null;
+    $categoryName = $data['category'] ?? null;
     $genre = $data['genre'] ?? null;
     $description = $data['description'] ?? null;
     $coverImage = $data['cover_image'] ?? null;
@@ -223,6 +224,18 @@ function createBook() {
         http_response_code(500);
         echo json_encode(['success' => false, 'message' => 'Database connection failed']);
         return;
+    }
+    
+    // Resolve category name to category_id if provided
+    if ($categoryName && !$categoryId) {
+        $catStmt = $conn->prepare("SELECT id FROM categories WHERE name = ?");
+        $catStmt->bind_param("s", $categoryName);
+        $catStmt->execute();
+        $catResult = $catStmt->get_result();
+        if ($catResult->num_rows > 0) {
+            $categoryId = $catResult->fetch_assoc()['id'];
+        }
+        $catStmt->close();
     }
     
     $stmt = $conn->prepare("INSERT INTO books (title, author, isbn, category_id, genre, description, cover_image, publisher, publish_year, pages, language, location, call_number, availability) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
@@ -255,6 +268,20 @@ function updateBook($id) {
         http_response_code(500);
         echo json_encode(['success' => false, 'message' => 'Database connection failed']);
         return;
+    }
+    
+    // Resolve category name to category_id if provided
+    if (isset($data['category']) && !isset($data['category_id'])) {
+        $categoryName = $data['category'];
+        $catStmt = $conn->prepare("SELECT id FROM categories WHERE name = ?");
+        $catStmt->bind_param("s", $categoryName);
+        $catStmt->execute();
+        $catResult = $catStmt->get_result();
+        if ($catResult->num_rows > 0) {
+            $data['category_id'] = $catResult->fetch_assoc()['id'];
+        }
+        $catStmt->close();
+        unset($data['category']); // Remove category name, use category_id
     }
     
     // Build update query dynamically

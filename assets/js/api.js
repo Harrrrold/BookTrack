@@ -71,6 +71,26 @@ async function apiSearchBooks(query = '', filters = {}) {
     return await apiCall(`books.php?${params}`);
 }
 
+async function apiCreateBook(bookData) {
+    return await apiCall('books.php', {
+        method: 'POST',
+        body: JSON.stringify(bookData)
+    });
+}
+
+async function apiUpdateBook(bookId, bookData) {
+    return await apiCall(`books.php?id=${encodeURIComponent(bookId)}`, {
+        method: 'PUT',
+        body: JSON.stringify(bookData)
+    });
+}
+
+async function apiDeleteBook(bookId) {
+    return await apiCall(`books.php?id=${encodeURIComponent(bookId)}`, {
+        method: 'DELETE'
+    });
+}
+
 // Borrowings functions
 async function apiBorrowBook(bookId, dueDays = 14) {
     return await apiCall('borrowings.php?action=borrow', {
