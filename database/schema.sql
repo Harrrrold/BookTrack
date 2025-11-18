@@ -5,7 +5,6 @@
 CREATE DATABASE IF NOT EXISTS booktrack CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 USE booktrack;
 
--- Users table
 CREATE TABLE IF NOT EXISTS users (
     id INT AUTO_INCREMENT PRIMARY KEY,
     first_name VARCHAR(100) NOT NULL,
@@ -14,7 +13,7 @@ CREATE TABLE IF NOT EXISTS users (
     suffix VARCHAR(10) DEFAULT NULL,
     email VARCHAR(255) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL,
-    role ENUM('user', 'admin', 'library_admin') DEFAULT 'user',
+    role ENUM('user', 'library_admin', 'library_moderator') DEFAULT 'user',
     profile_image VARCHAR(255) DEFAULT NULL,
     phone VARCHAR(20) DEFAULT NULL,
     address TEXT DEFAULT NULL,
@@ -168,7 +167,7 @@ ON DUPLICATE KEY UPDATE name=name;
 -- Insert default admin user (password: admin123)
 -- Password hash for 'admin123' using password_hash PHP function
 INSERT INTO users (first_name, last_name, email, password, role, status) VALUES
-('Admin', 'User', 'admin@booktrack.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'admin', 'active')
+('Admin', 'User', 'admin@booktrack.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'library_admin', 'active')
 ON DUPLICATE KEY UPDATE email=email;
 
 -- Insert default regular user (password: user123)

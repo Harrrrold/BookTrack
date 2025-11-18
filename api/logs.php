@@ -11,7 +11,7 @@ require_once '../config/database.php';
 $isAuthenticated = isset($_SESSION['is_logged_in']) && $_SESSION['is_logged_in'] === true;
 $userRole = $_SESSION['user_role'] ?? 'user';
 
-if (!$isAuthenticated || ($userRole !== 'admin' && $userRole !== 'library_admin')) {
+if (!$isAuthenticated || ($userRole !== 'library_admin' && $userRole !== 'library_moderator')) {
     http_response_code(403);
     echo json_encode(['success' => false, 'message' => 'Admin access required']);
     exit;

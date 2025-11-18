@@ -30,7 +30,7 @@ switch ($method) {
             getMyReservations();
         } else {
             // Admin only
-            if ($userRole !== 'admin' && $userRole !== 'library_admin') {
+            if ($userRole !== 'library_admin' && $userRole !== 'library_moderator') {
                 http_response_code(403);
                 echo json_encode(['success' => false, 'message' => 'Admin access required']);
                 break;
@@ -188,7 +188,7 @@ function cancelReservation($id) {
     }
     
     // Get reservation details
-    $stmt = $conn->prepare("SELECT r.*, bk.title FROM reservations r JOIN books bk ON r.book_id = bk.id WHERE r.id = ? AND (r.user_id = ? OR ? = 'admin' OR ? = 'library_admin')");
+    $stmt = $conn->prepare("SELECT r.*, bk.title FROM reservations r JOIN books bk ON r.book_id = bk.id WHERE r.id = ? AND (r.user_id = ? OR ? = 'library_admin' OR ? = 'library_moderator')");
     $stmt->bind_param("isss", $id, $userId, $userRole, $userRole);
     $stmt->execute();
     $result = $stmt->get_result();
@@ -323,7 +323,7 @@ function getReservation($id) {
         return;
     }
     
-    $stmt = $conn->prepare("SELECT r.*, bk.title, bk.author FROM reservations r JOIN books bk ON r.book_id = bk.id WHERE r.id = ? AND (r.user_id = ? OR ? = 'admin' OR ? = 'library_admin')");
+    $stmt = $conn->prepare("SELECT r.*, bk.title, bk.author FROM reservations r JOIN books bk ON r.book_id = bk.id WHERE r.id = ? AND (r.user_id = ? OR ? = 'library_admin' OR ? = 'library_moderator')");
     $stmt->bind_param("isss", $id, $userId, $userRole, $userRole);
     $stmt->execute();
     $result = $stmt->get_result();

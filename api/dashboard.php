@@ -20,7 +20,7 @@ $userId = $_SESSION['user_id'];
 $userRole = $_SESSION['user_role'] ?? 'user';
 $type = $_GET['type'] ?? 'user';
 
-if ($type === 'admin' && $userRole !== 'admin' && $userRole !== 'library_admin') {
+if ($type === 'admin' && $userRole !== 'library_admin' && $userRole !== 'library_moderator') {
     http_response_code(403);
     echo json_encode(['success' => false, 'message' => 'Admin access required']);
     exit;

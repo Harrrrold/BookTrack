@@ -30,7 +30,7 @@ switch ($method) {
             getMyBorrowings();
         } else {
             // Admin only
-            if ($userRole !== 'admin' && $userRole !== 'library_admin') {
+            if ($userRole !== 'library_admin' && $userRole !== 'library_moderator') {
                 http_response_code(403);
                 echo json_encode(['success' => false, 'message' => 'Admin access required']);
                 break;
@@ -184,7 +184,7 @@ function returnBook() {
     
     // Find borrowing record
     if ($borrowingId) {
-        $stmt = $conn->prepare("SELECT b.*, bk.title as book_title FROM borrowings b JOIN books bk ON b.book_id = bk.id WHERE b.id = ? AND (b.user_id = ? OR ? = 'admin' OR ? = 'library_admin')");
+    $stmt = $conn->prepare("SELECT b.*, bk.title as book_title FROM borrowings b JOIN books bk ON b.book_id = bk.id WHERE b.id = ? AND (b.user_id = ? OR ? = 'library_admin' OR ? = 'library_moderator')");
         $stmt->bind_param("isss", $borrowingId, $userId, $userRole, $userRole);
     } else {
         $stmt = $conn->prepare("SELECT b.*, bk.title as book_title FROM borrowings b JOIN books bk ON b.book_id = bk.id WHERE b.book_id = ? AND b.user_id = ? AND b.status = 'borrowed'");
@@ -352,7 +352,7 @@ function getBorrowing($id) {
         return;
     }
     
-    $stmt = $conn->prepare("SELECT b.*, bk.title, bk.author FROM borrowings b JOIN books bk ON b.book_id = bk.id WHERE b.id = ? AND (b.user_id = ? OR ? = 'admin' OR ? = 'library_admin')");
+    $stmt = $conn->prepare("SELECT b.*, bk.title, bk.author FROM borrowings b JOIN books bk ON b.book_id = bk.id WHERE b.id = ? AND (b.user_id = ? OR ? = 'library_admin' OR ? = 'library_moderator')");
     $stmt->bind_param("isss", $id, $userId, $userRole, $userRole);
     $stmt->execute();
     $result = $stmt->get_result();

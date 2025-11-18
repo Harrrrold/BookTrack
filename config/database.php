@@ -26,7 +26,7 @@ if (file_exists(__DIR__ . '/database.local.php')) {
 // Create database connection
 function getDBConnection() {
     try {
-        $conn = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
+        $conn = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME, 3307);
         
         if ($conn->connect_error) {
             throw new Exception("Connection failed: " . $conn->connect_error);

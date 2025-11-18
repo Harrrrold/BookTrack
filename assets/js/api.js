@@ -174,6 +174,29 @@ async function apiUpdateProfile(profileData, userId = null) {
     });
 }
 
+// Admin/user management functions
+async function apiGetUsers(params = {}) {
+    const searchParams = new URLSearchParams({ action: 'list', ...params });
+    return await apiCall(`users.php?${searchParams.toString()}`);
+}
+
+async function apiCreateUser(userData) {
+    return await apiCall('users.php?action=create', {
+        method: 'POST',
+        body: JSON.stringify(userData)
+    });
+}
+
+async function apiDeleteUser(userId) {
+    return await apiCall(`users.php?id=${encodeURIComponent(userId)}`, {
+        method: 'DELETE'
+    });
+}
+
+async function apiUpdateUser(userId, userData) {
+    return await apiUpdateProfile(userData, userId);
+}
+
 // Utility: Check if user is logged in
 function isLoggedIn() {
     return sessionStorage.getItem('isLoggedIn') === 'true';
@@ -201,7 +224,7 @@ function requireAuth() {
 // Utility: Require admin role
 function requireAdmin() {
     const user = getCurrentUser();
-    if (!isLoggedIn() || (user.role !== 'admin' && user.role !== 'library_admin')) {
+    if (!isLoggedIn() || (user.role !== 'library_admin' && user.role !== 'library_moderator')) {
         window.location.href = 'login.html';
         return false;
     }

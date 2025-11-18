@@ -205,7 +205,7 @@
                     sessionStorage.setItem('isLoggedIn', 'true');
                     
                     // Redirect based on role
-                    if (data.user.role === 'admin') {
+                    if (data.user.role === 'library_admin' || data.user.role === 'library_moderator') {
                         window.location.href = 'admin_Dasboard.html';
                     } else {
                         window.location.href = 'user_Dashboard.html';

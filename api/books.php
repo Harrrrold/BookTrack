@@ -28,7 +28,7 @@ switch ($method) {
         break;
         
     case 'POST':
-        if (!$isAuthenticated || ($userRole !== 'admin' && $userRole !== 'library_admin')) {
+        if (!$isAuthenticated || ($userRole !== 'library_admin' && $userRole !== 'library_moderator')) {
             http_response_code(403);
             echo json_encode(['success' => false, 'message' => 'Admin access required']);
             break;
@@ -37,7 +37,7 @@ switch ($method) {
         break;
         
     case 'PUT':
-        if (!$isAuthenticated || ($userRole !== 'admin' && $userRole !== 'library_admin')) {
+        if (!$isAuthenticated || ($userRole !== 'library_admin' && $userRole !== 'library_moderator')) {
             http_response_code(403);
             echo json_encode(['success' => false, 'message' => 'Admin access required']);
             break;
@@ -51,7 +51,7 @@ switch ($method) {
         break;
         
     case 'DELETE':
-        if (!$isAuthenticated || ($userRole !== 'admin' && $userRole !== 'library_admin')) {
+        if (!$isAuthenticated || ($userRole !== 'library_admin' && $userRole !== 'library_moderator')) {
             http_response_code(403);
             echo json_encode(['success' => false, 'message' => 'Admin access required']);
             break;

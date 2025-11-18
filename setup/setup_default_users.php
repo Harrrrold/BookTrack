@@ -21,7 +21,7 @@ $defaultUsers = [
         'last_name' => 'User',
         'email' => 'admin@booktrack.com',
         'password' => 'admin123',
-        'role' => 'admin',
+        'role' => 'library_admin',
         'status' => 'active'
     ],
     [

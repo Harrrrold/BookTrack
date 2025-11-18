@@ -34,7 +34,8 @@ switch ($method) {
                 getMyProfile();
             }
         } elseif ($action === 'list') {
-            if ($userRole !== 'admin' && $userRole !== 'library_admin') {
+            // Allow both library admins and library moderators to list users
+            if ($userRole !== 'library_admin' && $userRole !== 'library_moderator') {
                 http_response_code(403);
                 echo json_encode(['success' => false, 'message' => 'Admin access required']);
                 break;
@@ -46,9 +47,18 @@ switch ($method) {
         }
         break;
         
+    case 'POST':
+        if ($action === 'create') {
+            createUser();
+        } else {
+            http_response_code(400);
+            echo json_encode(['success' => false, 'message' => 'Invalid action']);
+        }
+        break;
+
     case 'PUT':
         if ($action === 'profile') {
-            if ($targetUserId && ($userRole !== 'admin' && $userRole !== 'library_admin')) {
+            if ($targetUserId && ($userRole !== 'library_admin' && $userRole !== 'library_moderator')) {
                 http_response_code(403);
                 echo json_encode(['success' => false, 'message' => 'Admin access required']);
                 break;
@@ -61,7 +71,7 @@ switch ($method) {
         break;
         
     case 'DELETE':
-        if ($targetUserId && ($userRole === 'admin' || $userRole === 'library_admin')) {
+        if ($targetUserId && ($userRole === 'library_admin' || $userRole === 'library_moderator')) {
             deleteUser($targetUserId);
         } else {
             http_response_code(403);
@@ -108,7 +118,7 @@ function getUserProfile($targetUserId) {
     global $userId, $userRole;
     
     // Users can only view their own profile unless admin
-    if ($targetUserId != $userId && $userRole !== 'admin' && $userRole !== 'library_admin') {
+    if ($targetUserId != $userId && $userRole !== 'library_admin' && $userRole !== 'library_moderator') {
         http_response_code(403);
         echo json_encode(['success' => false, 'message' => 'Access denied']);
         return;
@@ -164,7 +174,7 @@ function getUserList() {
         $types .= "s";
     }
     
-    if ($role && in_array($role, ['user', 'admin', 'library_admin'])) {
+    if ($role && in_array($role, ['user', 'library_admin', 'library_moderator'])) {
         $sql .= " AND role = ?";
         $params[] = $role;
         $types .= "s";
@@ -199,13 +209,35 @@ function updateProfile($targetUserId = null) {
     $updateUserId = $targetUserId ?? $userId;
     
     // Users can only update their own profile unless admin
-    if ($updateUserId != $userId && $userRole !== 'admin' && $userRole !== 'library_admin') {
+    if ($updateUserId != $userId && $userRole !== 'library_admin' && $userRole !== 'library_moderator') {
         http_response_code(403);
         echo json_encode(['success' => false, 'message' => 'Access denied']);
         return;
     }
     
     $data = json_decode(file_get_contents('php://input'), true);
+    if (!is_array($data)) {
+        http_response_code(400);
+        echo json_encode(['success' => false, 'message' => 'Invalid payload']);
+        return;
+    }
+
+    if (isset($data['status'])) {
+        if (!in_array($data['status'], ['active', 'inactive', 'suspended'], true) || $updateUserId == $userId) {
+            unset($data['status']);
+        }
+    }
+
+    if (isset($data['role'])) {
+        $validRoles = ['user', 'library_admin', 'library_moderator'];
+        $requestedRole = $data['role'];
+
+        if ($updateUserId == $userId || !in_array($requestedRole, $validRoles, true)) {
+            unset($data['role']);
+        } elseif ($userRole === 'library_moderator') {
+            $data['role'] = 'user';
+        }
+    }
     
     $conn = getDBConnection();
     if (!$conn) {
@@ -222,7 +254,7 @@ function updateProfile($targetUserId = null) {
     $allowedFields = ['first_name', 'middle_name', 'last_name', 'suffix', 'phone', 'address', 'profile_image'];
     
     // Admins can update status and role
-    if ($userRole === 'admin' || $userRole === 'library_admin') {
+    if ($userRole === 'library_admin' || $userRole === 'library_moderator') {
         $allowedFields[] = 'status';
         if ($updateUserId != $userId) { // Can't change own role
             $allowedFields[] = 'role';
@@ -350,6 +382,107 @@ function deleteUser($targetUserId) {
         http_response_code(500);
         echo json_encode(['success' => false, 'message' => 'Failed to delete user: ' . $deleteStmt->error]);
         $deleteStmt->close();
+        closeDBConnection($conn);
+    }
+}
+
+/**
+ * Create a new user (admin-side)
+ * - library_admin can create users with role user or library_moderator
+ * - library_moderator can only create users with role user
+ */
+function createUser() {
+    global $userRole, $userId;
+
+    if ($userRole !== 'library_admin' && $userRole !== 'library_moderator') {
+        http_response_code(403);
+        echo json_encode(['success' => false, 'message' => 'Admin access required']);
+        return;
+    }
+
+    $data = json_decode(file_get_contents('php://input'), true);
+
+    $firstName = trim($data['first_name'] ?? '');
+    $lastName = trim($data['last_name'] ?? '');
+    $email = trim($data['email'] ?? '');
+    $role = $data['role'] ?? 'user';
+    $status = $data['status'] ?? 'active';
+    $phone = trim($data['phone'] ?? '');
+    $address = trim($data['address'] ?? '');
+
+    if ($firstName === '' || $lastName === '' || $email === '') {
+        http_response_code(400);
+        echo json_encode(['success' => false, 'message' => 'First name, last name, and email are required']);
+        return;
+    }
+
+    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        http_response_code(400);
+        echo json_encode(['success' => false, 'message' => 'Invalid email format']);
+        return;
+    }
+
+    // Enforce allowed roles
+    if ($userRole === 'library_moderator') {
+        $role = 'user';
+    } else {
+        // library_admin: only allow specific roles
+        if (!in_array($role, ['user', 'library_moderator'], true)) {
+            $role = 'user';
+        }
+    }
+
+    if (!in_array($status, ['active', 'inactive', 'suspended'], true)) {
+        $status = 'active';
+    }
+
+    $conn = getDBConnection();
+    if (!$conn) {
+        http_response_code(500);
+        echo json_encode(['success' => false, 'message' => 'Database connection failed']);
+        return;
+    }
+
+    // Check if email already exists
+    $checkStmt = $conn->prepare("SELECT id FROM users WHERE email = ?");
+    $checkStmt->bind_param("s", $email);
+    $checkStmt->execute();
+    $result = $checkStmt->get_result();
+    if ($result->num_rows > 0) {
+        http_response_code(409);
+        echo json_encode(['success' => false, 'message' => 'Email already registered']);
+        $checkStmt->close();
+        closeDBConnection($conn);
+        return;
+    }
+    $checkStmt->close();
+
+    // For admin-created users, generate a temporary password
+    $tempPassword = bin2hex(random_bytes(4)); // 8 hex chars
+    $hashedPassword = password_hash($tempPassword, PASSWORD_DEFAULT);
+
+    $stmt = $conn->prepare("INSERT INTO users (first_name, last_name, email, password, role, phone, address, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+    $stmt->bind_param("ssssssss", $firstName, $lastName, $email, $hashedPassword, $role, $phone, $address, $status);
+
+    if ($stmt->execute()) {
+        $newUserId = $conn->insert_id;
+
+        // Log activity
+        logSystemActivity($conn, $userId, "User created: $email (ID $newUserId, role $role)", 'success');
+
+        $stmt->close();
+        closeDBConnection($conn);
+
+        echo json_encode([
+            'success' => true,
+            'message' => 'User created successfully',
+            'user_id' => $newUserId,
+            'temp_password' => $tempPassword
+        ]);
+    } else {
+        http_response_code(500);
+        echo json_encode(['success' => false, 'message' => 'Failed to create user: ' . $stmt->error]);
+        $stmt->close();
         closeDBConnection($conn);
     }
 }
