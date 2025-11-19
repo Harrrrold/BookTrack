@@ -154,8 +154,6 @@ function getLog($id) {
 }
 
 function deleteLog($id) {
-    global $userId;
-    
     $conn = getDBConnection();
     if (!$conn) {
         http_response_code(500);
@@ -163,12 +161,16 @@ function deleteLog($id) {
         return;
     }
     
+    $userId = $_SESSION['user_id'] ?? null;
+    
     $stmt = $conn->prepare("DELETE FROM system_logs WHERE id = ?");
     $stmt->bind_param("i", $id);
     
     if ($stmt->execute()) {
         // Log activity
-        logSystemActivity($conn, $userId, "Log deleted: ID $id", 'info');
+        if ($userId) {
+            logSystemActivity($conn, $userId, "Log deleted: ID $id", 'info');
+        }
         
         $stmt->close();
         closeDBConnection($conn);

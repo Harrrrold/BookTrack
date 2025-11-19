@@ -68,12 +68,45 @@
                 </div>
             </div>
 
+            <!-- Filter Section -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="bt-card p-4">
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <label for="levelFilter" class="form-label">Filter by Level</label>
+                                <select class="form-select bt-input" id="levelFilter">
+                                    <option value="">All Levels</option>
+                                    <option value="info">Info</option>
+                                    <option value="success">Success</option>
+                                    <option value="warning">Warning</option>
+                                    <option value="error">Error</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="limitFilter" class="form-label">Number of Logs</label>
+                                <select class="form-select bt-input" id="limitFilter">
+                                    <option value="50">50</option>
+                                    <option value="100" selected>100</option>
+                                    <option value="200">200</option>
+                                    <option value="500">500</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">&nbsp;</label>
+                                <button class="btn btn-outline-secondary w-100" onclick="clearFilters()">Clear Filters</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <!-- Logs Content -->
             <div class="row">
                 <div class="col-12">
                     <div class="bt-card p-4">
                         <div class="d-flex justify-content-between align-items-center mb-3">
-                            <h3 class="h5 bt-title mb-0">Recent Activity</h3>
+                            <h3 class="h5 bt-title mb-0">System Activity Logs</h3>
                             <div class="d-flex align-items-center gap-2">
                                 <span class="bt-muted">Showing <span id="logCount">0</span> log entries</span>
                             </div>
@@ -130,35 +163,62 @@
             window.location.href = 'login.html';
         }
 
-        // Load logs
-        function loadLogs() {
-            const logs = JSON.parse(localStorage.getItem('systemLogs')) || [];
-            const tbody = document.getElementById('logsTableBody');
-            tbody.innerHTML = '';
+        // Global variables
+        let currentFilters = {
+            level: '',
+            limit: 100
+        };
 
-            if (logs.length === 0) {
-                tbody.innerHTML = `
-                    <tr>
-                        <td colspan="5" class="text-center py-4">
-                            <span class="bt-muted">No log entries found</span>
-                        </td>
-                    </tr>
-                `;
-            } else {
-                logs.slice(-50).reverse().forEach(log => {
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td>${new Date(log.timestamp).toLocaleString()}</td>
-                        <td><span class="badge ${getLogLevelBadgeClass(log.level)}">${log.level}</span></td>
-                        <td>${log.user || 'System'}</td>
-                        <td>${log.action}</td>
-                        <td>${log.details}</td>
+        // Load logs from API
+        async function loadLogs() {
+            try {
+                const params = {
+                    limit: currentFilters.limit || 100
+                };
+                if (currentFilters.level) {
+                    params.level = currentFilters.level;
+                }
+
+                const response = await apiGetLogs(params);
+                if (!response.success) {
+                    showAlert(response.message || 'Failed to load logs', 'danger');
+                    return;
+                }
+
+                const logs = response.logs || [];
+                const tbody = document.getElementById('logsTableBody');
+                tbody.innerHTML = '';
+
+                if (logs.length === 0) {
+                    tbody.innerHTML = `
+                        <tr>
+                            <td colspan="5" class="text-center py-4">
+                                <span class="bt-muted">No log entries found</span>
+                            </td>
+                        </tr>
                     `;
-                    tbody.appendChild(row);
-                });
-            }
+                } else {
+                    logs.forEach(log => {
+                        const row = document.createElement('tr');
+                        const timestamp = new Date(log.timestamp || log.created_at).toLocaleString();
+                        const userName = log.user_name || log.user_email || 'System';
+                        
+                        row.innerHTML = `
+                            <td>${timestamp}</td>
+                            <td><span class="badge ${getLogLevelBadgeClass(log.level)}">${log.level}</span></td>
+                            <td>${userName}</td>
+                            <td>${log.action || 'N/A'}</td>
+                            <td>${log.details || 'No details'}</td>
+                        `;
+                        tbody.appendChild(row);
+                    });
+                }
 
-            document.getElementById('logCount').textContent = logs.length;
+                document.getElementById('logCount').textContent = logs.length;
+            } catch (error) {
+                console.error('Error loading logs:', error);
+                showAlert('Failed to load logs. Please try again.', 'danger');
+            }
         }
 
         // Get log level badge class
@@ -173,36 +233,81 @@
         }
 
         // Refresh logs
-        function refreshLogs() {
-            loadLogs();
+        async function refreshLogs() {
+            await loadLogs();
             showAlert('Logs refreshed!', 'info');
         }
 
-        // Export logs
-        function exportLogs() {
-            const logs = JSON.parse(localStorage.getItem('systemLogs')) || [];
-            const csvContent = "data:text/csv;charset=utf-8," + 
-                "Timestamp,Level,User,Action,Details\n" +
-                logs.map(log => 
-                    `"${new Date(log.timestamp).toLocaleString()}","${log.level}","${log.user || 'System'}","${log.action}","${log.details}"`
-                ).join("\n");
-            
-            const encodedUri = encodeURI(csvContent);
-            const link = document.createElement("a");
-            link.setAttribute("href", encodedUri);
-            link.setAttribute("download", "booktrack_logs.csv");
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
+        // Clear filters
+        function clearFilters() {
+            document.getElementById('levelFilter').value = '';
+            document.getElementById('limitFilter').value = '100';
+            currentFilters = {
+                level: '',
+                limit: 100
+            };
+            loadLogs();
         }
 
-        // Clear logs
-        function clearLogs() {
-            if (confirm('Are you sure you want to clear all logs? This action cannot be undone.')) {
-                localStorage.removeItem('systemLogs');
-                loadLogs();
-                showAlert('Logs cleared successfully!', 'success');
+        // Apply filters
+        function applyFilters() {
+            currentFilters.level = document.getElementById('levelFilter').value;
+            currentFilters.limit = parseInt(document.getElementById('limitFilter').value) || 100;
+            loadLogs();
+        }
+
+        // Export logs
+        async function exportLogs() {
+            try {
+                // Get more logs for export (up to 1000)
+                const response = await apiGetLogs({ limit: 1000 });
+                if (!response.success) {
+                    showAlert(response.message || 'Failed to export logs', 'danger');
+                    return;
+                }
+
+                const logs = response.logs || [];
+                if (logs.length === 0) {
+                    showAlert('No logs to export', 'warning');
+                    return;
+                }
+
+                const csvContent = "data:text/csv;charset=utf-8," + 
+                    "Timestamp,Level,User,Action,Details,IP Address\n" +
+                    logs.map(log => {
+                        const timestamp = new Date(log.timestamp || log.created_at).toLocaleString();
+                        const userName = log.user_name || log.user_email || 'System';
+                        const action = log.action || 'N/A';
+                        const details = (log.details || 'No details').replace(/"/g, '""');
+                        const ip = log.ip_address || 'N/A';
+                        return `"${timestamp}","${log.level}","${userName}","${action}","${details}","${ip}"`;
+                    }).join("\n");
+                
+                const encodedUri = encodeURI(csvContent);
+                const link = document.createElement("a");
+                link.setAttribute("href", encodedUri);
+                link.setAttribute("download", `booktrack_logs_${new Date().toISOString().split('T')[0]}.csv`);
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                showAlert('Logs exported successfully!', 'success');
+            } catch (error) {
+                console.error('Error exporting logs:', error);
+                showAlert('Failed to export logs. Please try again.', 'danger');
             }
+        }
+
+        // Clear logs - Note: This is disabled as logs should be kept for audit purposes
+        // If you want to enable clearing, you'd need to add a bulk delete endpoint
+        function clearLogs() {
+            showAlert('Log clearing is disabled for security and audit purposes. Logs are automatically managed by the system.', 'info');
+            // Uncomment below if you want to enable clearing (requires backend support)
+            /*
+            if (confirm('Are you sure you want to clear all logs? This action cannot be undone.')) {
+                // Would need to implement bulk delete in API
+                showAlert('Log clearing is not yet implemented.', 'warning');
+            }
+            */
         }
 
         // Show alert
@@ -225,6 +330,8 @@
 
         // Event listeners
         document.getElementById('logoutBtn').addEventListener('click', logout);
+        document.getElementById('levelFilter').addEventListener('change', applyFilters);
+        document.getElementById('limitFilter').addEventListener('change', applyFilters);
 
         // Initialize
         checkAuth();

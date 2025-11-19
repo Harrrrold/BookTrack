@@ -91,6 +91,28 @@ async function apiDeleteBook(bookId) {
     });
 }
 
+// Logs functions
+async function apiGetLogs(params = {}) {
+    const searchParams = new URLSearchParams();
+    if (params.level) searchParams.append('level', params.level);
+    if (params.user_id) searchParams.append('user_id', params.user_id);
+    if (params.limit) searchParams.append('limit', params.limit);
+    if (params.offset) searchParams.append('offset', params.offset);
+    const query = searchParams.toString();
+    const endpoint = query ? `logs.php?${query}` : 'logs.php';
+    return await apiCall(endpoint);
+}
+
+async function apiGetLog(logId) {
+    return await apiCall(`logs.php?id=${encodeURIComponent(logId)}`);
+}
+
+async function apiDeleteLog(logId) {
+    return await apiCall(`logs.php?id=${encodeURIComponent(logId)}`, {
+        method: 'DELETE'
+    });
+}
+
 // Borrowings functions
 async function apiBorrowBook(bookId, dueDays = 14) {
     return await apiCall('borrowings.php?action=borrow', {
